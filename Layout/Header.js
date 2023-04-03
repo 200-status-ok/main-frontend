@@ -5,9 +5,12 @@ import { useState } from "react";
 import LoginPopup from "../components/LoginPopup";
 const Header = () => {
   const [showLoginPopup, setShowLoginPopup] = useState(false);
+  const [user, setUser] = useState(null);
   return (
     <>
-      {showLoginPopup && <LoginPopup setShowLoginPopup={setShowLoginPopup} />}
+      {showLoginPopup && (
+        <LoginPopup setUser={setUser} setShowLoginPopup={setShowLoginPopup} />
+      )}
       <div className={classes.container}>
         <div className={classes.title_container}>
           <h1 className={classes.subheader}>دنبالش نگرد...</h1>
@@ -21,14 +24,25 @@ const Header = () => {
         <div className={classes.dots}>
           <Image src={leftdots} width="250" />
         </div>
-        <button
-          className={classes.button}
-          onClick={() => {
-            setShowLoginPopup(true);
-          }}
-        >
-          ورود
-        </button>
+        {user ? (
+          <button
+            className={classes.button}
+            onClick={() => {
+              setShowLoginPopup(true);
+            }}
+          >
+            خروج
+          </button>
+        ) : (
+          <button
+            className={classes.button}
+            onClick={() => {
+              setShowLoginPopup(true);
+            }}
+          >
+            ورود
+          </button>
+        )}
       </div>
     </>
   );

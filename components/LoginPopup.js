@@ -4,7 +4,12 @@ import userIcon from "../assets/icons/user.png";
 import leftdots from "../assets/images/leftdots.png";
 import nine_dots from "../assets/images/ninedots.png";
 import googleIcon from "../assets/icons/google.png";
-const LoginPopup = () => {
+import axios from "axios";
+import { toast } from "react-toastify";
+import { useState } from "react";
+const LoginPopup = ({ setUser, setShowLoginPopup }) => {
+  const [username, setUsername] = useState("");
+  const [otp, setOtp] = useState("");
   return (
     <>
       <div className={classes.background}>
@@ -21,17 +26,53 @@ const LoginPopup = () => {
             <input
               className={classes.email_input}
               placeholder="ایمیل یا شماره موبایل"
+              value={username}
+              onChange={(e) => setUsername(e.target.value)}
             />
             <div className={classes.code_input_container}>
-              <input className={classes.code_input} placeholder="کد تایید" />
-              <button className={classes.code_button}>ارسال</button>
+              <input
+                className={classes.code_input}
+                placeholder="کد تایید"
+                value={otp}
+                onChange={(e) => setOtp(e.target.value)}
+              />
+              <button
+                className={classes.code_button}
+                onClick={async () => {
+                  await axios.post(
+                    "https://main-backend.iran.liara.run/api/v1/users/auth/otp/send",
+                    {
+                      username,
+                    }
+                  );
+                  toast.success("کد با موفقیت ارسال شد");
+                }}
+              >
+                ارسال
+              </button>
             </div>
           </div>
           <div className={classes.mid_dots}>
             <Image src={nine_dots} width="70" />
           </div>
           <div className={classes.buttons_container}>
-            <button className={classes.login_button}>ورود</button>
+            <button
+              className={classes.login_button}
+              onClick={async () => {
+                const response = await axios.post(
+                  "https://main-backend.iran.liara.run/api/v1/users/auth/otp/login",
+                  {
+                    username,
+                    otp,
+                  }
+                );
+                setUser(response.data);
+                setShowLoginPopup(false);
+                console.log(response.data);
+              }}
+            >
+              ورود
+            </button>
             <button className={classes.gLogin_button}>
               <Image
                 src={googleIcon}
