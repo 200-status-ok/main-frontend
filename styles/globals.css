@@ -40,3 +40,6 @@ a {
 html {
   scroll-behavior: smooth;
 }
+.Toastify__toast-container {
+  z-index: 100000 !important;
+}
