@@ -37,3 +37,6 @@ a {
     background: black;
   }
 }
+html {
+  scroll-behavior: smooth;
+}
