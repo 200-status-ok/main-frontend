@@ -1,0 +1,79 @@
+.posters_container {
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr;
+}
+.sidebar {
+  position: fixed;
+  top: 64px;
+  right: 0;
+  width: 280px;
+  height: calc(100vh - 64px);
+  background-color: #eee;
+  color: black;
+  font-size: 24px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+.container {
+  margin-right: 280px;
+  margin-top: 80px;
+
+  width: calc(100vw - 300px);
+}
+.posters_container {
+  width: 90%;
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr;
+  margin: 16px auto;
+  grid-gap: 16px;
+}
+.poster {
+  border: 2.5px solid #d6d6d6cc;
+  border-radius: 4px;
+  display: flex;
+  column-gap: 16px;
+  padding: 16px;
+}
+.poster_body {
+  width: 60%;
+}
+.poster_title {
+  font-size: 20px;
+  /* font-weight: bold; */
+}
+.badge {
+  padding: 4px 8px;
+  font-size: 12px;
+}
+.emergency {
+  background-color: #ffd1d1;
+}
+.category {
+  background-color: #efefef;
+}
+.reward {
+  background-color: #cdf0ea;
+}
+
+.founded {
+  color: #2f89fc;
+  font-weight: bold;
+}
+.lost {
+  font-weight: bold;
+  color: #ffd1d1;
+}
+.time_description {
+  font-size: 12px;
+}
+.badges_container {
+  display: flex;
+  align-items: center;
+  row-gap: 0px;
+  margin-top: 5px;
+  flex-wrap: wrap;
+  column-gap: 16px;
+  min-height: 70px;
+  margin-bottom: 12px;
+}
