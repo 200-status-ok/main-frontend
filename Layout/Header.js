@@ -1,7 +1,7 @@
 import classes from "./Header.module.css";
 import leftdots from "../assets/images/leftdots.png";
 import Image from "next/image";
-import { useState } from "react";
+import { useRef, useState } from "react";
 import LoginPopup from "../components/LoginPopup";
 const Header = () => {
   const [showLoginPopup, setShowLoginPopup] = useState(false);

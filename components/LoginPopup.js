@@ -6,14 +6,20 @@ import nine_dots from "../assets/images/ninedots.png";
 import googleIcon from "../assets/icons/google.png";
 import axios from "axios";
 import { toast } from "react-toastify";
-import { useState } from "react";
+import { useState, useRef } from "react";
+import useOnClickOutside from "../hooks/useOutside";
 const LoginPopup = ({ setUser, setShowLoginPopup }) => {
   const [username, setUsername] = useState("");
   const [otp, setOtp] = useState("");
+  const loginBoxRef = useRef();
+
+  useOnClickOutside(loginBoxRef, () => {
+    setShowLoginPopup(false);
+  });
   return (
     <>
       <div className={classes.background}>
-        <div className={classes.popup_container}>
+        <div className={classes.popup_container} ref={loginBoxRef}>
           <div className={classes.title_container}>
             <div className={classes.title_right}>
               <Image src={userIcon} width="32" height="32" />
