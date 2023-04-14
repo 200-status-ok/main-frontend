@@ -165,8 +165,6 @@
 }
 .poster_image {
   margin: 0 auto;
-  width: 90%;
-  height: 90%;
 }
 .poster_title {
   font-size: 24px;
@@ -177,6 +175,7 @@
   font-size: 20px;
   color: #3a3a3acc;
   font-weight: 400;
+  height: 120px;
   /* min-height: 160px; */
 }
 .badges_container {
@@ -225,15 +224,4 @@
   background-color: white;
   font-size: 26px;
   border: 0;
-}
-.footer {
-  width: 100%;
-  height: 280px;
-  justify-content: center;
-  align-items: center;
-  background-color: #3a3a3a;
-  color: white;
-  font-size: 32px;
-  display: flex;
-  margin-top: 80px;
 }

@@ -13,14 +13,14 @@ import plus from "../assets/icons/plus.png";
 import dots from "../assets/images/dots.png";
 import bicycle from "../assets/images/bicycle.png";
 import toodots from "../assets/images/toodots.png";
-import dot from "../assets/images/dot.png";
 import leftchevron from "../assets/icons/left_chevron.png";
+import Layout from "../Layout/Layout";
+import Poster from "../components/Poster";
 export default function Home() {
   const [showLoginPopup, setShowLoginPopup] = useState(false);
 
   return (
-    <>
-      <Header />
+    <Layout>
       <div className={classes.hero}>
         <div className={classes.hero_text_container}>
           <div className={classes.hero_text}>
@@ -65,92 +65,38 @@ export default function Home() {
       <div className={classes.posters}>
         <div className={classes.posters_title}>آخرین آگهی ها</div>
         <div className={classes.posters_container}>
-          <div className={classes.poster}>
-            <Image
-              className={classes.poster_image}
-              src={bicycle}
-              width={260}
-              height={260}
-            />
-            <h2>
-              <Image src={dot} width={10} style={{ marginLeft: "8px" }} />
-              دسته کلید
-            </h2>
-            <p className={classes.poster_description}>
-              یکی از مشکلاتی که بیشتر افراد با آن مواجه هستند، گم کردن کلید می
-              باشد که موجب نگرانی های بعدی فرد می شود.{" "}
-            </p>
-            <div className={classes.badges_container}>
-              <div className={`${classes.badge} ${classes.emergency}`}>
-                فوری
-              </div>
-              <div className={`${classes.badge} ${classes.category}`}>
-                دسته کلید
-              </div>
-            </div>
-            <p>
-              3 دقیقه پیش <span className={classes.founded}>پیدا شده </span>
-              در <b>صادقیه</b>
-            </p>
-          </div>
-
-          <div className={classes.poster}>
-            <Image
-              className={classes.poster_image}
-              src={bicycle}
-              width={260}
-              height={260}
-            />
-            <h2>
-              <Image src={dot} width={10} style={{ marginLeft: "8px" }} />
-              دسته کلید
-            </h2>
-            <p className={classes.poster_description}>
-              یکی از مشکلاتی که بیشتر افراد با آن مواجه هستند، گم کردن کلید می
-              باشد که موجب نگرانی های بعدی فرد می شود.{" "}
-            </p>
-            <div className={classes.badges_container}>
-              <div className={`${classes.badge} ${classes.emergency}`}>
-                فوری
-              </div>
-              <div className={`${classes.badge} ${classes.category}`}>
-                دسته کلید
-              </div>
-            </div>
-            <p>
-              3 دقیقه پیش <span className={classes.founded}>پیدا شده </span>
-              در <b>صادقیه</b>
-            </p>
-          </div>
-
-          <div className={classes.poster}>
-            <Image
-              className={classes.poster_image}
-              src={bicycle}
-              width={260}
-              height={260}
-            />
-            <h2>
-              <Image src={dot} width={10} style={{ marginLeft: "8px" }} />
-              دسته کلید
-            </h2>
-            <p className={classes.poster_description}>
-              یکی از مشکلاتی که بیشتر افراد با آن مواجه هستند، گم کردن کلید می
-              باشد که موجب نگرانی های بعدی فرد می شود.{" "}
-            </p>
-            <div className={classes.badges_container}>
-              <div className={`${classes.badge} ${classes.emergency}`}>
-                فوری
-              </div>
-              <div className={`${classes.badge} ${classes.category}`}>
-                دسته کلید
-              </div>
-            </div>
-            <p>
-              3 دقیقه پیش <span className={classes.lost}>گم شده </span>
-              در <b>صادقیه</b>
-            </p>
-          </div>
+          <Poster
+            title="دسته کلید"
+            description="یک دسته کلید در فلان جا گم شده است ، از یابنده تقاضا میشود که بفرستد برای ما سلام چطوری میخاومبشه 4 خط و بیشتر چه بسا بشود "
+            image={bicycle}
+            time_description="3 دقیقه پیش"
+            location="سعادت آباد"
+            found
+          />
+          <Poster
+            title="دسته کلید"
+            description="یک دسته کلید در فلان جا گم شده است ، از یابنده تقاضا میشود که بفرستد برای ما"
+            image={bicycle}
+            time_description="3 دقیقه پیش"
+            location="سعادت آباد"
+            found
+          />
+          <Poster
+            title="دسته کلید"
+            description="یک دسته کلید در فلان جا گم شده است ، از یابنده تقاضا میشود که بفرستد برای ما"
+            image={bicycle}
+            time_description="3 دقیقه پیش"
+            location="سعادت آباد"
+            found
+          />
+          <Poster
+            title="دسته کلید"
+            description="یک دسته کلید در فلان جا گم شده است ، از یابنده تقاضا میشود که بفرستد برای ما"
+            image={bicycle}
+            time_description="3 دقیقه پیش"
+            location="سعادت آباد"
+            found
+          />
         </div>
       </div>
       <div className={classes.more}>
@@ -160,7 +106,6 @@ export default function Home() {
           <Image src={leftchevron} width={10} />
         </div>
       </div>
-      <div className={classes.footer}>این یک فوتر است</div>
-    </>
+    </Layout>
   );
 }
