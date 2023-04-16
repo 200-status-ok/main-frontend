@@ -3,6 +3,7 @@ import leftdots from "../assets/images/leftdots.png";
 import Image from "next/image";
 import { useRef, useState } from "react";
 import LoginPopup from "../components/LoginPopup";
+import Link from "next/link";
 const Header = () => {
   const [showLoginPopup, setShowLoginPopup] = useState(false);
   const [user, setUser] = useState(null);
@@ -17,7 +18,9 @@ const Header = () => {
           <h2 className={classes.header_title}>همینجاست</h2>
         </div>
         <ul className={classes.nav_menu}>
-          <li>آگهی ها</li>
+          <Link href="/posters">
+            <li>آگهی ها</li>
+          </Link>
           <li>پیشنهادات شما</li>
           <li>درباره ما</li>
         </ul>
