@@ -22,6 +22,16 @@ const posters = [
     description:
       "یک دسته کلید در فلان جا گم شده است ، از یابنده تقاضا میشود که بفرستد برای ما سلام چطوری میخاومبشه 4 خط و بیشتر ...",
     time_description: "3 دقیقه پیش",
+    found: false,
+    lost: true,
+  },
+  {
+    title: "دوچرخه",
+    location: "صادقیه",
+    image: bicycle,
+    description:
+      "یک دسته کلید در فلان جا گم شده است ، از یابنده تقاضا میشود که بفرستد برای ما سلام چطوری میخاومبشه 4 خط و بیشتر ...",
+    time_description: "3 دقیقه پیش",
     found: true,
     lost: false,
   },
