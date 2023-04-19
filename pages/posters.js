@@ -7,6 +7,7 @@ import SmallPoster from "../components/SmallPoster";
 import dynamic from "next/dynamic";
 import { useState } from "react";
 import ReactSwitch from "react-switch";
+import { HiSearch } from "react-icons/hi";
 const posters = [
   {
     title: "دوچرخه",
@@ -149,6 +150,14 @@ const Posters = () => {
             }}
           />
           <div className={classes.filter_options_container}>
+            <div className={classes.searchbar_container}>
+              <input placeholder="چی گم کردی ؟ مثلا دسته کلید ..." />
+              <HiSearch
+                width={24}
+                style={{ position: "absolute", left: "75px", top: "12px" }}
+                color="rgba(0, 0, 0, 0.3)"
+              />
+            </div>
             <div className={classes.found_lost_container}>
               <div
                 className={`${classes.found_lost_item} ${
@@ -178,6 +187,8 @@ const Posters = () => {
                 onChange={handleChange}
                 checked={checked}
                 onColor="#cdf0ea"
+                color="#88888824"
+                offColor="#e8e8e8"
                 // onHandleColor="rgb(130 210 197)"
                 handleDiameter={20}
                 uncheckedIcon={false}
@@ -188,6 +199,7 @@ const Posters = () => {
                 width={48}
               />
             </div>
+            <button className={classes.filter_button}>بگرد</button>
           </div>
         </div>
         <div className={classes.posters_container}>
