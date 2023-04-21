@@ -52,3 +52,14 @@ html {
   border-radius: 8px;
   object-fit: cover;
 }
+
+.swiper-rtl .swiper-button-prev {
+  right: 6px !important;
+  color: white;
+}
+
+.swiper-rtl .swiper-button-next {
+  left: 30px !important;
+  color: white;
+  right: auto;
+}

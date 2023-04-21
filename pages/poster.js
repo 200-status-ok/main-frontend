@@ -6,17 +6,28 @@ import bicycle from "../assets/images/bicycle.png";
 import bic from "../assets/images/bic.webp";
 import { HiOutlineBookmark, HiOutlineShare } from "react-icons/hi";
 import { Swiper, SwiperSlide } from "swiper/react";
+import { useState } from "react";
+import { Navigation, Pagination } from "swiper";
 
 // Import Swiper styles
 import "swiper/css";
+import "swiper/css/navigation";
+import "swiper/css/pagination";
+import "swiper/css/scrollbar";
+let swiperInstance = null;
+
+const NeshanMap = dynamic(
+  () => import("react-neshan-map-leaflet/dist/NeshanMap"),
+  {
+    ssr: false,
+  }
+);
+
 const Poster = () => {
   const latLong = [35.742473999999994001, 51.502310300000005001];
-  const NeshanMap = dynamic(
-    () => import("react-neshan-map-leaflet/dist/NeshanMap"),
-    {
-      ssr: false,
-    }
-  );
+  const [slider, setSlider] = useState(0);
+  const [slides, setSlides] = useState([bicycle, bic]);
+
   return (
     <>
       <AppHeader />
@@ -65,22 +76,58 @@ const Poster = () => {
           </div>
           <div className={classes.media_container}>
             <div className={classes.slider_container}>
-              <Image src={bicycle} width={430} height={360} />
-              {/* <Swiper
+              <Swiper
                 slidesPerView={1}
-                onSlideChange={() => console.log("slide change")}
-                onSwiper={(swiper) => console.log(swiper)}
+                modules={[Navigation, Pagination]}
+                navigation
+                pagination={{ clickable: true }}
+                onSlideChange={(swiper) => {
+                  setSlider(swiper.activeIndex);
+                  console.log(swiper);
+                }}
+                onSwiper={(swiper) => {
+                  swiper.activeIndex = slider;
+                  swiperInstance = swiper;
+                }}
                 className="swiper-slide"
-                width={430}
+                width={500}
                 height={360}
               >
-                <SwiperSlide>
-                  <Image src={bicycle} />
-                </SwiperSlide>
-                <SwiperSlide>
-                  <Image src={bic} />
-                </SwiperSlide>
-              </Swiper> */}
+                {slides.map((slide, index) => {
+                  return (
+                    <SwiperSlide key={index}>
+                      <Image
+                        className={classes.slide_image}
+                        src={slide}
+                        width={500}
+                        height={360}
+                      />
+                    </SwiperSlide>
+                  );
+                })}
+              </Swiper>
+              <div className={classes.slides_container}>
+                {slides.map((slide, index) => {
+                  return (
+                    <div
+                      key={index}
+                      onClick={() => {
+                        setSlider(index);
+                        swiperInstance.slideTo(index);
+                      }}
+                    >
+                      <Image
+                        className={`${classes.small_slide_image} ${
+                          index === slider && classes.active
+                        }`}
+                        src={slide}
+                        width={70}
+                        height={70}
+                      />
+                    </div>
+                  );
+                })}
+              </div>
             </div>
             <div className={classes.map_container}>
               موقعیت
