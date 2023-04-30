@@ -1,5 +1,6 @@
 import classes from "../pages/posters.module.css";
 import Image from "next/image";
+import Link from "next/link";
 const lengthOfDescription = 80;
 const SmallPoster = ({
   image,
@@ -10,9 +11,10 @@ const SmallPoster = ({
   location,
   time_description,
   categories,
+  id,
 }) => {
   return (
-    <div className={classes.poster}>
+    <Link href={`/poster/${id}`} className={classes.poster}>
       <div className={classes.poster_body}>
         <div className={classes.poster_title}>{title}</div>
         <div className={classes.poster_description}>
@@ -65,7 +67,7 @@ const SmallPoster = ({
         width={150}
         height={150}
       />
-    </div>
+    </Link>
   );
 };
 

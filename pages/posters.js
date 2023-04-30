@@ -236,6 +236,7 @@ const Posters = () => {
         <div className={classes.posters_container}>
           {allPosters.map((poster, index) => (
             <SmallPoster
+              id={poster.id}
               key={index}
               image={
                 poster?.images.length > 0 ? poster?.images[0]?.url : bicycle
