@@ -135,7 +135,7 @@ const Posters = () => {
   const fetchPosters = async () => {
     try {
       const { data } = await axios.get(
-        "https://main-backend.iran.liara.run/api/v1/posters/?page_id=1&page_size=10&sort=asc&sort_by=created_at&status=both"
+        "https://main-backend.iran.liara.run/api/v1/posters/?page_id=2&page_size=10&sort=asc&sort_by=created_at&status=both"
       );
       console.log(data);
       setAllPosters(data);

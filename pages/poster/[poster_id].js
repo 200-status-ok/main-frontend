@@ -9,7 +9,6 @@ import { Swiper, SwiperSlide } from "swiper/react";
 import { useEffect, useState } from "react";
 import { useRouter } from "next/router";
 import { Navigation, Pagination } from "swiper";
-
 // Import Swiper styles
 import "swiper/css";
 import "swiper/css/navigation";
@@ -18,13 +17,12 @@ import "swiper/css/scrollbar";
 import axios from "axios";
 let swiperInstance = null;
 
-const NeshanMap = dynamic(
-  () => import("react-neshan-map-leaflet/dist/NeshanMap"),
-  {
-    ssr: false,
-  }
-);
-
+const NeshanMap = dynamic(() => import("react-neshan-map-leaflet"), {
+  ssr: false,
+});
+const MapWithNoSSR = dynamic(() => import("../../components/Map"), {
+  ssr: false,
+});
 const Poster = () => {
   const latLong = [35.742473999999994001, 51.502310300000005001];
   const [slider, setSlider] = useState(0);
@@ -38,8 +36,8 @@ const Poster = () => {
 
   const checkLatLong = () => {
     if (poster?.address.length > 0) {
-      if (poster.address[0].latitude && poster.address[0].longtitude) {
-        return [poster.address[0].latitude, poster.address[0].longtitude];
+      if (poster.address[0].latitude && poster.address[0].longitude) {
+        return [poster.address[0].latitude, poster.address[0].longitude];
       } else {
         return latLong;
       }
@@ -192,34 +190,7 @@ const Poster = () => {
             <div className={classes.map_container}>
               موقعیت
               {poster.address.length > 0 && (
-                <NeshanMap
-                  options={{
-                    key: "web.66cfce07db6049a6a227e68668211488",
-                    center: checkLatLong(),
-                    zoom: 15,
-                  }}
-                  style={{
-                    width: "100%",
-                    height: "270px",
-                    borderRadius: "4px",
-                    border: "2px solid #efefefcc",
-                  }}
-                  onInit={(L, myMap) => {
-                    let marker = L.marker(checkLatLong())
-                      .addTo(myMap)
-                      .bindPopup("اینجا گم کردم");
-
-                    myMap.on("click", function (e) {
-                      marker.setLatLng(e.latlng);
-                    });
-                    L.circle(checkLatLong(), {
-                      color: "red",
-                      fillColor: "#f03",
-                      fillOpacity: 0.5,
-                      radius: 500,
-                    }).addTo(myMap);
-                  }}
-                />
+                <MapWithNoSSR lat={checkLatLong()[0]} lng={checkLatLong()[1]} />
               )}
             </div>
           </div>
