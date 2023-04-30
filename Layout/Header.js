@@ -7,11 +7,10 @@ import { setCookie } from "cookies-next";
 import Link from "next/link";
 import { useAuth } from "../context/AuthProvider";
 const Header = () => {
-  const [showLoginPopup, setShowLoginPopup] = useState(false);
   const { auth, setAuth } = useAuth();
   return (
     <>
-      {showLoginPopup && <LoginPopup setShowLoginPopup={setShowLoginPopup} />}
+      {auth?.showLoginPopup && <LoginPopup />}
       <div className={classes.container}>
         <div className={classes.title_container}>
           <h1 className={classes.subheader}>دنبالش نگرد...</h1>
@@ -41,7 +40,7 @@ const Header = () => {
           <button
             className={classes.button}
             onClick={() => {
-              setShowLoginPopup(true);
+              setAuth({ ...auth, showLoginPopup: true });
             }}
           >
             ورود

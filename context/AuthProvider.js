@@ -4,7 +4,7 @@ import { useRouter } from "next/router";
 export const MyContext = createContext();
 
 const AuthProvider = ({ children }) => {
-  const [auth, setAuth] = useState({});
+  const [auth, setAuth] = useState({ showLoginPopup: false });
   const router = useRouter();
 
   useEffect(() => {

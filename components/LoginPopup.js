@@ -11,7 +11,7 @@ import { useState, useRef } from "react";
 import useOnClickOutside from "../hooks/useOutside";
 import { useTimer } from "react-timer-hook";
 import { useAuth } from "../context/AuthProvider";
-const LoginPopup = ({ setShowLoginPopup }) => {
+const LoginPopup = () => {
   const [username, setUsername] = useState("");
   const [otp, setOtp] = useState("");
   const { auth, setAuth } = useAuth();
@@ -23,6 +23,7 @@ const LoginPopup = ({ setShowLoginPopup }) => {
   time.setSeconds(time.getSeconds() + 119);
   const Otp_timer = useTimer({
     expiryTimestamp: time,
+    autoStart: false,
     onExpire: () => {
       setShowSendCode(true);
       setDisable(false);
@@ -30,7 +31,7 @@ const LoginPopup = ({ setShowLoginPopup }) => {
   });
   console.log(Otp_timer);
   useOnClickOutside(loginBoxRef, () => {
-    setShowLoginPopup(false);
+    setAuth({ ...auth, showLoginPopup: false });
   });
 
   return (
@@ -143,11 +144,13 @@ const LoginPopup = ({ setShowLoginPopup }) => {
                         otp,
                       }
                     );
-                    setAuth({ token: response.data });
+                    setAuth({
+                      token: response.data.token,
+                      showLoginPopup: false,
+                    });
                     setCookie("token", response.data.token);
                     console.log(response.data);
                     toast.success("با موفقیت وارد شدید");
-                    setShowLoginPopup(false);
                     console.log(response.data);
                   } catch (error) {
                     if (error?.response?.data?.error?.includes("invalid")) {

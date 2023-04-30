@@ -1,3 +1,5 @@
+import LoginPopup from "../components/LoginPopup";
+import { useAuth } from "../context/AuthProvider";
 import Footer from "./Footer";
 import Header from "./Header";
 
