@@ -80,7 +80,7 @@
   margin-top: 5px;
   flex-wrap: wrap;
   column-gap: 16px;
-  /* min-height: 70px; */
+  min-height: 60px;
   /* margin-bottom: 12px; */
 }
 
@@ -141,7 +141,7 @@
   margin: 0 auto;
 }
 .filter_button {
-  background-color: #6886c5;
+  background-color: #2f89fc;
   border: 0;
   outline: 0;
   border-radius: 4px;

@@ -6,16 +6,33 @@ import nine_dots from "../assets/images/ninedots.png";
 import googleIcon from "../assets/icons/google.png";
 import axios from "axios";
 import { toast } from "react-toastify";
+import { setCookie, getCookie } from "cookies-next";
 import { useState, useRef } from "react";
 import useOnClickOutside from "../hooks/useOutside";
-const LoginPopup = ({ setUser, setShowLoginPopup }) => {
+import { useTimer } from "react-timer-hook";
+import { useAuth } from "../context/AuthProvider";
+const LoginPopup = ({ setShowLoginPopup }) => {
   const [username, setUsername] = useState("");
   const [otp, setOtp] = useState("");
+  const { auth, setAuth } = useAuth();
   const loginBoxRef = useRef();
+  const [disable, setDisable] = useState(false);
+  const [showSendCode, setShowSendCode] = useState(true);
 
+  const time = new Date();
+  time.setSeconds(time.getSeconds() + 119);
+  const Otp_timer = useTimer({
+    expiryTimestamp: time,
+    onExpire: () => {
+      setShowSendCode(true);
+      setDisable(false);
+    },
+  });
+  console.log(Otp_timer);
   useOnClickOutside(loginBoxRef, () => {
     setShowLoginPopup(false);
   });
+
   return (
     <>
       <div className={classes.background}>
@@ -33,28 +50,78 @@ const LoginPopup = ({ setUser, setShowLoginPopup }) => {
               className={classes.email_input}
               placeholder="ایمیل یا شماره موبایل"
               value={username}
-              onChange={(e) => setUsername(e.target.value)}
+              disabled={disable}
+              onChange={(e) => {
+                if (not_persian(e.target.value)) {
+                  setUsername(e.target.value);
+                }
+              }}
             />
             <div className={classes.code_input_container}>
               <input
                 className={classes.code_input}
                 placeholder="کد تایید"
                 value={otp}
-                onChange={(e) => setOtp(e.target.value)}
+                onChange={(e) => {
+                  if (e.target.value.length < 7) {
+                    setOtp(e.target.value);
+                  }
+                }}
+                type="number"
               />
               <button
                 className={classes.code_button}
                 onClick={async () => {
-                  await axios.post(
-                    "https://main-backend.iran.liara.run/api/v1/users/auth/otp/send",
-                    {
-                      username,
+                  try {
+                    if (
+                      /^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|.(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/.test(
+                        username
+                      )
+                    ) {
+                      await axios.post(
+                        "https://main-backend.iran.liara.run/api/v1/users/auth/otp/send",
+                        {
+                          username,
+                        }
+                      );
+                      const timer = new Date();
+                      timer.setSeconds(timer.getSeconds() + 119);
+                      Otp_timer.restart(timer);
+                      setShowSendCode(false);
+                      toast.success("کد با موفقیت ارسال شد");
+                      setDisable(true);
+                    } else {
+                      if (
+                        /^(9|09)(12|19|35|36|37|38|39|32|03|02|21)\d{7}$/.test(
+                          username
+                        )
+                      ) {
+                        await axios.post(
+                          "https://main-backend.iran.liara.run/api/v1/users/auth/otp/send",
+                          {
+                            username,
+                          }
+                        );
+                        toast.success("کد با موفقیت ارسال شد");
+                        const timer = new Date();
+                        timer.setSeconds(timer.getSeconds() + 119);
+                        Otp_timer.restart(timer);
+                        setShowSendCode(false);
+                        setDisable(true);
+                      } else {
+                        toast.error(
+                          "لطفا یک ایمیل یا شماره موبایل معتبر وارد کنید"
+                        );
+                      }
                     }
-                  );
-                  toast.success("کد با موفقیت ارسال شد");
+                  } catch (error) {
+                    toast.error("مشکلی در اتصال به بکند پیش آمده است");
+                  }
                 }}
               >
-                ارسال
+                {showSendCode
+                  ? "ارسال"
+                  : Otp_timer.minutes + ":" + Otp_timer.seconds}
               </button>
             </div>
           </div>
@@ -65,21 +132,43 @@ const LoginPopup = ({ setUser, setShowLoginPopup }) => {
             <button
               className={classes.login_button}
               onClick={async () => {
-                const response = await axios.post(
-                  "https://main-backend.iran.liara.run/api/v1/users/auth/otp/login",
-                  {
-                    username,
-                    otp,
+                if (otp.length !== 6) {
+                  toast.error("کد وارد شده اشتباه است");
+                } else {
+                  try {
+                    const response = await axios.post(
+                      "https://main-backend.iran.liara.run/api/v1/users/auth/otp/login",
+                      {
+                        username,
+                        otp,
+                      }
+                    );
+                    setAuth({ token: response.data });
+                    setCookie("token", response.data.token);
+                    console.log(response.data);
+                    toast.success("با موفقیت وارد شدید");
+                    setShowLoginPopup(false);
+                    console.log(response.data);
+                  } catch (error) {
+                    if (error?.response?.data?.error?.includes("invalid")) {
+                      toast.error("کد وارد شده اشتباه است");
+                    } else if (
+                      error?.response?.data?.error?.includes("redis")
+                    ) {
+                      toast.error("کد منقضی شده است ، مجدد تلاش کنید");
+                    } else {
+                      toast.error("مشکلی در اتصال به بکند پیش آمده است");
+                    }
                   }
-                );
-                setUser(response.data);
-                setShowLoginPopup(false);
-                console.log(response.data);
+                }
               }}
             >
               ورود
             </button>
-            <button className={classes.gLogin_button}>
+            <a
+              className={classes.gLogin_button}
+              href="https://main-backend.iran.liara.run/api/v1/users/auth/google/login"
+            >
               <Image
                 src={googleIcon}
                 width="24"
@@ -87,7 +176,7 @@ const LoginPopup = ({ setUser, setShowLoginPopup }) => {
                 className={classes.google_icon}
               />
               ورود با گوگل
-            </button>
+            </a>
           </div>
         </div>
       </div>
@@ -96,3 +185,11 @@ const LoginPopup = ({ setUser, setShowLoginPopup }) => {
 };
 
 export default LoginPopup;
+const not_persian = (char) => {
+  var p = /^[\u0600-\u06FF\s]+$/;
+  if (!p.test(char)) {
+    return true;
+  } else {
+    return false;
+  }
+};

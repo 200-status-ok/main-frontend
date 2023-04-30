@@ -63,3 +63,11 @@ html {
   color: white;
   right: auto;
 }
+.padding-right-16 {
+  padding-right: 16px;
+}
+input::-webkit-outer-spin-button,
+input::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}

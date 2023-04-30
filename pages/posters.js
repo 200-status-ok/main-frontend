@@ -5,24 +5,28 @@ import Poster from "../components/Poster";
 import classes from "./posters.module.css";
 import SmallPoster from "../components/SmallPoster";
 import dynamic from "next/dynamic";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import ReactSwitch from "react-switch";
+import axios from "axios";
 import { HiSearch } from "react-icons/hi";
+import { useAuth } from "../context/AuthProvider";
 const posters = [
   {
     title: "دوچرخه",
-    location: "صادقیه",
-    image: bicycle,
+    address: [{ address_detail: "صادقیه" }],
+    images: [],
+    categories: [{ name: "فوری" }, { name: "دسته کلید" }],
     description:
       "یک دوچرخه در فلان جا گم شده است ، از یابنده تقاضا میشود که با شماره ذکر شده تماس بگیرد یشتر ...",
     time_description: "3 دقیقه پیش",
-    found: true,
-    lost: false,
+    status: "found",
   },
   {
     title: "دوچرخه",
-    location: "صادقیه",
-    image: bicycle,
+    address: ["صادقیه"],
+    images: [],
+    categories: [{ name: "فوری" }, { name: "دسته کلید" }],
+
     description:
       "یک دسته کلید در فلان جا گم شده است ، از یابنده تقاضا میشود که بفرستد برای ما سلام چطوری میخاومبشه 4 خط و بیشتر ...",
     time_description: "3 دقیقه پیش",
@@ -31,8 +35,10 @@ const posters = [
   },
   {
     title: "دوچرخه",
-    location: "صادقیه",
-    image: bicycle,
+    address: ["صادقیه"],
+    images: [],
+    categories: [{ name: "فوری" }, { name: "دسته کلید" }],
+
     description:
       "یک دسته کلید در فلان جا گم شده است ، از یابنده تقاضا میشود که بفرستد برای ما سلام چطوری میخاومبشه 4 خط و بیشتر ...",
     time_description: "3 دقیقه پیش",
@@ -41,8 +47,10 @@ const posters = [
   },
   {
     title: "دوچرخه",
-    location: "صادقیه",
-    image: bicycle,
+    address: ["صادقیه"],
+    categories: [{ name: "فوری" }, { name: "دسته کلید" }],
+
+    images: [],
     description:
       "یک دسته کلید در فلان جا گم شده است ، از یابنده تقاضا میشود که بفرستد برای ما سلام چطوری میخاومبشه 4 خط و بیشتر ...",
     time_description: "3 دقیقه پیش",
@@ -51,8 +59,21 @@ const posters = [
   },
   {
     title: "دوچرخه",
-    location: "صادقیه",
-    image: bicycle,
+    categories: [{ name: "فوری" }, { name: "دسته کلید" }],
+
+    address: ["صادقیه"],
+    images: [],
+    description:
+      "یک دسته کلید در فلان جا گم شده است ، از یابنده تقاضا میشود که بفرستد برای ما سلام چطوری میخاومبشه 4 خط و بیشتر ...",
+    time_description: "3 دقیقه پیش",
+    found: true,
+    lost: false,
+  },
+  {
+    categories: [{ name: "فوری" }, { name: "دسته کلید" }],
+    title: "دوچرخه",
+    address: ["صادقیه"],
+    images: [],
     description:
       "یک دسته کلید در فلان جا گم شده است ، از یابنده تقاضا میشود که بفرستد برای ما سلام چطوری میخاومبشه 4 خط و بیشتر ...",
     time_description: "3 دقیقه پیش",
@@ -61,8 +82,9 @@ const posters = [
   },
   {
     title: "دوچرخه",
-    location: "صادقیه",
-    image: bicycle,
+    categories: [{ name: "فوری" }, { name: "دسته کلید" }],
+    address: ["صادقیه"],
+    images: [],
     description:
       "یک دسته کلید در فلان جا گم شده است ، از یابنده تقاضا میشود که بفرستد برای ما سلام چطوری میخاومبشه 4 خط و بیشتر ...",
     time_description: "3 دقیقه پیش",
@@ -71,8 +93,9 @@ const posters = [
   },
   {
     title: "دوچرخه",
-    location: "صادقیه",
-    image: bicycle,
+    categories: [{ name: "فوری" }, { name: "دسته کلید" }],
+    address: ["صادقیه"],
+    images: [],
     description:
       "یک دسته کلید در فلان جا گم شده است ، از یابنده تقاضا میشود که بفرستد برای ما سلام چطوری میخاومبشه 4 خط و بیشتر ...",
     time_description: "3 دقیقه پیش",
@@ -80,19 +103,10 @@ const posters = [
     lost: false,
   },
   {
+    categories: [{ name: "فوری" }, { name: "دسته کلید" }],
     title: "دوچرخه",
-    location: "صادقیه",
-    image: bicycle,
-    description:
-      "یک دسته کلید در فلان جا گم شده است ، از یابنده تقاضا میشود که بفرستد برای ما سلام چطوری میخاومبشه 4 خط و بیشتر ...",
-    time_description: "3 دقیقه پیش",
-    found: true,
-    lost: false,
-  },
-  {
-    title: "دوچرخه",
-    location: "صادقیه",
-    image: bicycle,
+    address: ["صادقیه"],
+    images: [],
     description:
       "یک دسته کلید در فلان جا گم شده است ، از یابنده تقاضا میشود که بفرستد برای ما سلام چطوری میخاومبشه 4 خط و بیشتر ...",
     time_description: "3 دقیقه پیش",
@@ -111,10 +125,27 @@ const NeshanMap = dynamic(
 const Posters = () => {
   const [type, setType] = useState("");
   const [checked, setChecked] = useState(false);
+  const [allPosters, setAllPosters] = useState([]);
 
+  const { auth, setAuth } = useAuth();
+  console.log(auth);
   const handleChange = (nextChecked) => {
     setChecked(nextChecked);
   };
+  const fetchPosters = async () => {
+    try {
+      const { data } = await axios.get(
+        "https://main-backend.iran.liara.run/api/v1/posters/?page_id=1&page_size=10&sort=asc&sort_by=created_at&status=both"
+      );
+      console.log(data);
+      setAllPosters(data);
+    } catch (error) {
+      console.log(error);
+    }
+  };
+  useEffect(() => {
+    fetchPosters();
+  }, []);
   return (
     <>
       <AppHeader />
@@ -203,16 +234,19 @@ const Posters = () => {
           </div>
         </div>
         <div className={classes.posters_container}>
-          {posters.map((poster, index) => (
+          {allPosters.map((poster, index) => (
             <SmallPoster
               key={index}
-              image={poster.image}
+              image={
+                poster?.images.length > 0 ? poster?.images[0]?.url : bicycle
+              }
               title={poster.title}
-              location={poster.location}
+              location={poster.address[0].address_detail}
               description={poster.description}
-              time_description={poster.time_description}
-              found={poster.found}
-              lost={poster.lost}
+              categories={poster.categories}
+              // time_description={poster.time_description}
+              found={poster.status === "found"}
+              lost={poster.status === "lost"}
             />
           ))}
         </div>

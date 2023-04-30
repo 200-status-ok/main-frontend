@@ -9,6 +9,7 @@ const SmallPoster = ({
   lost,
   location,
   time_description,
+  categories,
 }) => {
   return (
     <div className={classes.poster}>
@@ -21,11 +22,27 @@ const SmallPoster = ({
         </div>
 
         <div className={classes.badges_container}>
-          <div className={`${classes.badge} ${classes.emergency}`}>فوری</div>
-          <div className={`${classes.badge} ${classes.category}`}>
-            {title}
-          </div>{" "}
-          <div className={`${classes.badge} ${classes.reward}`}>مژدگانی </div>
+          {categories?.map((cat) => {
+            if (cat.name === "فوری") {
+              return (
+                <div className={`${classes.badge} ${classes.emergency}`}>
+                  فوری
+                </div>
+              );
+            }
+            if (cat.name === "مژدگانی") {
+              return (
+                <div className={`${classes.badge} ${classes.reward}`}>
+                  مژدگانی{" "}
+                </div>
+              );
+            }
+            return (
+              <div className={`${classes.badge} ${classes.category}`}>
+                {cat.name}
+              </div>
+            );
+          })}
         </div>
         {found && (
           <p className={classes.time_description}>
@@ -42,7 +59,12 @@ const SmallPoster = ({
           </p>
         )}
       </div>
-      <Image className={classes.poster_image} src={image} width={150} />
+      <img
+        className={classes.poster_image}
+        src={image}
+        width={150}
+        height={150}
+      />
     </div>
   );
 };
