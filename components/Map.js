@@ -55,8 +55,6 @@ export default function Map({
         }
 
         const circle = L.circle([e.latlng.lat, e.latlng.lng], {
-          color: "red",
-          fillColor: "#f03",
           fillOpacity: 0.5,
           radius: 100,
         }).addTo(map.target);

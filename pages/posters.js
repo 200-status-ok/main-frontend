@@ -134,6 +134,9 @@ const Posters = () => {
   const [latLong, setLatLong] = useState({ lat: 0, lng: 0 });
 
   const [search, setSearch] = useState("");
+  const [tagInput, setTagInput] = useState("");
+  const [tag, setTag] = useState("");
+  const [allTags, setAllTags] = useState([]);
   const [refetch, setRefetch] = useState(0);
 
   const { auth, setAuth } = useAuth();
@@ -143,9 +146,9 @@ const Posters = () => {
   const fetchPosters = async () => {
     try {
       const { data } = await axios.get(
-        `https://main-backend.iran.liara.run/api/v1/posters/?page_id=1&page_size=10&status=${type}&only_rewards=${checked}&search_phrase=${search}&lat=${checkLatLong(
-          latLong.lat
-        )}&lon=${checkLatLong(latLong.lng)}`
+        `https://main-backend.iran.liara.run/api/v1/posters/?page_id=1&page_size=10&status=${type}&only_rewards=${checked}&search_phrase=${
+          search ? search : ""
+        }&lat=${checkLatLong(latLong.lat)}&lon=${checkLatLong(latLong.lng)}`
       );
       setError("");
       setAllPosters(data);
@@ -161,6 +164,15 @@ const Posters = () => {
       setSearch(router.query.search);
     }
   }, [router.query]);
+  // useEffect(() => {
+  //   (async () => {
+  //     const { data } = await axios.get(
+  //       `https://main-backend.iran.liara.run/api/v1/tags/`
+  //     );
+  //     const filteredTags = data.filter((tag) => tag.name.includes(tagInput));
+  //     setAllTags(filteredTags);
+  //   })();
+  // }, [tagInput]);
   return (
     <>
       <AppHeader />
@@ -186,6 +198,25 @@ const Posters = () => {
                 color="rgba(0, 0, 0, 0.3)"
               />
             </div>
+            {/* <div className={classes.searchbar_container_new}>
+              <input
+                placeholder="چی گم کردی ؟ مثلا دسته کلید ..."
+                value={tagInput}
+                onChange={(e) => setTagInput(e.target.value)}
+              />
+              {allTags.length > 0 && (
+                <div className={classes.tags_container}>
+                  {allTags.map((tag) => (
+                    <div className={classes.tag}>{tag.name}</div>
+                  ))}
+                </div>
+              )}
+              <HiSearch
+                width={24}
+                style={{ position: "absolute", left: "75px", top: "12px" }}
+                color="rgba(0, 0, 0, 0.3)"
+              />
+            </div> */}
             <div className={classes.found_lost_container}>
               <div
                 className={`${classes.found_lost_item} ${

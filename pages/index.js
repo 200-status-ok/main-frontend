@@ -20,7 +20,7 @@ import Link from "next/link";
 import axios from "axios";
 export default function Home() {
   const [showLoginPopup, setShowLoginPopup] = useState(false);
-  const [search, setSearch] = useState("");
+  const [search, setSearch] = useState(" ");
   const [allPosters, setAllPosters] = useState([]);
 
   useEffect(() => {
@@ -87,7 +87,7 @@ export default function Home() {
         <div className={classes.posters_title}>آخرین آگهی ها</div>
         <div className={classes.posters_container}>
           {console.log(allPosters)}
-          {allPosters.map((poster) => (
+          {allPosters.slice(0, 3).map((poster) => (
             <Link href={`/poster/${poster.id}`}>
               <Poster
                 key={poster.id}

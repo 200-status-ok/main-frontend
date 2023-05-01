@@ -15,6 +15,7 @@ import "swiper/css/navigation";
 import "swiper/css/pagination";
 import "swiper/css/scrollbar";
 import axios from "axios";
+import Popup from "../../components/Popup";
 let swiperInstance = null;
 
 const MapWithNoSSR = dynamic(() => import("../../components/Map"), {
@@ -24,6 +25,7 @@ const Poster = () => {
   const [latLong, setLatLong] = [35.742473999999994001, 51.502310300000005001];
   const [slider, setSlider] = useState(0);
   const [slides, setSlides] = useState([bicycle, bic]);
+  const [showContactDetail, setShowContactDetail] = useState(false);
   const [poster, setPoster] = useState({
     title: "",
     description: "",
@@ -57,6 +59,9 @@ const Poster = () => {
   };
   return (
     <>
+      {showContactDetail && (
+        <Popup phone={poster?.phone_user} setShow={setShowContactDetail} />
+      )}
       <AppHeader />
       <div className={classes.container}>
         <div className={classes.poster_container}>
@@ -64,7 +69,6 @@ const Poster = () => {
             <h2>{poster.title}</h2>
             {poster?.status === "lost" ? (
               <p>
-                {"3 دقیقه پیش" + " "}
                 <span className={classes.lost}> گم شده </span>
                 در{" "}
                 <b>
@@ -89,7 +93,12 @@ const Poster = () => {
 
             <div className={classes.poster_cta_container}>
               <div className={classes.poster_cta_buttons}>
-                <button className={classes.contact}>اطلاعات تماس</button>
+                <button
+                  className={classes.contact}
+                  onClick={() => setShowContactDetail(true)}
+                >
+                  اطلاعات تماس
+                </button>
                 <button className={classes.chat}>چت</button>
               </div>
 
