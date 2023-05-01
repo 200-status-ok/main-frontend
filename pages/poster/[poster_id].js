@@ -17,14 +17,11 @@ import "swiper/css/scrollbar";
 import axios from "axios";
 let swiperInstance = null;
 
-const NeshanMap = dynamic(() => import("react-neshan-map-leaflet"), {
-  ssr: false,
-});
 const MapWithNoSSR = dynamic(() => import("../../components/Map"), {
   ssr: false,
 });
 const Poster = () => {
-  const latLong = [35.742473999999994001, 51.502310300000005001];
+  const [latLong, setLatLong] = [35.742473999999994001, 51.502310300000005001];
   const [slider, setSlider] = useState(0);
   const [slides, setSlides] = useState([bicycle, bic]);
   const [poster, setPoster] = useState({
@@ -189,7 +186,7 @@ const Poster = () => {
             </div>
             <div className={classes.map_container}>
               موقعیت
-              {poster.address.length > 0 && (
+              {poster.address.length > 0 && poster.address[0].latitude && (
                 <MapWithNoSSR lat={checkLatLong()[0]} lng={checkLatLong()[1]} />
               )}
             </div>

@@ -148,7 +148,9 @@ const LoginPopup = () => {
                       token: response.data.token,
                       showLoginPopup: false,
                     });
-                    setCookie("token", response.data.token);
+                    setCookie("token", response.data.token, {
+                      expires: new Date(Date.now() + 1000 * 60 * 60 * 24 * 365),
+                    });
                     console.log(response.data);
                     toast.success("با موفقیت وارد شدید");
                     console.log(response.data);

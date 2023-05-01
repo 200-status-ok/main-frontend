@@ -114,7 +114,7 @@
   color: rgba(0, 0, 0, 0.56);
 }
 .found_lost_item.active {
-  background-color: #6886c5;
+  background-color: #2f89fc;
   color: white;
 }
 .reward_container {
@@ -150,4 +150,11 @@
   width: 40%;
   cursor: pointer;
   font-size: 16px;
+}
+.error {
+  color: red;
+  font-size: 20px;
+  width: 100%;
+  margin-top: 8px;
+  text-align: center;
 }

@@ -10,6 +10,7 @@ import ReactSwitch from "react-switch";
 import axios from "axios";
 import { HiSearch } from "react-icons/hi";
 import { useAuth } from "../context/AuthProvider";
+import { useRouter } from "next/router";
 const posters = [
   {
     title: "دوچرخه",
@@ -114,75 +115,71 @@ const posters = [
     lost: false,
   },
 ];
-const latLong = [35.742473999999994001, 51.502310300000005001];
-const NeshanMap = dynamic(
-  () => import("react-neshan-map-leaflet/dist/NeshanMap"),
-  {
-    ssr: false,
+const MapWithNoSSR = dynamic(() => import("../components/Map"), {
+  ssr: false,
+});
+const checkLatLong = (latLong) => {
+  if (latLong === 0) {
+    return "";
   }
-);
-
+  return latLong;
+};
 const Posters = () => {
-  const [type, setType] = useState("");
+  const [type, setType] = useState("both");
   const [checked, setChecked] = useState(false);
   const [allPosters, setAllPosters] = useState([]);
 
+  const router = useRouter();
+  const [error, setError] = useState("");
+  const [latLong, setLatLong] = useState({ lat: 0, lng: 0 });
+
+  const [search, setSearch] = useState("");
+  const [refetch, setRefetch] = useState(0);
+
   const { auth, setAuth } = useAuth();
-  console.log(auth);
   const handleChange = (nextChecked) => {
     setChecked(nextChecked);
   };
   const fetchPosters = async () => {
     try {
       const { data } = await axios.get(
-        "https://main-backend.iran.liara.run/api/v1/posters/?page_id=2&page_size=10&sort=asc&sort_by=created_at&status=both"
+        `https://main-backend.iran.liara.run/api/v1/posters/?page_id=1&page_size=10&status=${type}&only_rewards=${checked}&search_phrase=${search}&lat=${checkLatLong(
+          latLong.lat
+        )}&lon=${checkLatLong(latLong.lng)}`
       );
-      console.log(data);
+      setError("");
       setAllPosters(data);
     } catch (error) {
-      console.log(error);
+      setError("خطایی در دریافت اطلاعات پیش آمده است ...");
     }
   };
   useEffect(() => {
     fetchPosters();
-  }, []);
+  }, [refetch]);
+  useEffect(() => {
+    if (router.query) {
+      setSearch(router.query.search);
+    }
+  }, [router.query]);
   return (
     <>
       <AppHeader />
       {/* <div className={classes.sidebar}>سایدبار</div> */}
       <div className={classes.container}>
         <div className={classes.filter_container}>
-          <NeshanMap
-            options={{
-              key: "web.66cfce07db6049a6a227e68668211488",
-              center: latLong,
-              zoom: 13,
-            }}
-            style={{
-              width: "60%",
-              height: "300px",
-              borderRadius: "4px",
-              border: "2px solid #efefefcc",
-            }}
-            onInit={(L, myMap) => {
-              let marker = L.marker(latLong)
-                .addTo(myMap)
-                .bindPopup("اینجا گم کردم");
-
-              myMap.on("click", function (e) {
-                marker.setLatLng(e.latlng);
-              });
-              L.circle(latLong, {
-                color: "red",
-                fillColor: "#f03",
-                fillOpacity: 0.5,
-                radius: 500,
-              }).addTo(myMap);
-            }}
+          <MapWithNoSSR
+            style={{ width: "60%", height: "300px" }}
+            zoom={11}
+            nocircle
+            setLatLong={setLatLong}
           />
           <div className={classes.filter_options_container}>
             <div className={classes.searchbar_container}>
-              <input placeholder="چی گم کردی ؟ مثلا دسته کلید ..." />
+              <input
+                placeholder="چی گم کردی ؟ مثلا دسته کلید ..."
+                value={search}
+                onChange={(e) => setSearch(e.target.value)}
+              />
               <HiSearch
                 width={24}
                 style={{ position: "absolute", left: "75px", top: "12px" }}
@@ -192,20 +189,30 @@ const Posters = () => {
             <div className={classes.found_lost_container}>
               <div
                 className={`${classes.found_lost_item} ${
-                  type === "گمشده" ? classes.active : ""
+                  type === "both" ? classes.active : ""
                 }`}
                 onClick={() => {
-                  setType("گمشده");
+                  setType("both");
+                }}
+              >
+                هردو
+              </div>
+              <div
+                className={`${classes.found_lost_item} ${
+                  type === "lost" ? classes.active : ""
+                }`}
+                onClick={() => {
+                  setType("lost");
                 }}
               >
                 گمشده
               </div>
               <div
                 className={`${classes.found_lost_item} ${
-                  type === "پیدا شده" ? classes.active : ""
+                  type === "found" ? classes.active : ""
                 }`}
                 onClick={() => {
-                  setType("پیدا شده");
+                  setType("found");
                 }}
               >
                 پیدا شده
@@ -230,16 +237,23 @@ const Posters = () => {
                 width={48}
               />
             </div>
-            <button className={classes.filter_button}>بگرد</button>
+            <button
+              className={classes.filter_button}
+              onClick={() => setRefetch(refetch + 1)}
+            >
+              بگرد
+            </button>
           </div>
         </div>
+        {error && <div className={classes.error}>{error}</div>}
+
         <div className={classes.posters_container}>
           {allPosters.map((poster, index) => (
             <SmallPoster
               id={poster.id}
               key={index}
               image={
-                poster?.images.length > 0 ? poster?.images[0]?.url : bicycle
+                poster?.images.length > 0 ? poster?.images[0]?.url : bicycle.src
               }
               title={poster.title}
               location={poster.address[0].address_detail}
