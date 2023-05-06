@@ -11,6 +11,7 @@ import axios from "axios";
 import { HiSearch } from "react-icons/hi";
 import { useAuth } from "../context/AuthProvider";
 import { useRouter } from "next/router";
+import NewPosterPopup from "../components/NewPosterPopup";
 const posters = [
   {
     title: "دوچرخه",
@@ -133,6 +134,8 @@ const Posters = () => {
   const [error, setError] = useState("");
   const [latLong, setLatLong] = useState({ lat: 0, lng: 0 });
 
+  const [showNewPoster, setShowNewPoster] = useState(false);
+
   const [search, setSearch] = useState("");
   const [tagInput, setTagInput] = useState("");
   const [tag, setTag] = useState("");
@@ -150,6 +153,7 @@ const Posters = () => {
           search ? search : ""
         }&lat=${checkLatLong(latLong.lat)}&lon=${checkLatLong(latLong.lng)}`
       );
+
       setError("");
       setAllPosters(data);
     } catch (error) {
@@ -176,6 +180,7 @@ const Posters = () => {
   return (
     <>
       <AppHeader />
+      <NewPosterPopup />
       {/* <div className={classes.sidebar}>سایدبار</div> */}
       <div className={classes.container}>
         <div className={classes.filter_container}>

@@ -41,9 +41,8 @@ export default function Map({
   useEffect(() => {
     if (lat && lng) {
       setGeoData({ lat, lng });
-      console.log();
     }
-  }, []);
+  }, [lat, lng]);
   useEffect(() => {
     if (map) {
       map.target.on("click", (e) => {
