@@ -3,6 +3,8 @@ import PosterClasses from "../pages/posters.module.css";
 import SearchableSelect from "./SearchableSelect";
 import { useEffect, useRef, useState } from "react";
 import { states } from "../data/province/Province";
+import { BsMagic } from "react-icons/bs";
+import { RxMagicWand } from "react-icons/rx";
 import Tehran from "../data/districts/Tehran.json";
 import box from "../assets/images/box.svg";
 import SearchableSelectTags from "./SearchableSelectTags";
@@ -22,6 +24,8 @@ const NewPosterPopup = () => {
   const [province, setProvince] = useState(states[6]);
   const [district, setDistrict] = useState(Tehran.districts[0]);
   const [latLong, setLatLong] = useState();
+
+  const [aiObjects, setAiObjects] = useState();
 
   const [allTags, setAllTags] = useState([]);
 
@@ -119,13 +123,49 @@ const NewPosterPopup = () => {
         </div>
         <div className={classes.title_container}>
           <div className={classes.title}>عنوان آگهی</div>
-          <input
-            className={classes.input}
-            value={poster.title}
-            onChange={(e) => {
-              setPoster({ ...poster, title: e.target.value });
-            }}
-          />
+          <div className={classes.ai_button_container}>
+            <input
+              className={classes.title_input}
+              value={poster.title}
+              onChange={(e) => {
+                setPoster({ ...poster, title: e.target.value });
+              }}
+            />
+            <button
+              className={`${classes.ai_generate_button} ${
+                imagesToBackend[0] ? classes.active : ""
+              }`}
+              onClick={async () => {
+                const { data } = await axios.get(
+                  `https://main-backend.iran.liara.run/api/v1/api-call/generatePosterInfo?image_url=${imagesToBackend[0]}`
+                );
+                setAiObjects(data);
+              }}
+            >
+              بهوش <BsMagic />
+            </button>
+          </div>
+          <div
+            className={`${classes.title_ai_container} ${
+              aiObjects && classes.show
+            }`}
+          >
+            {aiObjects &&
+              aiObjects?.titles?.map((title) => (
+                <div
+                  className={classes.title_ai_item}
+                  onClick={() => {
+                    setPoster({ ...poster, title });
+                    setAiObjects({
+                      ...aiObjects,
+                      titles: aiObjects.titles.filter((t) => t !== title),
+                    });
+                  }}
+                >
+                  {title}
+                </div>
+              ))}
+          </div>
         </div>
         <div className={classes.description_container}>
           <div className={classes.description}>توضیحات</div>
@@ -136,6 +176,23 @@ const NewPosterPopup = () => {
               setPoster({ ...poster, description: e.target.value })
             }
           />
+          <div
+            className={`${classes.title_ai_container} ${
+              aiObjects && classes.show
+            }`}
+          >
+            {aiObjects && (
+              <div
+                className={classes.title_ai_item}
+                onClick={() => {
+                  setPoster({ ...poster, description: aiObjects.description });
+                  setAiObjects({ ...aiObjects, description: "" });
+                }}
+              >
+                {aiObjects?.description}
+              </div>
+            )}
+          </div>
         </div>
 
         <div className={classes.tags_container}>
@@ -148,6 +205,27 @@ const NewPosterPopup = () => {
             setTags={setTags}
             zindex={10000000}
           />
+          <div
+            className={`${classes.title_ai_container} ${
+              aiObjects && classes.show
+            }`}
+          >
+            {aiObjects &&
+              aiObjects?.tags?.map((tag) => (
+                <div
+                  className={classes.title_ai_item}
+                  onClick={() => {
+                    setTags([...tags, { name: tag, id: -1 }]);
+                    setAiObjects({
+                      ...aiObjects,
+                      tags: aiObjects.tags.filter((t) => t !== tag),
+                    });
+                  }}
+                >
+                  {tag}
+                </div>
+              ))}
+          </div>
         </div>
         <div
           className={PosterClasses.found_lost_container}

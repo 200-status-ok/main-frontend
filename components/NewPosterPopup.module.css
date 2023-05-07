@@ -169,3 +169,63 @@
 .submit_button:hover {
   background-color: #2f89fccc;
 }
+.ai_generate_button {
+  opacity: 0;
+  visibility: hidden;
+  width: 30%;
+  height: 40px;
+  text-align: center;
+  padding: 8px;
+  border-radius: 4px;
+  background-color: #2f89fc;
+  color: white;
+  outline: 0;
+  border: 0;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  column-gap: 8px;
+  justify-content: center;
+  transition: all 0.3s ease-in-out;
+  font-size: 18px;
+}
+.ai_generate_button.active {
+  opacity: 1;
+  visibility: visible;
+}
+.ai_button_container {
+  display: flex;
+
+  column-gap: 8px;
+}
+.title_input {
+  width: 70%;
+  height: 40px;
+  outline: none;
+  border: 1px solid rgb(0, 0, 0, 0.3);
+  border-radius: 4px;
+  padding: 8px;
+}
+.title_ai_container {
+  width: 100%;
+  height: 0px;
+  border-radius: 4px;
+  display: flex;
+  flex-wrap: wrap;
+  column-gap: 8px;
+  transition: all 0.5s ease-in-out;
+  padding: 0;
+}
+.title_ai_item {
+  padding: 4px;
+  border-radius: 4px;
+  cursor: pointer;
+  background-color: #cecece75;
+  width: max-content;
+  height: max-content;
+}
+.title_ai_container.show {
+  border: 1px solid rgb(0, 0, 0, 0.3);
+  height: 100px;
+  padding: 8px;
+}
