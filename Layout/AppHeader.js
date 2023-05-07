@@ -8,6 +8,7 @@ import {
   HiOutlineChatAlt2,
 } from "react-icons/hi";
 import LoginPopup from "../components/LoginPopup";
+import NewPosterPopup from "../components/NewPosterPopup";
 import { states } from "../data/province/Province";
 const AppHeader = () => {
   const [city, setCity] = useState("تهران");
@@ -16,6 +17,8 @@ const AppHeader = () => {
   return (
     <>
       {auth?.showLoginPopup && <LoginPopup />}
+      {auth?.showNewPosterPopup && <NewPosterPopup />}
+
       <div className={classes.header}>
         <div className={classes.header_layout}>
           <div
@@ -25,6 +28,7 @@ const AppHeader = () => {
           >
             {states.map((s) => (
               <div
+                key={s.name}
                 className={classes.city_container}
                 style={{ justifyContent: "center" }}
                 onClick={() => {
@@ -62,7 +66,7 @@ const AppHeader = () => {
               className={classes.add_poster_btn}
               onClick={() => {
                 if (auth?.token) {
-                  console.log(auth);
+                  setAuth({ ...auth, showNewPosterPopup: true });
                 } else {
                   setAuth({ ...auth, showLoginPopup: true });
                 }

@@ -170,9 +170,9 @@ const LoginPopup = () => {
             >
               ورود
             </button>
-            {/* <a
+            <a
               className={classes.gLogin_button}
-              href="https://main-backend.iran.liara.run/api/v1/users/auth/google/login"
+              href="https://main-backend.iran.liara.run/api/v1/users/auth/google/login?redirect_uri=http://localhost:3000/glogin"
             >
               <Image
                 src={googleIcon}
@@ -181,7 +181,7 @@ const LoginPopup = () => {
                 className={classes.google_icon}
               />
               ورود با گوگل
-            </a> */}
+            </a>
           </div>
         </div>
       </div>

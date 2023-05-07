@@ -12,6 +12,7 @@ import { HiSearch } from "react-icons/hi";
 import { useAuth } from "../context/AuthProvider";
 import { useRouter } from "next/router";
 import NewPosterPopup from "../components/NewPosterPopup";
+
 const posters = [
   {
     title: "دوچرخه",
@@ -131,17 +132,15 @@ const Posters = () => {
   const [allPosters, setAllPosters] = useState([]);
 
   const router = useRouter();
+  console.log(router.query);
   const [error, setError] = useState("");
   const [latLong, setLatLong] = useState({ lat: 0, lng: 0 });
-
-  const [showNewPoster, setShowNewPoster] = useState(false);
 
   const [search, setSearch] = useState("");
   const [tagInput, setTagInput] = useState("");
   const [tag, setTag] = useState("");
   const [allTags, setAllTags] = useState([]);
   const [refetch, setRefetch] = useState(0);
-
   const { auth, setAuth } = useAuth();
   const handleChange = (nextChecked) => {
     setChecked(nextChecked);
@@ -161,8 +160,12 @@ const Posters = () => {
     }
   };
   useEffect(() => {
-    fetchPosters();
-  }, [refetch]);
+    if (auth?.refetch) {
+      fetchPosters();
+    } else {
+      fetchPosters();
+    }
+  }, [refetch, auth.refetch]);
   useEffect(() => {
     if (router.query) {
       setSearch(router.query.search);
@@ -180,7 +183,6 @@ const Posters = () => {
   return (
     <>
       <AppHeader />
-      <NewPosterPopup />
       {/* <div className={classes.sidebar}>سایدبار</div> */}
       <div className={classes.container}>
         <div className={classes.filter_container}>

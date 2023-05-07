@@ -1,7 +1,7 @@
 import classes from "./SearchableSelect.module.css";
 import { useEffect, useRef, useState } from "react";
 import useOnClickOutside from "../hooks/useOutside";
-const SearchableSelect = ({ options, value, setValue }) => {
+const SearchableSelect = ({ options, value, setValue, zindex = 10000 }) => {
   const [search, setSearch] = useState(" ");
   const [showOptions, setShowOptions] = useState(false);
   const [filteredOptions, setFilteredOptions] = useState();
@@ -34,7 +34,7 @@ const SearchableSelect = ({ options, value, setValue }) => {
     }
   });
   return (
-    <div className={classes.holder}>
+    <div className={classes.holder} style={{ zIndex: zindex }}>
       <div
         className={`${classes.container} ${
           showOptions

@@ -18,17 +18,22 @@ import Layout from "../Layout/Layout";
 import Poster from "../components/Poster";
 import Link from "next/link";
 import axios from "axios";
+import { toast } from "react-toastify";
 export default function Home() {
   const [showLoginPopup, setShowLoginPopup] = useState(false);
-  const [search, setSearch] = useState(" ");
+  const [search, setSearch] = useState("");
   const [allPosters, setAllPosters] = useState([]);
 
   useEffect(() => {
     (async () => {
-      const { data } = await axios.get(
-        "https://main-backend.iran.liara.run/api/v1/posters/?page_id=1&page_size=10&status=both"
-      );
-      setAllPosters(data);
+      try {
+        const { data } = await axios.get(
+          "https://main-backend.iran.liara.run/api/v1/posters/?page_id=1&page_size=10&status=both"
+        );
+        setAllPosters(data);
+      } catch (error) {
+        toast.error("مشکلی در ارتباط با سرور پیش آمد");
+      }
     })();
   }, []);
   return (
