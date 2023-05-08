@@ -18,6 +18,7 @@ import "swiper/css/scrollbar";
 import axios from "axios";
 import Popup from "../../components/Popup";
 import ReportPopup from "../../components/ReportPopup";
+import SharePopup from "../../components/SharePopup";
 let swiperInstance = null;
 
 const MapWithNoSSR = dynamic(() => import("../../components/Map"), {
@@ -30,6 +31,7 @@ const Poster = () => {
   const [showContactDetail, setShowContactDetail] = useState(false);
 
   const [showReportPoster, setShowReportPoster] = useState(false);
+  const [showShareButtons, setShowShareButtons] = useState(false);
 
   const [poster, setPoster] = useState({
     title: "",
@@ -67,7 +69,10 @@ const Poster = () => {
       {showContactDetail && (
         <Popup phone={poster?.phone_user} setShow={setShowContactDetail} />
       )}
-      {showReportPoster && <ReportPopup setShow={setShowReportPoster} />}
+      {showReportPoster && (
+        <ReportPopup setShow={setShowReportPoster} posterId={poster.id} />
+      )}
+      {/* {showShareButtons && <SharePopup setShow={setShowShareButtons} />} */}
       <AppHeader />
       <div className={classes.container}>
         <div className={classes.poster_container}>
@@ -115,7 +120,18 @@ const Poster = () => {
                 >
                   <MdOutlineReport size="24px" />
                 </div>
-                <div className={classes.share_button}>
+                <div
+                  className={classes.share_button}
+                  onClick={async () => {
+                    const data = await navigator.share({
+                      title: `${poster.title}`,
+                      text: `${poster.description}}`,
+                      url: `https://localhost:3000/poster/${poster.id}`,
+                    });
+                    console.log("fuck");
+                    console.log(data);
+                  }}
+                >
                   <HiOutlineShare size="20px" />
                 </div>
               </div>
