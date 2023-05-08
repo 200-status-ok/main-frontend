@@ -6,6 +6,7 @@ import LoginPopup from "../components/LoginPopup";
 import { setCookie } from "cookies-next";
 import Link from "next/link";
 import { useAuth } from "../context/AuthProvider";
+import { toast } from "react-toastify";
 const Header = () => {
   const { auth, setAuth } = useAuth();
   return (
@@ -32,6 +33,7 @@ const Header = () => {
             onClick={() => {
               setAuth({});
               setCookie("token", "");
+              toast.success("با موفقیت شدید", {});
             }}
           >
             خروج
