@@ -5,6 +5,7 @@ import dynamic from "next/dynamic";
 import bicycle from "../../assets/images/bicycle.png";
 import bic from "../../assets/images/bic.webp";
 import { HiOutlineBookmark, HiOutlineShare } from "react-icons/hi";
+import { MdOutlineReport } from "react-icons/md";
 import { Swiper, SwiperSlide } from "swiper/react";
 import { useEffect, useState } from "react";
 import { useRouter } from "next/router";
@@ -104,7 +105,7 @@ const Poster = () => {
 
               <div className={classes.poster_cta_share}>
                 <div className={classes.share_button}>
-                  <HiOutlineBookmark size="20px" />
+                  <MdOutlineReport size="24px" />
                 </div>
                 <div className={classes.share_button}>
                   <HiOutlineShare size="20px" />
@@ -137,6 +138,7 @@ const Poster = () => {
                 );
               })}
             </div>
+            {/* <div className={classes.report_container}></div> */}
           </div>
           <div className={classes.media_container}>
             <div className={classes.slider_container}>

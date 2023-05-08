@@ -64,7 +64,9 @@
   left: 6px;
   top: 6px;
   overflow-y: auto;
-  /* width: 210px; */
+  width: 350px;
+  white-space: nowrap;
+  overflow: hidden;
   column-gap: 8px;
   direction: ltr;
 }

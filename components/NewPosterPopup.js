@@ -20,6 +20,8 @@ import {
 } from "react-icons/hi";
 import axios from "axios";
 import { useAuth } from "../context/AuthProvider";
+import { Oval } from "react-loader-spinner";
+import { toast } from "react-toastify";
 const NewPosterPopup = () => {
   const [province, setProvince] = useState(states[6]);
   const [district, setDistrict] = useState(Tehran.districts[0]);
@@ -38,6 +40,8 @@ const NewPosterPopup = () => {
   const [imagesToBackend, setImagesToBackend] = useState([]);
   const [images, setImages] = useState([]);
   const imageRef = useRef();
+
+  const [loadingAi, setLoadingAi] = useState(false);
 
   const { auth, setAuth } = useAuth();
   useEffect(() => {
@@ -66,10 +70,14 @@ const NewPosterPopup = () => {
 
   useEffect(() => {
     (async () => {
-      const { data } = await axios.get(
-        "https://main-backend.iran.liara.run/api/v1/tags/"
-      );
-      setAllTags(data);
+      try {
+        const { data } = await axios.get(
+          "https://main-backend.iran.liara.run/api/v1/tags/"
+        );
+        setAllTags(data);
+      } catch (error) {
+        toast.error("خطایی در دریافت دسته بندی رخ داده است");
+      }
     })();
   }, []);
   const { districts } = Tehran;
@@ -136,19 +144,55 @@ const NewPosterPopup = () => {
                 imagesToBackend[0] ? classes.active : ""
               }`}
               onClick={async () => {
+                setLoadingAi(true);
                 const { data } = await axios.get(
                   `https://main-backend.iran.liara.run/api/v1/api-call/generatePosterInfo?image_url=${imagesToBackend[0]}`
                 );
                 setAiObjects(data);
+                setLoadingAi(false);
               }}
             >
-              بهوش <BsMagic />
+              {loadingAi ? (
+                <Oval
+                  height={24}
+                  width={24}
+                  color="white"
+                  wrapperStyle={{}}
+                  wrapperClass=""
+                  visible={true}
+                  ariaLabel="oval-loading"
+                  secondaryColor="#2f89fc"
+                  strokeWidth={2}
+                  strokeWidthSecondary={2}
+                />
+              ) : (
+                <>
+                  بهوش <BsMagic />
+                </>
+              )}
             </button>
           </div>
           <div
             className={`${classes.title_ai_container} ${
               aiObjects && classes.show
             }`}
+            style={{
+              height: aiObjects
+                ? aiObjects.titles.length === 0
+                  ? "0px"
+                  : "100px"
+                : "0px",
+              padding: aiObjects
+                ? aiObjects.titles.length === 0
+                  ? "0px"
+                  : "10px"
+                : "0px",
+              border: aiObjects
+                ? aiObjects.titles.length === 0
+                  ? "0px"
+                  : "1px solid rgba(0,0,0,.3)"
+                : "0px",
+            }}
           >
             {aiObjects &&
               aiObjects?.titles?.map((title) => (
@@ -180,6 +224,15 @@ const NewPosterPopup = () => {
             className={`${classes.title_ai_container} ${
               aiObjects && classes.show
             }`}
+            style={{
+              height: aiObjects ? (!aiObjects.description ? 0 : 100) : 0,
+              padding: aiObjects ? (!aiObjects.description ? 0 : 8) : 0,
+              border: aiObjects
+                ? !aiObjects.description
+                  ? 0
+                  : "1px solid rgba(0,0,0,.3)"
+                : 0,
+            }}
           >
             {aiObjects && (
               <div
@@ -209,6 +262,23 @@ const NewPosterPopup = () => {
             className={`${classes.title_ai_container} ${
               aiObjects && classes.show
             }`}
+            style={{
+              height: aiObjects
+                ? aiObjects.tags.length === 0
+                  ? "0px"
+                  : "100px"
+                : "0px",
+              padding: aiObjects
+                ? aiObjects.tags.length === 0
+                  ? "0px"
+                  : "10px"
+                : "0px",
+              border: aiObjects
+                ? aiObjects.tags.length === 0
+                  ? "0px"
+                  : "1px solid rgba(0,0,0,.3)"
+                : "0px",
+            }}
           >
             {aiObjects &&
               aiObjects?.tags?.map((tag) => (
@@ -313,10 +383,16 @@ const NewPosterPopup = () => {
                     status: poster.status,
                     tel_id: "mhr1380",
                     title: poster.title,
-                    user_id: 1,
+                    user_id: 4,
                     user_phone: "09030335008",
                   },
-                  tags: [...tags.map((tag) => tag.id)],
+                  tags: [
+                    ...tags.map((tag) => {
+                      if (tag.id > 0) {
+                        return tag.id;
+                      }
+                    }),
+                  ].filter((tag) => tag !== undefined),
                 }
               );
               setAuth({ ...auth, showNewPosterPopup: false, refresh: true });
