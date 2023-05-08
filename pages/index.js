@@ -79,10 +79,13 @@ export default function Home() {
             بگرد
           </Link>
           <div className={classes.cta_button_container}>
-            <button className={classes.cta_button}>
-              <Image src={plus} width={30} />
-              ثبت آگهی
-            </button>
+            <Link href="/posters">
+              <button className={classes.cta_button}>
+                <Image src={plus} width={30} />
+                ثبت آگهی
+              </button>
+            </Link>
+
             <Image src={dots} width={100} />
           </div>
         </div>

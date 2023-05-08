@@ -10,6 +10,7 @@ import {
 import LoginPopup from "../components/LoginPopup";
 import NewPosterPopup from "../components/NewPosterPopup";
 import { states } from "../data/province/Province";
+import Link from "next/link";
 const AppHeader = () => {
   const [city, setCity] = useState("تهران");
   const [showCities, setShowCities] = useState(false);
@@ -41,8 +42,10 @@ const AppHeader = () => {
             ))}
           </div>
           <div className={classes.header_right}>
-            <h1 className={classes.header_logo}>همینجاست</h1>
-            <hr className={classes.divider} />
+            <Link href="/">
+              <h1 className={classes.header_logo}>همینجاست</h1>
+            </Link>
+            {/* <hr className={classes.divider} />
             <div
               className={classes.city_container}
               onClick={() => {
@@ -51,7 +54,7 @@ const AppHeader = () => {
             >
               <HiOutlineLocationMarker width={10} color="rgba(0, 0, 0, 0.56)" />
               {city}
-            </div>
+            </div> */}
           </div>
           <div className={classes.header_left}>
             <div className={classes.header_menu_items}>

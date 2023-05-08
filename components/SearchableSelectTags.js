@@ -1,8 +1,16 @@
 import classes from "./SearchableSelectTags.module.css";
 import { useEffect, useRef, useState } from "react";
 import useOnClickOutside from "../hooks/useOutside";
-const SearchableSelectTags = ({ options, zindex = 10000, tags, setTags }) => {
-  const [search, setSearch] = useState(" ");
+const SearchableSelectTags = ({
+  options,
+  zindex = 10000,
+  tags,
+  setTags,
+  placeholder,
+  customStyle,
+  maxLengthOfTags = "350px",
+}) => {
+  const [search, setSearch] = useState("");
   const [showOptions, setShowOptions] = useState(false);
   const [filteredOptions, setFilteredOptions] = useState();
 
@@ -42,8 +50,10 @@ const SearchableSelectTags = ({ options, zindex = 10000, tags, setTags }) => {
           value={search}
           onChange={(e) => setSearch(e.target.value)}
           onClick={() => setShowOptions(true)}
+          placeholder={placeholder ? placeholder : ""}
+          style={customStyle ? customStyle : {}}
         />
-        <div className={classes.tags_holder}>
+        <div className={classes.tags_holder} style={{ width: maxLengthOfTags }}>
           {tags.map((tag) => (
             <div
               className={classes.selected_tags}

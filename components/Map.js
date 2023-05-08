@@ -26,9 +26,13 @@ export default function Map({
   zoom = 16.5,
   nocircle,
   setLatLong,
+  noDrawCircle,
+  cricleState,
+  latLong,
 }) {
   const [geoData, setGeoData] = useState({ lat: 35.683111, lng: 51.439189 });
   const [myCircle, setMyCircle] = useState(null);
+  const [testCircle, setTestCircle] = useState(cricleState); // [35.683111, 51.439189
   const [map, setMap] = useState(null);
   let DefaultIcon = L.icon({
     iconUrl: icon.src,
@@ -39,31 +43,41 @@ export default function Map({
   const center = [geoData.lat, geoData.lng];
 
   useEffect(() => {
-    if (lat && lng) {
-      setGeoData({ lat, lng });
+    if (latLong) {
+      setGeoData(latLong);
     }
-  }, [lat, lng]);
+  }, [latLong]);
   useEffect(() => {
     if (map) {
       map.target.on("click", (e) => {
         console.log(e.latlng);
-        setGeoData({ lat: e.latlng.lat, lng: e.latlng.lng });
         // remove previous circle
-        if (myCircle) {
-          map.target.removeLayer(myCircle);
+        if (noDrawCircle) {
+          console.log("no draw circle");
+          return;
+        } else {
+          console.log("draw circle");
+          setTestCircle(true);
+          // if (myCircle) {
+          //   map.target.removeLayer(myCircle);
+          // }
+          setGeoData({ lat: e.latlng.lat, lng: e.latlng.lng });
+          // const circle = L.circle([e.latlng.lat, e.latlng.lng], {
+          //   fillOpacity: 0.5,
+          //   radius: 100,
+          // }).addTo(map.target);
+          if (setLatLong) {
+            setLatLong({ lat: e.latlng.lat, lng: e.latlng.lng });
+          }
+          // setMyCircle(circle);
         }
-
-        const circle = L.circle([e.latlng.lat, e.latlng.lng], {
-          fillOpacity: 0.5,
-          radius: 100,
-        }).addTo(map.target);
-        if (setLatLong) {
-          setLatLong({ lat: e.latlng.lat, lng: e.latlng.lng });
-        }
-        setMyCircle(circle);
       });
     }
   }, [map]);
+
+  useEffect(() => {
+    setTestCircle(cricleState);
+  }, [cricleState]);
   return (
     <MapContainer
       center={center}
@@ -75,7 +89,7 @@ export default function Map({
         attribution='&copy; <a href="http://osm.org/copyright">OpenStreetMap</a> contributors'
         url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
       />
-      {!nocircle && (
+      {testCircle && (
         <Circle radius={50} center={[geoData.lat, geoData.lng]}></Circle>
       )}
 

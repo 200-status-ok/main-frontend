@@ -344,8 +344,10 @@ const NewPosterPopup = () => {
         </div>
         <div className={classes.map}>
           <MapWithNoSSR
-            lat={district.centroid.latitude}
-            lng={district.centroid.longitude}
+            latLong={{
+              lat: district.centroid.latitude,
+              lng: district.centroid.longitude,
+            }}
             nocircle
             setLatLong={setLatLong}
           />

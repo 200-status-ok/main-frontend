@@ -12,6 +12,7 @@ const SmallPoster = ({
   time_description,
   categories,
   id,
+  award,
 }) => {
   return (
     <Link href={`/poster/${id}`} className={classes.poster}>
@@ -45,6 +46,11 @@ const SmallPoster = ({
               </div>
             );
           })}
+          {award > 0 ? (
+            <div className={`${classes.badge} ${classes.reward}`}>مژدگانی </div>
+          ) : (
+            ""
+          )}
         </div>
         {found && (
           <p className={classes.time_description}>

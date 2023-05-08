@@ -9,9 +9,12 @@ import { useEffect, useState } from "react";
 import ReactSwitch from "react-switch";
 import axios from "axios";
 import { HiSearch } from "react-icons/hi";
+
 import { useAuth } from "../context/AuthProvider";
 import { useRouter } from "next/router";
 import NewPosterPopup from "../components/NewPosterPopup";
+import SearchableSelectTags from "../components/SearchableSelectTags";
+import { toast } from "react-toastify";
 
 const posters = [
   {
@@ -121,7 +124,7 @@ const MapWithNoSSR = dynamic(() => import("../components/Map"), {
   ssr: false,
 });
 const checkLatLong = (latLong) => {
-  if (latLong === 0) {
+  if (latLong == 35.686023 || latLong == 51.393045) {
     return "";
   }
   return latLong;
@@ -134,21 +137,27 @@ const Posters = () => {
   const router = useRouter();
   console.log(router.query);
   const [error, setError] = useState("");
-  const [latLong, setLatLong] = useState({ lat: 0, lng: 0 });
+  const [latLong, setLatLong] = useState({ lat: 35.686023, lng: 51.393045 });
 
   const [search, setSearch] = useState("");
-  const [tagInput, setTagInput] = useState("");
-  const [tag, setTag] = useState("");
+
+  const [tags, setTags] = useState([]);
   const [allTags, setAllTags] = useState([]);
+
   const [refetch, setRefetch] = useState(0);
   const { auth, setAuth } = useAuth();
+
+  const [drawCircle, setDrawCircle] = useState(false);
+
   const handleChange = (nextChecked) => {
     setChecked(nextChecked);
   };
   const fetchPosters = async () => {
     try {
       const { data } = await axios.get(
-        `https://main-backend.iran.liara.run/api/v1/posters/?page_id=1&page_size=10&status=${type}&only_rewards=${checked}&search_phrase=${
+        `https://main-backend.iran.liara.run/api/v1/posters/?page_id=1&page_size=10&status=${type}${
+          "&" + tags.length > 0 ? tags.map((t) => t.id).toString() : ""
+        }&only_rewards=${checked}&search_phrase=${
           search ? search : ""
         }&lat=${checkLatLong(latLong.lat)}&lon=${checkLatLong(latLong.lng)}`
       );
@@ -159,16 +168,29 @@ const Posters = () => {
       setError("خطایی در دریافت اطلاعات پیش آمده است ...");
     }
   };
-  useEffect(() => {
-    if (auth?.refetch) {
-      fetchPosters();
-    } else {
-      fetchPosters();
+  const fetchTags = async () => {
+    try {
+      const { data } = await axios.get(
+        "https://main-backend.iran.liara.run/api/v1/tags/"
+      );
+      setAllTags(data);
+    } catch (error) {
+      toast.error("خطایی در دریافت دسته بندی ها رخ داده است");
     }
-  }, [refetch, auth.refetch]);
+  };
+  useEffect(() => {
+    fetchPosters();
+    if (tags.length === 0) {
+      fetchTags();
+    }
+  }, [refetch]);
   useEffect(() => {
     if (router.query) {
       setSearch(router.query.search);
+      const timer = setTimeout(() => {
+        setRefetch(refetch + 1);
+        clearTimeout(timer);
+      }, 1000);
     }
   }, [router.query]);
   // useEffect(() => {
@@ -187,10 +209,11 @@ const Posters = () => {
       <div className={classes.container}>
         <div className={classes.filter_container}>
           <MapWithNoSSR
-            style={{ width: "60%", height: "300px" }}
-            zoom={11}
-            nocircle
+            style={{ width: "60%", height: "330px" }}
+            zoom={11.5}
             setLatLong={setLatLong}
+            latLong={latLong}
+            cricleState={drawCircle}
           />
           <div className={classes.filter_options_container}>
             <div className={classes.searchbar_container}>
@@ -203,6 +226,19 @@ const Posters = () => {
                 width={24}
                 style={{ position: "absolute", left: "75px", top: "12px" }}
                 color="rgba(0, 0, 0, 0.3)"
+              />
+            </div>
+            <div className={classes.search_tags_container}>
+              <SearchableSelectTags
+                options={allTags}
+                setAllTags={setAllTags}
+                allTags={allTags}
+                tags={tags}
+                setTags={setTags}
+                zindex={10000}
+                placeholder="دسته بندی ها"
+                customStyle={{ border: "1px solid rgba(0,0,0,.16)" }}
+                maxLengthOfTags={"240px"}
               />
             </div>
             {/* <div className={classes.searchbar_container_new}>
@@ -256,6 +292,7 @@ const Posters = () => {
                 پیدا شده
               </div>
             </div>
+
             <div className={classes.reward_container}>
               {" "}
               مژدگانی
@@ -275,6 +312,7 @@ const Posters = () => {
                 width={48}
               />
             </div>
+
             <button
               className={classes.filter_button}
               onClick={() => setRefetch(refetch + 1)}
@@ -300,6 +338,7 @@ const Posters = () => {
               // time_description={poster.time_description}
               found={poster.status === "found"}
               lost={poster.status === "lost"}
+              award={poster?.award}
             />
           ))}
         </div>

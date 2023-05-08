@@ -33,7 +33,11 @@ const Header = () => {
             onClick={() => {
               setAuth({});
               setCookie("token", "");
-              toast.success("با موفقیت شدید", {});
+              toast.success(
+                <>
+                  با موفقیت <span style={{ color: "#e74c3c" }}>خارج</span> شدید
+                </>
+              );
             }}
           >
             خروج

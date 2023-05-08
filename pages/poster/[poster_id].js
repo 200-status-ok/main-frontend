@@ -17,6 +17,7 @@ import "swiper/css/pagination";
 import "swiper/css/scrollbar";
 import axios from "axios";
 import Popup from "../../components/Popup";
+import ReportPopup from "../../components/ReportPopup";
 let swiperInstance = null;
 
 const MapWithNoSSR = dynamic(() => import("../../components/Map"), {
@@ -27,6 +28,9 @@ const Poster = () => {
   const [slider, setSlider] = useState(0);
   const [slides, setSlides] = useState([bicycle, bic]);
   const [showContactDetail, setShowContactDetail] = useState(false);
+
+  const [showReportPoster, setShowReportPoster] = useState(false);
+
   const [poster, setPoster] = useState({
     title: "",
     description: "",
@@ -63,6 +67,7 @@ const Poster = () => {
       {showContactDetail && (
         <Popup phone={poster?.phone_user} setShow={setShowContactDetail} />
       )}
+      {showReportPoster && <ReportPopup setShow={setShowReportPoster} />}
       <AppHeader />
       <div className={classes.container}>
         <div className={classes.poster_container}>
@@ -104,7 +109,10 @@ const Poster = () => {
               </div>
 
               <div className={classes.poster_cta_share}>
-                <div className={classes.share_button}>
+                <div
+                  className={classes.share_button}
+                  onClick={() => setShowReportPoster(true)}
+                >
                   <MdOutlineReport size="24px" />
                 </div>
                 <div className={classes.share_button}>
@@ -137,6 +145,13 @@ const Poster = () => {
                   </div>
                 );
               })}
+              {poster.award > 0 ? (
+                <div className={`${classes.badge} ${classes.reward}`}>
+                  مژدگانی{" "}
+                </div>
+              ) : (
+                ""
+              )}
             </div>
             {/* <div className={classes.report_container}></div> */}
           </div>
@@ -198,7 +213,11 @@ const Poster = () => {
             <div className={classes.map_container}>
               موقعیت
               {poster.address.length > 0 && poster.address[0].latitude && (
-                <MapWithNoSSR lat={checkLatLong()[0]} lng={checkLatLong()[1]} />
+                <MapWithNoSSR
+                  noDrawCircle={true}
+                  cricleState={true}
+                  latLong={{ lat: checkLatLong()[0], lng: checkLatLong()[1] }}
+                />
               )}
             </div>
           </div>
