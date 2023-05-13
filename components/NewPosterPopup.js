@@ -8,9 +8,12 @@ import { RxMagicWand } from "react-icons/rx";
 import Tehran from "../data/districts/Tehran.json";
 import box from "../assets/images/box.svg";
 import SearchableSelectTags from "./SearchableSelectTags";
-const MapWithNoSSR = dynamic(() => import("../components/Map"), {
-  ssr: false,
-});
+const MapWithNoSsrNewPoster = dynamic(
+  () => import("../components/NewPosterMap"),
+  {
+    ssr: false,
+  }
+);
 import dynamic from "next/dynamic";
 import {
   HiOutlinePhotograph,
@@ -26,7 +29,12 @@ import ReactSwitch from "react-switch";
 const NewPosterPopup = () => {
   const [province, setProvince] = useState(states[6]);
   const [district, setDistrict] = useState(Tehran.districts[0]);
-  const [latLong, setLatLong] = useState();
+  const [latLong, setLatLong] = useState({
+    lat: district.centroid.latitude,
+    lng: district.centroid.longitude,
+  });
+  const [sendLoading, setSendLoading] = useState(false);
+
   const [award, setAward] = useState(false);
 
   const [aiObjects, setAiObjects] = useState();
@@ -46,6 +54,14 @@ const NewPosterPopup = () => {
   const [loadingAi, setLoadingAi] = useState(false);
 
   const { auth, setAuth } = useAuth();
+
+  useEffect(() => {
+    console.log("district", district);
+    setLatLong({
+      lat: district.centroid.latitude,
+      lng: district.centroid.longitude,
+    });
+  }, [district]);
   useEffect(() => {
     (async () => {
       if (images.length > 0) {
@@ -367,14 +383,7 @@ const NewPosterPopup = () => {
           />
         </div>
         <div className={classes.map}>
-          <MapWithNoSSR
-            latLong={{
-              lat: district.centroid.latitude,
-              lng: district.centroid.longitude,
-            }}
-            cricleState={true}
-            setLatLong={setLatLong}
-          />
+          <MapWithNoSsrNewPoster latLong={latLong} setLatLong={setLatLong} />
         </div>
         <div className={classes.buttons_container}>
           <div
@@ -391,7 +400,8 @@ const NewPosterPopup = () => {
               if (!poster.title || !poster.description) {
                 toast.error("لطفا تمامی فیلد ها را پر کنید");
               } else {
-                const { data } = await axios.post(
+                setSendLoading(true);
+                await axios.post(
                   "https://main-backend.iran.liara.run/api/v1/posters/authorize/",
                   {
                     addresses: [
@@ -427,11 +437,29 @@ const NewPosterPopup = () => {
                   { headers: { Authorization: `Bearer ${auth.token}` } }
                 );
                 setAuth({ ...auth, showNewPosterPopup: false, refresh: true });
-                console.log(data);
+                setSendLoading(false);
+                toast.success(
+                  "آگهی شما با موفقیت ارسال شد و پس از تایید نمایش داده خواهد شد"
+                );
               }
             }}
           >
-            ثبت
+            {sendLoading ? (
+              <Oval
+                height={24}
+                width={24}
+                color="white"
+                wrapperStyle={{}}
+                wrapperClass=""
+                visible={true}
+                ariaLabel="oval-loading"
+                secondaryColor="#2f89fc"
+                strokeWidth={2}
+                strokeWidthSecondary={2}
+              />
+            ) : (
+              "ثبت"
+            )}
           </div>
         </div>
       </div>

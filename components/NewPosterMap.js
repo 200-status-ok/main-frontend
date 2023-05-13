@@ -19,18 +19,9 @@ export function ChangeView({ coords, zoom }) {
 import icon from "leaflet/dist/images/marker-icon.png";
 import iconShadow from "leaflet/dist/images/marker-shadow.png";
 
-export default function Map({
-  style,
-  zoom = 16.5,
-  setLatLong,
-  latLong,
-  radius = 50,
-  noDrawCircle,
-  firstCircle,
-}) {
+export default function Map({ style, zoom = 16.5, latLong, setLatLong }) {
+  //   const [geoData, setGeoData] = useState({ lat: 35.683111, lng: 51.439189 });
   const [map, setMap] = useState(null);
-  const [firstCircleState, setFirstCircleState] = useState(firstCircle);
-
   let DefaultIcon = L.icon({
     iconUrl: icon.src,
     shadowUrl: iconShadow.src,
@@ -42,14 +33,9 @@ export default function Map({
   useEffect(() => {
     if (map) {
       map.target.on("click", (e) => {
-        setFirstCircleState(true);
         console.log(e.latlng);
-        // remove previous circle
-        if (noDrawCircle) {
-          return;
-        } else {
-          setLatLong({ lat: e.latlng.lat, lng: e.latlng.lng });
-        }
+        // setGeoData({ lat: e.latlng.lat, lng: e.latlng.lng });
+        setLatLong({ lat: e.latlng.lat, lng: e.latlng.lng });
       });
     }
   }, [map]);
@@ -65,10 +51,7 @@ export default function Map({
         attribution='&copy; <a href="http://osm.org/copyright">OpenStreetMap</a> contributors'
         url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
       />
-      {firstCircleState && (
-        <Circle radius={radius} center={[latLong?.lat, latLong?.lng]}></Circle>
-      )}
-
+      <Circle radius={50} center={[latLong.lat, latLong.lng]}></Circle>
       {/* <Marker position={[geoData.lat, geoData.lng]}></Marker> */}
       <ChangeView coords={center} />
     </MapContainer>

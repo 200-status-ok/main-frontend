@@ -212,9 +212,10 @@ const Posters = () => {
           <MapWithNoSSR
             style={{ width: "60%", height: "330px" }}
             zoom={11.5}
+            radius={1500}
             setLatLong={setLatLong}
             latLong={latLong}
-            cricleState={drawCircle}
+            firstCircle={false}
           />
           <div className={classes.filter_options_container}>
             <div className={classes.searchbar_container}>

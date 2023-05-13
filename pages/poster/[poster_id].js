@@ -231,7 +231,7 @@ const Poster = () => {
               {poster.address.length > 0 && poster.address[0].latitude && (
                 <MapWithNoSSR
                   noDrawCircle={true}
-                  cricleState={true}
+                  firstCircle={true}
                   latLong={{ lat: checkLatLong()[0], lng: checkLatLong()[1] }}
                 />
               )}

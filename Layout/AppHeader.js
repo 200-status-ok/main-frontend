@@ -57,10 +57,12 @@ const AppHeader = () => {
             </div> */}
           </div>
           <div className={classes.header_left}>
-            <div className={classes.header_menu_items}>
-              <HiOutlineViewGrid width={10} color="rgba(0, 0, 0, 0.56)" />
-              آگهی های من
-            </div>
+            <Link href="/my-posters">
+              <div className={classes.header_menu_items}>
+                <HiOutlineViewGrid width={10} color="rgba(0, 0, 0, 0.56)" />
+                آگهی های من
+              </div>
+            </Link>
             <div className={classes.header_menu_items}>
               <HiOutlineChatAlt2 width={10} color="rgba(0, 0, 0, 0.56)" />
               چت

@@ -4,9 +4,10 @@ import classes from "./posters.module.css";
 import axios from "axios";
 import { useAuth } from "../context/AuthProvider";
 import SmallPoster from "../components/SmallPoster";
+import bicycle from "../assets/images/bicycle.png";
 
 const MyPosters = () => {
-  const [allPosters, setAllPosters] = useState([]);
+  const [allPosters, setAllPosters] = useState();
   const { auth, setAuth } = useAuth();
   const fetchPosters = async () => {
     try {
@@ -17,6 +18,7 @@ const MyPosters = () => {
         }
       );
       setAllPosters(data.posters);
+      console.log(data);
     } catch (error) {
       console.log(error);
     }
