@@ -66,8 +66,10 @@ export default function Map({
           //   fillOpacity: 0.5,
           //   radius: 100,
           // }).addTo(map.target);
+
           if (setLatLong) {
             setLatLong({ lat: e.latlng.lat, lng: e.latlng.lng });
+            console.log("set lat long");
           }
           // setMyCircle(circle);
         }

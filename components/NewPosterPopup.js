@@ -22,10 +22,12 @@ import axios from "axios";
 import { useAuth } from "../context/AuthProvider";
 import { Oval } from "react-loader-spinner";
 import { toast } from "react-toastify";
+import ReactSwitch from "react-switch";
 const NewPosterPopup = () => {
   const [province, setProvince] = useState(states[6]);
   const [district, setDistrict] = useState(Tehran.districts[0]);
   const [latLong, setLatLong] = useState();
+  const [award, setAward] = useState(false);
 
   const [aiObjects, setAiObjects] = useState();
 
@@ -122,6 +124,9 @@ const NewPosterPopup = () => {
                       setImages(
                         images.filter((img) => img.file !== image.file)
                       );
+                      // setImagesToBackend(
+                      //   imagesToBackend.filter((img) => img !== image.file)
+                      // );
                     }}
                   />
                 </div>
@@ -324,6 +329,25 @@ const NewPosterPopup = () => {
             پیدا شده
           </div>
         </div>
+        <div className={classes.award_container}>
+          {" "}
+          مژدگانی
+          <ReactSwitch
+            onChange={(e) => setAward(e)}
+            checked={award}
+            onColor="#cdf0ea"
+            color="#88888824"
+            offColor="#e8e8e8"
+            // onHandleColor="rgb(130 210 197)"
+            handleDiameter={20}
+            uncheckedIcon={false}
+            checkedIcon={false}
+            boxShadow="0px 1px 5px rgba(0, 0, 0, 0.6)"
+            activeBoxShadow="0px 0px 1px 10px rgba(0, 0, 0, 0.2)"
+            height={20}
+            width={48}
+          />
+        </div>
         <div className={classes.province_container}>
           <div className={classes.province}>استان</div>
           <SearchableSelect
@@ -348,7 +372,7 @@ const NewPosterPopup = () => {
               lat: district.centroid.latitude,
               lng: district.centroid.longitude,
             }}
-            nocircle
+            cricleState={true}
             setLatLong={setLatLong}
           />
         </div>
@@ -364,41 +388,47 @@ const NewPosterPopup = () => {
           <div
             className={classes.submit_button}
             onClick={async () => {
-              const { data } = await axios.post(
-                "https://main-backend.iran.liara.run/api/v1/posters/",
-                {
-                  addresses: [
-                    {
-                      address_detail: district.name,
-                      city: province.name,
-                      latitude: latLong.lat,
-                      longitude: latLong.lng,
-                      province: province.name,
+              if (!poster.title || !poster.description) {
+                toast.error("لطفا تمامی فیلد ها را پر کنید");
+              } else {
+                const { data } = await axios.post(
+                  "https://main-backend.iran.liara.run/api/v1/posters/authorize/",
+                  {
+                    addresses: [
+                      {
+                        address_detail: district.name,
+                        city: province.name,
+                        latitude: latLong.lat,
+                        longitude: latLong.lng,
+                        province: province.name,
+                      },
+                    ],
+                    img_urls: imagesToBackend,
+                    poster: {
+                      alert: true,
+                      award: award ? 1 : 0,
+                      chat: true,
+                      description: poster.description,
+                      status: poster.status,
+                      tel_id: "mhr1380",
+                      title: poster.title,
+                      user_id: 4,
+                      user_phone: "09030335008",
                     },
-                  ],
-                  img_urls: imagesToBackend,
-                  poster: {
-                    alert: true,
-                    award: 0,
-                    chat: true,
-                    description: poster.description,
-                    status: poster.status,
-                    tel_id: "mhr1380",
-                    title: poster.title,
-                    user_id: 4,
-                    user_phone: "09030335008",
+                    state: "pending",
+                    tags: [
+                      ...tags.map((tag) => {
+                        if (tag.id > 0) {
+                          return tag.id;
+                        }
+                      }),
+                    ].filter((tag) => tag !== undefined),
                   },
-                  tags: [
-                    ...tags.map((tag) => {
-                      if (tag.id > 0) {
-                        return tag.id;
-                      }
-                    }),
-                  ].filter((tag) => tag !== undefined),
-                }
-              );
-              setAuth({ ...auth, showNewPosterPopup: false, refresh: true });
-              console.log(data);
+                  { headers: { Authorization: `Bearer ${auth.token}` } }
+                );
+                setAuth({ ...auth, showNewPosterPopup: false, refresh: true });
+                console.log(data);
+              }
             }}
           >
             ثبت

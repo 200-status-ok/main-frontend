@@ -155,17 +155,17 @@ const Posters = () => {
   const fetchPosters = async () => {
     try {
       const { data } = await axios.get(
-        `https://main-backend.iran.liara.run/api/v1/posters/?page_id=1&page_size=10&status=${type}${
-          "&" + tags.length > 0 ? tags.map((t) => t.id).toString() : ""
+        `https://main-backend.iran.liara.run/api/v1/posters/?page_id=1&page_size=10&state=accepted&status=${type}${
+          tags.length > 0 ? `&tags=${tags.map((t) => t.id).toString()}` : ""
         }&only_rewards=${checked}&search_phrase=${
           search ? search : ""
         }&lat=${checkLatLong(latLong.lat)}&lon=${checkLatLong(latLong.lng)}`
       );
-
       setError("");
       setAllPosters(data);
     } catch (error) {
-      setError("خطایی در دریافت اطلاعات پیش آمده است ...");
+      console.log(error);
+      // setError("خطایی در دریافت اطلاعات پیش آمده است ...");
     }
   };
   const fetchTags = async () => {
@@ -193,6 +193,7 @@ const Posters = () => {
       }, 1000);
     }
   }, [router.query]);
+
   // useEffect(() => {
   //   (async () => {
   //     const { data } = await axios.get(

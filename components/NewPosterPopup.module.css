@@ -234,3 +234,7 @@
   height: 100px;
   padding: 8px;
 }
+.award_container {
+  display: flex;
+  column-gap: 16px;
+}
