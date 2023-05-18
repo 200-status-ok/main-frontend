@@ -63,10 +63,12 @@ const AppHeader = () => {
                 آگهی های من
               </div>
             </Link>
-            <div className={classes.header_menu_items}>
-              <HiOutlineChatAlt2 width={10} color="rgba(0, 0, 0, 0.56)" />
-              چت
-            </div>
+            <Link href="/chat">
+              <div className={classes.header_menu_items}>
+                <HiOutlineChatAlt2 width={10} color="rgba(0, 0, 0, 0.56)" />
+                چت
+              </div>
+            </Link>
             <div
               className={classes.add_poster_btn}
               onClick={() => {
