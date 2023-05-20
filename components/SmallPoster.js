@@ -5,7 +5,7 @@ const lengthOfDescription = 80;
 const SmallPoster = ({
   image,
   title,
-  description,
+  description = "",
   found,
   lost,
   location,
@@ -13,11 +13,49 @@ const SmallPoster = ({
   categories,
   id,
   award,
+  state,
 }) => {
+  const checkState = (state) => {
+    switch (state) {
+      case "accepted":
+        return "تایید شده";
+      case "rejected":
+        return "رد شده";
+      case "pending":
+        return "در انتظار بررسی";
+      default:
+        return "در انتظار بررسی";
+    }
+  };
+  const checkStateClass = (state) => {
+    switch (state) {
+      case "accepted":
+        return classes.accepted;
+      case "rejected":
+        return classes.rejected;
+      case "pending":
+        return classes.pending;
+      default:
+        return classes.pending;
+    }
+  };
   return (
     <Link href={`/poster/${id}`} className={classes.poster}>
       <div className={classes.poster_body}>
-        <div className={classes.poster_title}>{title}</div>
+        <div className={classes.poster_title}>
+          {state ? (
+            <>
+              {title}{" "}
+              <div
+                className={`${classes.poster_state} ${checkStateClass(state)}`}
+              >
+                {checkState(state)}
+              </div>
+            </>
+          ) : (
+            title
+          )}
+        </div>
         <div className={classes.poster_description}>
           {description.length > lengthOfDescription
             ? description.slice(0, lengthOfDescription) + " ..."

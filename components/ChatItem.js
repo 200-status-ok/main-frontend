@@ -1,15 +1,20 @@
-import classes from "../pages/Chat.module.css";
+import classes from "../pages/chat/Chat.module.css";
 import bicycle from "../assets/images/bicycle.png";
-const ChatItem = ({ description }) => {
+const ChatItem = ({ description, name, onClick, active, image }) => {
   return (
-    <div className={classes.chatslist_chat_item}>
+    <div
+      className={`${classes.chatslist_chat_item} ${
+        active ? classes.active : ""
+      }`}
+      onClick={() => {
+        onClick();
+      }}
+    >
       <div className={classes.chatslist_chat_item_icon}>
-        <img src={bicycle.src} />
+        <img src={image ? image : bicycle.src} />
       </div>
       <div className={classes.chatslist_chat_item_info}>
-        <div className={classes.chatslist_chat_item_info_top}>
-          دوچرخه گم شده
-        </div>
+        <div className={classes.chatslist_chat_item_info_top}>{name} </div>
         <div className={classes.chatslist_chat_item_info_down}>
           {" "}
           {description.length > 32

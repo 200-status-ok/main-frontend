@@ -38,6 +38,8 @@
 }
 .poster_title {
   font-size: 20px;
+  display: flex;
+  justify-content: space-between;
   /* font-weight: bold; */
 }
 .poster_description {
@@ -180,4 +182,34 @@
   flex-direction: column;
   row-gap: 8px;
   width: 70%;
+}
+.my_posters_container {
+  display: flex;
+  flex-direction: column;
+  margin: 0 auto;
+  row-gap: 16px;
+  margin-top: 96px;
+  width: 80%;
+}
+.my_posters_title {
+  font-size: 20px;
+  font-weight: bold;
+}
+.poster_state {
+  padding: 4px;
+  border-radius: 4px;
+  font-size: 16px;
+  font-weight: 400;
+}
+.poster_state.accepted {
+  background-color: #2f89fc;
+  color: white;
+}
+.poster_state.rejected {
+  background-color: #ffd1d1;
+  color: white;
+}
+.poster_state.pending {
+  background-color: #efefef;
+  color: black;
 }

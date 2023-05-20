@@ -7,6 +7,7 @@ import {
   HiOutlineViewGrid,
   HiOutlineChatAlt2,
 } from "react-icons/hi";
+import { TbWallet } from "react-icons/tb";
 import LoginPopup from "../components/LoginPopup";
 import NewPosterPopup from "../components/NewPosterPopup";
 import { states } from "../data/province/Province";
@@ -57,6 +58,12 @@ const AppHeader = () => {
             </div> */}
           </div>
           <div className={classes.header_left}>
+            <Link href="/my-wallet">
+              <div className={classes.header_menu_items}>
+                <TbWallet width={10} color="rgba(0, 0, 0, 0.56)" />
+                کیف پول
+              </div>
+            </Link>
             <Link href="/my-posters">
               <div className={classes.header_menu_items}>
                 <HiOutlineViewGrid width={10} color="rgba(0, 0, 0, 0.56)" />

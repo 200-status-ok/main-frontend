@@ -193,6 +193,10 @@
   opacity: 1;
   visibility: visible;
 }
+.ai_generate_button.disabled {
+  opacity: 0.5;
+  visibility: visible;
+}
 .ai_button_container {
   display: flex;
 

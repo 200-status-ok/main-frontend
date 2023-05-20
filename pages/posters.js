@@ -326,6 +326,7 @@ const Posters = () => {
         {error && <div className={classes.error}>{error}</div>}
 
         <div className={classes.posters_container}>
+          {console.log(allPosters)}
           {allPosters.map((poster, index) => (
             <SmallPoster
               id={poster.id}

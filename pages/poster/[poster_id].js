@@ -19,6 +19,8 @@ import axios from "axios";
 import Popup from "../../components/Popup";
 import ReportPopup from "../../components/ReportPopup";
 import SharePopup from "../../components/SharePopup";
+import { useAuth } from "../../context/AuthProvider";
+import { toast } from "react-toastify";
 let swiperInstance = null;
 
 const MapWithNoSSR = dynamic(() => import("../../components/Map"), {
@@ -29,6 +31,8 @@ const Poster = () => {
   const [slider, setSlider] = useState(0);
   const [slides, setSlides] = useState([bicycle, bic]);
   const [showContactDetail, setShowContactDetail] = useState(false);
+
+  const { auth, setAuth } = useAuth();
 
   const [showReportPoster, setShowReportPoster] = useState(false);
   const [showShareButtons, setShowShareButtons] = useState(false);
@@ -110,7 +114,27 @@ const Poster = () => {
                 >
                   اطلاعات تماس
                 </button>
-                <button className={classes.chat}>چت</button>
+                <button
+                  className={classes.chat}
+                  onClick={async () => {
+                    try {
+                      const { data } = await axios.post(
+                        "https://main-backend.iran.liara.run/api/v1/chats/authorize/conversation",
+                        {
+                          name: poster.title,
+                          poster_id: poster.id,
+                        },
+                        { headers: { Authorization: `Bearer ${auth.token}` } }
+                      );
+                      router.push(`/chat/${data.conversation.id}`);
+                    } catch (error) {
+                      console.log(error);
+                      toast.error("خطایی پیش آمده است ");
+                    }
+                  }}
+                >
+                  چت
+                </button>
               </div>
 
               <div className={classes.poster_cta_share}>

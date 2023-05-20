@@ -162,12 +162,13 @@ const NewPosterPopup = () => {
             />
             <button
               className={`${classes.ai_generate_button} ${
-                imagesToBackend[0] ? classes.active : ""
+                imagesToBackend[0] ? classes.active : classes.disabled
               }`}
+              disabled={!imagesToBackend[0]}
               onClick={async () => {
                 setLoadingAi(true);
                 const { data } = await axios.get(
-                  `https://main-backend.iran.liara.run/api/v1/api-call/generatePosterInfo?image_url=${imagesToBackend[0]}`
+                  `https://main-backend.iran.liara.run/api/v1/api-call/generate-poster-Info?image_url=${imagesToBackend[0]}`
                 );
                 setAiObjects(data);
                 setLoadingAi(false);
@@ -428,9 +429,7 @@ const NewPosterPopup = () => {
                     state: "pending",
                     tags: [
                       ...tags.map((tag) => {
-                        if (tag.id > 0) {
-                          return tag.id;
-                        }
+                        return tag.name;
                       }),
                     ].filter((tag) => tag !== undefined),
                   },
