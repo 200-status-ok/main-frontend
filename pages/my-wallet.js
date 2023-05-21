@@ -1,12 +1,28 @@
 import classes from "./my-wallet.module.css";
 import AppHeader from "../Layout/AppHeader";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import TransactionItem from "../components/TransactionItem";
 import axios from "axios";
+import { useAuth } from "../context/AuthProvider";
 const depositOptions = ["50000", "100000", "200000", "500000"];
 const MyWallet = () => {
+  const { auth, setAuth } = useAuth();
   const [depositAmount, setDepositAmount] = useState("");
+  const [allTransactions, setAllTransactions] = useState([]);
 
+  useEffect(() => {
+    if (auth.token) {
+      (async () => {
+        const { data } = await axios.get(
+          "https://main-backend.iran.liara.run/api/v1/users/authorize/payment/user_wallet/get_transactions",
+          {
+            headers: { Authorization: `Bearer ${auth.token}` },
+          }
+        );
+        setAllTransactions(data);
+      })();
+    }
+  }, [auth.token]);
   return (
     <>
       <AppHeader></AppHeader>
@@ -29,7 +45,12 @@ const MyWallet = () => {
             onClick={async () => {
               if (depositAmount > 0) {
                 const response = await axios.get(
-                  `https://main-backend.iran.liara.run/api/v1/users/authorize/payment/user_wallet?url=http://localhost:3000/payment&amount=${depositAmount}`
+                  `https://main-backend.iran.liara.run/api/v1/users/authorize/payment/user_wallet/?url=http://localhost:3000/payment&amount=${depositAmount}`,
+                  {
+                    headers: {
+                      Authorization: `Bearer ${auth.token}`,
+                    },
+                  }
                 );
                 console.log(response);
               }
@@ -39,8 +60,9 @@ const MyWallet = () => {
           </button>
         </div>
         <div className={classes.deposit_options_container}>
-          {depositOptions.map((d) => (
+          {depositOptions.map((d, index) => (
             <div
+              key={index}
               className={classes.desposit_options_item}
               onClick={() => {
                 setDepositAmount(d);
@@ -59,13 +81,14 @@ const MyWallet = () => {
               <div className={classes.transaction_list_header_item}>وضعیت</div>
             </div>
             <div className={classes.transaction_list_body}>
-              <TransactionItem
-                amount="30000"
-                date="1402/02/30"
-                state="ناموفق"
-              />
-              <TransactionItem amount="30000" date="1402/02/30" state="موفق" />
-              <TransactionItem amount="30000" date="1402/02/30" state="موفق" />
+              {allTransactions.map((t) => (
+                <TransactionItem
+                  key={t.id}
+                  amount={t.amount}
+                  date={t.created_at}
+                  state={t.status}
+                />
+              ))}
             </div>
           </div>
         </div>

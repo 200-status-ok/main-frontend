@@ -56,6 +56,7 @@ const SearchableSelectTags = ({
         <div className={classes.tags_holder} style={{ width: maxLengthOfTags }}>
           {tags.map((tag) => (
             <div
+              key={tag.name}
               className={classes.selected_tags}
               onClick={() => {
                 setTags(tags.filter((t) => t.id !== tag.id));
@@ -71,6 +72,7 @@ const SearchableSelectTags = ({
             return (
               <div
                 className={classes.option}
+                key={option.name}
                 onClick={() => {
                   setSearch("");
                   setShowOptions(false);

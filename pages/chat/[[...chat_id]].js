@@ -15,6 +15,8 @@ const Chat = () => {
   const [owner, setOwner] = useState([{ id: 0, is_owner: false }]);
   const { auth, setAuth } = useAuth();
 
+  const [connection, setConnection] = useState();
+
   const [ownerId, setOwnerId] = useState(0);
   const [chatHistory, setChatHistory] = useState([]);
 
@@ -42,8 +44,25 @@ const Chat = () => {
     }
   }, [auth.token]);
   useEffect(() => {
-    if (router.query.chat_id && isConnectionOpen === false) {
-      setIsConnectionOpen(true);
+    if (router.query.chat_id && !connection) {
+      const websocket = new w3cwebsocket(
+        `wss://main-backend.iran.liara.run/api/v1/chats/join?conv_id=${router.query.chat_id}&token=${auth.token}`
+      );
+      websocket.onopen = (event) => {
+        setConnection(websocket);
+      };
+      websocket.onmessage = (event) => {
+        fetchChatHistory(router.query.chat_id);
+      };
+      websocket.onclose = (event) => {
+        console.log(event);
+        event.target.onopen((event) => {
+          console.log(event);
+        });
+      };
+      websocket.onerror = (event) => {
+        console.log(event);
+      };
     }
   }, [router.query]);
 
@@ -62,13 +81,9 @@ const Chat = () => {
         },
       }
     );
-    console.log(data2);
     setOwnerId(data2.conversation.owner_id);
     setChatHistory(data.messages.reverse());
   };
-
-  console.log(ownerId);
-  console.log(owner);
 
   const checkClassOfMessage = (message, is_owner) => {
     if (is_owner) {
@@ -94,30 +109,7 @@ const Chat = () => {
           <div className={classes.chatslist_container}>
             <div className={classes.chatslist_header}>چت های من</div>
             <div className={classes.chatslist_body}>
-              <button
-                onClick={() => {
-                  // const websocket = new WebSocket(
-                  //   `ws://main-backend.iran.liara.run/api/v1/chats/join?conv_id=3&token=${auth.token}`
-                  // );
-                  // websocket.onopen = (event) => {
-                  //   console.log(event);
-                  // };
-                  // websocket.onmessage = (event) => {
-                  //   console.log(event);
-                  // };
-                  // websocket.onclose = (event) => {
-                  //   console.log(event);
-                  //   event.target.onopen((event) => {
-                  //     console.log(event);
-                  //   });
-                  // };
-                  // websocket.onerror = (event) => {
-                  //   console.log(event);
-                  // };
-                }}
-              >
-                تست
-              </button>
+              <button onClick={() => {}}>تست</button>
               {allChats.map((chat, index) => (
                 <ChatItem
                   name={chat.name}

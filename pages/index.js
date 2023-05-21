@@ -96,7 +96,7 @@ export default function Home() {
         <div className={classes.posters_container}>
           {console.log(allPosters)}
           {allPosters.slice(0, 3).map((poster) => (
-            <Link href={`/poster/${poster.id}`}>
+            <Link href={`/poster/${poster.id}`} key={poster.id}>
               <Poster
                 key={poster.id}
                 title={poster.title}

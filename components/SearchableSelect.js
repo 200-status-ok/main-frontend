@@ -58,6 +58,7 @@ const SearchableSelect = ({ options, value, setValue, zindex = 10000 }) => {
               const children = option.children.map((child) => {
                 return (
                   <div
+                    key={child.name}
                     className={classes.option}
                     style={{ marginRight: child.indent * 16 + "px" }}
                     onClick={() => {
@@ -74,6 +75,7 @@ const SearchableSelect = ({ options, value, setValue, zindex = 10000 }) => {
                 <>
                   {
                     <div
+                      key={option.name}
                       className={classes.option}
                       style={{ marginRight: option.indent * 16 + "px" }}
                       onClick={() => {
@@ -91,6 +93,7 @@ const SearchableSelect = ({ options, value, setValue, zindex = 10000 }) => {
             } else {
               return (
                 <div
+                  key={option.name}
                   className={classes.option}
                   style={{ marginRight: option.indent * 16 + "px" }}
                   onClick={() => {

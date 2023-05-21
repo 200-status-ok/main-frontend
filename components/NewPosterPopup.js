@@ -129,8 +129,8 @@ const NewPosterPopup = () => {
                 </div>
               </div>
             </div>
-            {images.map((image) => (
-              <div className={classes.image}>
+            {images.map((image, index) => (
+              <div className={classes.image} key={index}>
                 <img src={URL.createObjectURL(image.file)} />
                 <div className={classes.delete_image}>
                   <HiTrash
@@ -217,8 +217,9 @@ const NewPosterPopup = () => {
             }}
           >
             {aiObjects &&
-              aiObjects?.titles?.map((title) => (
+              aiObjects?.titles?.map((title, index) => (
                 <div
+                  key={index}
                   className={classes.title_ai_item}
                   onClick={() => {
                     setPoster({ ...poster, title });
@@ -303,8 +304,9 @@ const NewPosterPopup = () => {
             }}
           >
             {aiObjects &&
-              aiObjects?.tags?.map((tag) => (
+              aiObjects?.tags?.map((tag, index) => (
                 <div
+                  key={index}
                   className={classes.title_ai_item}
                   onClick={() => {
                     setTags([...tags, { name: tag, id: -1 }]);
