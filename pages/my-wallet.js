@@ -4,12 +4,16 @@ import { useEffect, useState } from "react";
 import TransactionItem from "../components/TransactionItem";
 import axios from "axios";
 import { useAuth } from "../context/AuthProvider";
+import { router } from "websocket";
+import { useRouter } from "next/router";
 const depositOptions = ["50000", "100000", "200000", "500000"];
 const MyWallet = () => {
   const { auth, setAuth } = useAuth();
   const [depositAmount, setDepositAmount] = useState("");
   const [allTransactions, setAllTransactions] = useState([]);
 
+  const [balance, setBalance] = useState(0);
+  const router = useRouter();
   useEffect(() => {
     if (auth.token) {
       (async () => {
@@ -19,6 +23,13 @@ const MyWallet = () => {
             headers: { Authorization: `Bearer ${auth.token}` },
           }
         );
+        const { data: user } = await axios.get(
+          "https://main-backend.iran.liara.run/api/v1/users/authorize/",
+          {
+            headers: { Authorization: `Bearer ${auth.token}` },
+          }
+        );
+        setBalance(user.wallet);
         setAllTransactions(data);
       })();
     }
@@ -28,7 +39,7 @@ const MyWallet = () => {
       <AppHeader></AppHeader>
       <div className={classes.container}>
         <div className={classes.balance_container}>
-          موجودی کیف پول : 270000 ریال
+          موجودی کیف پول : {balance.toLocaleString()} ریال
         </div>
         <div className={classes.deposit_container}>
           <span className={classes.currency}>ریال</span>
@@ -44,15 +55,13 @@ const MyWallet = () => {
             className={classes.deposit_button}
             onClick={async () => {
               if (depositAmount > 0) {
-                const response = await axios.get(
-                  `https://main-backend.iran.liara.run/api/v1/users/authorize/payment/user_wallet/?url=http://localhost:3000/payment&amount=${depositAmount}`,
+                const { data } = await axios.get(
+                  `https://main-backend.iran.liara.run/api/v1/users/authorize/payment/user_wallet?url=http://localhost:3000/payment&amount=${depositAmount}`,
                   {
-                    headers: {
-                      Authorization: `Bearer ${auth.token}`,
-                    },
+                    headers: { Authorization: `Bearer ${auth.token}` },
                   }
                 );
-                console.log(response);
+                router.push(data.redirect);
               }
             }}
           >
