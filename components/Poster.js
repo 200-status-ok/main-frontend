@@ -15,7 +15,7 @@ const Poster = ({
 }) => {
   return (
     <div className={classes.poster}>
-      <Image
+      <img
         className={classes.poster_image}
         src={image}
         width={260}

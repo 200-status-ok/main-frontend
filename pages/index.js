@@ -1,7 +1,7 @@
 import Head from "next/head";
 import Image from "next/image";
 import styles from "../styles/Home.module.css";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import LoginPopup from "../components/LoginPopup";
 import classes from "./Home.module.css";
 import IranMap from "../assets/images/IranMap.png";
@@ -16,9 +16,26 @@ import toodots from "../assets/images/toodots.png";
 import leftchevron from "../assets/icons/left_chevron.png";
 import Layout from "../Layout/Layout";
 import Poster from "../components/Poster";
+import Link from "next/link";
+import axios from "axios";
+import { toast } from "react-toastify";
 export default function Home() {
   const [showLoginPopup, setShowLoginPopup] = useState(false);
+  const [search, setSearch] = useState("");
+  const [allPosters, setAllPosters] = useState([]);
 
+  useEffect(() => {
+    (async () => {
+      try {
+        const { data } = await axios.get(
+          "https://main-backend.iran.liara.run/api/v1/posters/?page_id=1&page_size=10&status=both"
+        );
+        setAllPosters(data);
+      } catch (error) {
+        toast.error("مشکلی در ارتباط با سرور پیش آمد");
+      }
+    })();
+  }, []);
   return (
     <Layout>
       <div className={classes.hero}>
@@ -50,13 +67,25 @@ export default function Home() {
           باشه اگه گمشده ات رو بین آگهی ها پیدا نکردی، <b> ثبتش کن </b>
         </div>
         <div className={classes.cta_input_container}>
-          <input placeholder="چی گم کردی ؟ مثلا کیف پول" />
-          <button className={classes.cta_input_container_button}>بگرد</button>
+          <input
+            placeholder="چی گم کردی ؟ مثلا کیف پول"
+            value={search}
+            onChange={(e) => setSearch(e.target.value)}
+          />
+          <Link
+            href={`/posters?search=${search}`}
+            className={classes.cta_input_container_button}
+          >
+            بگرد
+          </Link>
           <div className={classes.cta_button_container}>
-            <button className={classes.cta_button}>
-              <Image src={plus} width={30} />
-              ثبت آگهی
-            </button>
+            <Link href="/posters">
+              <button className={classes.cta_button}>
+                <Image src={plus} width={30} />
+                ثبت آگهی
+              </button>
+            </Link>
+
             <Image src={dots} width={100} />
           </div>
         </div>
@@ -65,44 +94,31 @@ export default function Home() {
       <div className={classes.posters}>
         <div className={classes.posters_title}>آخرین آگهی ها</div>
         <div className={classes.posters_container}>
-          <Poster
-            title="دسته کلید"
-            description="یک دسته کلید در فلان جا گم شده است ، از یابنده تقاضا میشود که بفرستد برای ما سلام چطوری میخاومبشه 4 خط و بیشتر چه بسا بشود "
-            image={bicycle}
-            time_description="3 دقیقه پیش"
-            location="سعادت آباد"
-            found
-          />
-          <Poster
-            title="دسته کلید"
-            description="یک دسته کلید در فلان جا گم شده است ، از یابنده تقاضا میشود که بفرستد برای ما"
-            image={bicycle}
-            time_description="3 دقیقه پیش"
-            location="سعادت آباد"
-            found
-          />
-          <Poster
-            title="دسته کلید"
-            description="یک دسته کلید در فلان جا گم شده است ، از یابنده تقاضا میشود که بفرستد برای ما"
-            image={bicycle}
-            time_description="3 دقیقه پیش"
-            location="سعادت آباد"
-            found
-          />
-          <Poster
-            title="دسته کلید"
-            description="یک دسته کلید در فلان جا گم شده است ، از یابنده تقاضا میشود که بفرستد برای ما"
-            image={bicycle}
-            time_description="3 دقیقه پیش"
-            location="سعادت آباد"
-            found
-          />
+          {console.log(allPosters)}
+          {allPosters.slice(0, 3).map((poster) => (
+            <Link href={`/poster/${poster.id}`} key={poster.id}>
+              <Poster
+                key={poster.id}
+                title={poster.title}
+                description={poster.description}
+                image={
+                  poster.images.length > 0 ? poster.images[0].url : bicycle.src
+                }
+                found={poster.status === "found"}
+                lost={poster.status === "lost"}
+                location={poster.address[0].address_detail}
+                time_description="3 دقیقه پیش"
+              />
+            </Link>
+          ))}
         </div>
       </div>
       <div className={classes.more}>
         <Image src={toodots} width={1140} />
         <div className={classes.more_button_container}>
-          <button className={classes.more_button}>مشاهده بیشتر</button>
+          <Link href="/posters">
+            <button className={classes.more_button}>مشاهده بیشتر</button>
+          </Link>
           <Image src={leftchevron} width={10} />
         </div>
       </div>
