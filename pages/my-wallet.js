@@ -30,7 +30,7 @@ const MyWallet = () => {
           }
         );
         setBalance(user.wallet);
-        setAllTransactions(data);
+        setAllTransactions(data ? data : []);
       })();
     }
   }, [auth.token]);
