@@ -7,7 +7,7 @@ const TransactionItem = ({ date, amount, state }) => {
       </div>
       <div className={classes.transaction_subitem}>{amount}</div>
       <div
-        className={`${stateToPersian(state, classes)} ${
+        className={`${stateToPersian(state, classes).class} ${
           classes.transaction_subitem
         }`}
       >
@@ -21,8 +21,8 @@ export default TransactionItem;
 const stateToPersian = (state, classes = {}) => {
   switch (state) {
     case "pending":
-      return { state: "در حال بررسی", class: classes?.success };
-    case "success":
+      return { state: "در حال بررسی", class: "" };
+    case "paid":
       return { state: "موفق", class: classes?.success };
     case "failed":
       return { state: "ناموفق", class: classes?.failed };

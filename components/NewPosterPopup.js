@@ -26,6 +26,7 @@ import { useAuth } from "../context/AuthProvider";
 import { Oval } from "react-loader-spinner";
 import { toast } from "react-toastify";
 import ReactSwitch from "react-switch";
+import Link from "next/link";
 const NewPosterPopup = () => {
   const [province, setProvince] = useState(states[6]);
   const [district, setDistrict] = useState(Tehran.districts[0]);
@@ -36,6 +37,8 @@ const NewPosterPopup = () => {
   const [sendLoading, setSendLoading] = useState(false);
 
   const [award, setAward] = useState(false);
+  const [specialPoster, setSpecialPoster] = useState(false);
+  const [showHint, setShowHint] = useState(false);
 
   const [aiObjects, setAiObjects] = useState();
 
@@ -54,6 +57,8 @@ const NewPosterPopup = () => {
   const [loadingAi, setLoadingAi] = useState(false);
 
   const { auth, setAuth } = useAuth();
+
+  const [userCredit, setUserCredits] = useState(0);
 
   useEffect(() => {
     console.log("district", district);
@@ -92,7 +97,16 @@ const NewPosterPopup = () => {
         const { data } = await axios.get(
           "https://main-backend.iran.liara.run/api/v1/tags/"
         );
+
         setAllTags(data);
+
+        const { data: user } = await axios.get(
+          "https://main-backend.iran.liara.run/api/v1/users/authorize/",
+          {
+            headers: { Authorization: `Bearer ${auth.token}` },
+          }
+        );
+        setUserCredits(user.wallet);
       } catch (error) {
         toast.error("خطایی در دریافت دسته بندی رخ داده است");
       }
@@ -348,7 +362,10 @@ const NewPosterPopup = () => {
             پیدا شده
           </div>
         </div>
-        <div className={classes.award_container}>
+        <div
+          className={classes.award_container}
+          style={{ fontSize: "20px", alignItems: "center" }}
+        >
           {" "}
           مژدگانی
           <ReactSwitch
@@ -366,6 +383,50 @@ const NewPosterPopup = () => {
             height={20}
             width={48}
           />
+        </div>
+        <div className={classes.special_container}>
+          {" "}
+          <div className={classes.special_header_container}>
+            <div className={classes.special_header}>اگهی ویژه</div>
+            <ReactSwitch
+              onChange={(e) => {
+                if (userCredit >= 100000) {
+                  setSpecialPoster(e);
+                } else {
+                  setShowHint(true);
+                }
+              }}
+              checked={specialPoster}
+              onColor="#cdf0ea"
+              color="#88888824"
+              offColor="#e8e8e8"
+              // onHandleColor="rgb(130 210 197)"
+              handleDiameter={20}
+              uncheckedIcon={false}
+              checkedIcon={false}
+              boxShadow="0px 1px 5px rgba(0, 0, 0, 0.6)"
+              activeBoxShadow="0px 0px 1px 10px rgba(0, 0, 0, 0.2)"
+              height={20}
+              width={48}
+            />
+            <div>100000 ریال</div>
+            <div>| موجودی شما : </div>
+            <div>{userCredit} ریال</div>
+          </div>
+          <div className={classes.special_description}>
+            با فعال سازی این ویژگی ، آگهی شما به مدت یک هفته در بالای آگهی ها
+            قرار خواهد گرفت و شانس بیشتری برای دیده شدن خواهد داشت.
+          </div>
+          {showHint && (
+            <div className={classes.special_hint}>
+              <div style={{ color: "#e74c3c" }}>موجودی شما کافی نیست </div>
+              <Link href="/my-wallet">
+                <button className={classes.go_to_wallet}>
+                  رفتن به کیف پول{" "}
+                </button>
+              </Link>
+            </div>
+          )}
         </div>
         <div className={classes.province_container}>
           <div className={classes.province}>استان</div>
@@ -425,8 +486,9 @@ const NewPosterPopup = () => {
                       status: poster.status,
                       tel_id: "mhr1380",
                       title: poster.title,
-                      user_id: 4,
+                      special_ads: specialPoster ? "premium" : "normal",
                       user_phone: "09030335008",
+                      user_id: 4,
                     },
                     state: "pending",
                     tags: [

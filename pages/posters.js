@@ -338,6 +338,7 @@ const Posters = () => {
               location={poster.address[0].address_detail}
               description={poster.description}
               categories={poster.categories}
+              special_type={poster.special_type}
               // time_description={poster.time_description}
               found={poster.status === "found"}
               lost={poster.status === "lost"}

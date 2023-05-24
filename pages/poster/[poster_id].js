@@ -165,26 +165,6 @@ const Poster = () => {
             </div>
             <div className={classes.badges_container}>
               {poster?.categories?.map((cat) => {
-                if (cat.name === "فوری") {
-                  return (
-                    <div
-                      key={cat.name}
-                      className={`${classes.badge} ${classes.emergency}`}
-                    >
-                      فوری
-                    </div>
-                  );
-                }
-                if (cat.name === "مژدگانی") {
-                  return (
-                    <div
-                      key={cat.name}
-                      className={`${classes.badge} ${classes.reward}`}
-                    >
-                      مژدگانی{" "}
-                    </div>
-                  );
-                }
                 return (
                   <div
                     key={cat.name}
@@ -195,11 +175,15 @@ const Poster = () => {
                 );
               })}
               {poster.award > 0 ? (
-                <div
-                  key={cat.name}
-                  className={`${classes.badge} ${classes.reward}`}
-                >
+                <div className={`${classes.badge} ${classes.reward}`}>
                   مژدگانی{" "}
+                </div>
+              ) : (
+                ""
+              )}{" "}
+              {poster.special_type === "premium" ? (
+                <div className={`${classes.badge} ${classes.emergency}`}>
+                  ویژه{" "}
                 </div>
               ) : (
                 ""

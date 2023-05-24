@@ -13,6 +13,7 @@ const SmallPoster = ({
   categories,
   id,
   award,
+  special_type,
   state,
 }) => {
   const checkState = (state) => {
@@ -64,26 +65,6 @@ const SmallPoster = ({
 
         <div className={classes.badges_container}>
           {categories?.map((cat) => {
-            if (cat.name === "فوری") {
-              return (
-                <div
-                  key={cat.name}
-                  className={`${classes.badge} ${classes.emergency}`}
-                >
-                  فوری
-                </div>
-              );
-            }
-            if (cat.name === "مژدگانی") {
-              return (
-                <div
-                  key={cat.name}
-                  className={`${classes.badge} ${classes.reward}`}
-                >
-                  مژدگانی{" "}
-                </div>
-              );
-            }
             return (
               <div
                 key={cat.name}
@@ -95,6 +76,11 @@ const SmallPoster = ({
           })}
           {award > 0 ? (
             <div className={`${classes.badge} ${classes.reward}`}>مژدگانی </div>
+          ) : (
+            ""
+          )}
+          {special_type === "premium" ? (
+            <div className={`${classes.badge} ${classes.emergency}`}>ویژه </div>
           ) : (
             ""
           )}

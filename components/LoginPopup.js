@@ -73,6 +73,7 @@ const LoginPopup = () => {
               <button
                 className={classes.code_button}
                 onClick={async () => {
+                  const regex = new RegExp("^(\\+98|0)?9\\d{9}$");
                   try {
                     if (
                       /^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|.(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/.test(
@@ -92,11 +93,7 @@ const LoginPopup = () => {
                       toast.success("کد با موفقیت ارسال شد");
                       setDisable(true);
                     } else {
-                      if (
-                        /^(9|09)(12|19|35|36|37|38|39|32|03|02|21)\d{7}$/.test(
-                          username
-                        )
-                      ) {
+                      if (regex.test(username)) {
                         await axios.post(
                           "https://main-backend.iran.liara.run/api/v1/users/auth/otp/send",
                           {
@@ -172,7 +169,7 @@ const LoginPopup = () => {
             </button>
             <a
               className={classes.gLogin_button}
-              href="https://main-backend.iran.liara.run/api/v1/users/auth/google/login/?redirect_uri=http://localhost:3000/glogin"
+              href="https://main-backend.iran.liara.run/api/v1/users/auth/google/login/?redirect_uri=https://haminjast.iran.liara.run/glogin"
             >
               <Image
                 src={googleIcon}
