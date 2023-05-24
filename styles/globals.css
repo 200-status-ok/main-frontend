@@ -30,7 +30,7 @@ a {
   padding: 0;
   font-family: "Alibaba";
 }
-@media (prefers-color-scheme: dark) {
+/* @media (prefers-color-scheme: dark) {
   html {
     color-scheme: dark;
   }
@@ -38,7 +38,7 @@ a {
     color: white;
     background: black;
   }
-}
+} */
 html {
   scroll-behavior: smooth;
 }
