@@ -2,12 +2,13 @@ import AppHeader from "../../Layout/AppHeader";
 import classes from "./Chat.module.css";
 import bicycle from "../../assets/images/bicycle.png";
 import ChatItem from "../../components/ChatItem";
-import { HiOutlinePaperAirplane } from "react-icons/hi";
+import { HiOutlinePaperAirplane, HiArrowSmRight } from "react-icons/hi";
 import { useEffect, useRef, useState } from "react";
 import axios from "axios";
 import { useAuth } from "../../context/AuthProvider";
 import { useRouter } from "next/router";
 import { w3cwebsocket } from "websocket";
+import Link from "next/link";
 
 const Chat = () => {
   const [allChats, setAllChats] = useState([]);
@@ -57,12 +58,14 @@ const Chat = () => {
           }
         );
 
-        setAllChats(data);
-        setOwner(
-          data.map((chat) => {
-            return { id: chat.id, is_owner: chat.is_owner };
-          })
-        );
+        if (data) {
+          setAllChats(data);
+          setOwner(
+            data.map((chat) => {
+              return { id: chat.id, is_owner: chat.is_owner };
+            })
+          );
+        }
       })();
     }
   }, [auth.token]);
@@ -141,14 +144,19 @@ const Chat = () => {
     <>
       <AppHeader />
       <div className={classes.container}>
-        <div className={classes.chatslist}>
+        <div
+          className={`${classes.chatslist} ${
+            router.query.chat_id ? classes.disabled : ""
+          }`}
+        >
           <div className={classes.chatslist_container}>
             <div className={classes.chatslist_header}>چت های من</div>
             <div className={classes.chatslist_body}>
+              {console.log(allChats)}
               {allChats.map((chat, index) => (
                 <ChatItem
                   name={chat.name}
-                  description={chat.name}
+                  description={""}
                   image={chat?.image_url}
                   key={index}
                   onClick={() => {
@@ -160,10 +168,23 @@ const Chat = () => {
             </div>
           </div>
         </div>
-        <div className={classes.singlechat}>
+        <div
+          className={`${classes.singlechat} ${
+            router?.query?.chat_id ? classes.active : ""
+          }`}
+        >
           {activeChat ? (
             <>
-              <div className={classes.singlechat_header}>کاربر همینجاست</div>
+              <div className={classes.singlechat_header}>
+                {router.query.chat_id ? (
+                  <Link href="/chat" style={{ width: "30px", height: "30px" }}>
+                    <HiArrowSmRight size={30} />
+                  </Link>
+                ) : (
+                  ""
+                )}
+                کاربر همینجاست{" "}
+              </div>
               <div className={classes.singlechat_body}>
                 <div className={classes.singlechat_top}>
                   <div className={classes.singlechat_top_icon}>

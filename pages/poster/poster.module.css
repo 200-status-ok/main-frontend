@@ -145,3 +145,32 @@
 .small_slide_image.active {
   outline: 2px solid #2f89fc;
 }
+.map_in_mobile {
+  display: none;
+}
+@media screen and (max-width: 1200px) {
+  .container {
+    width: 75%;
+  }
+}
+@media screen and (max-width: 950px) {
+  .poster_container {
+    flex-direction: column-reverse;
+    row-gap: 16px;
+    align-items: center;
+  }
+  .details_container {
+    width: 100%;
+  }
+  .map_container {
+    display: none;
+  }
+  .media_container {
+    width: 100%;
+  }
+  .map_in_mobile {
+    display: flex;
+    flex-direction: column;
+    row-gap: 16px;
+  }
+}

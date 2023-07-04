@@ -91,6 +91,7 @@ const LoginPopup = () => {
                       Otp_timer.restart(timer);
                       setShowSendCode(false);
                       toast.success("کد با موفقیت ارسال شد");
+
                       setDisable(true);
                     } else {
                       if (regex.test(username)) {

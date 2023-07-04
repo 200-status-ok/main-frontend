@@ -47,7 +47,7 @@
   color: #3a3a3ad9;
 }
 .poster_image {
-  width: 30%;
+  width: 160px;
 }
 .badge {
   padding: 4px 8px;
@@ -212,4 +212,47 @@
 .poster_state.pending {
   background-color: #efefef;
   color: black;
+}
+
+@media screen and (max-width: 1300px) {
+  .filter_container {
+    width: 100%;
+  }
+}
+@media screen and (max-width: 1000px) {
+  .container {
+    width: 90%;
+  }
+  .filter_container {
+    flex-direction: column-reverse;
+    row-gap: 32px;
+    align-items: center;
+  }
+  .filter_options_container {
+    width: 450px;
+  }
+  .posters_container {
+    grid-template-columns: 1fr;
+  }
+}
+@media screen and (max-width: 700px) {
+  .container {
+    margin-top: 0;
+    margin-bottom: 80px;
+  }
+}
+@media screen and (max-width: 650px) {
+  .filter_options_container {
+    width: 300px;
+  }
+}
+@media screen and (max-width: 400px) {
+  .poster {
+    flex-direction: column-reverse;
+    row-gap: 8px;
+    align-items: center;
+  }
+  .poster_body {
+    width: 100%;
+  }
 }

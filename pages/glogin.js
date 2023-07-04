@@ -22,7 +22,7 @@ const Glogin = () => {
   }, [router.query]);
   return (
     <div style={{ fontSize: "20px", textAlign: "center", marginTop: "16px" }}>
-      با موفقیت وارد شدید . در حال ریدایرکت...
+      با موفقیت وارد شدید . در حال انتقال...
     </div>
   );
 };

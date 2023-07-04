@@ -46,3 +46,21 @@
   align-items: center;
   justify-content: center;
 }
+@media screen and (max-width: 1200px) {
+  .dots {
+    display: none;
+  }
+}
+@media screen and (max-width: 1200px) {
+  .container {
+    flex-direction: column;
+    row-gap: 16px;
+    align-items: center;
+  }
+}
+@media screen and (max-width: 450px) {
+  .nav_menu {
+    flex-direction: column;
+    row-gap: 16px;
+  }
+}

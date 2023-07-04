@@ -76,7 +76,7 @@ const NewPosterPopup = () => {
           const formData = new FormData();
           formData.append("poster_image", image.file);
           const { data } = await axios.post(
-            "https://main-backend.iran.liara.run/api/v1/posters/upload-image",
+            "https://main-backend.iran.liara.run/api/v1/posters/image",
             formData
           );
           setImagesToBackend([...imagesToBackend, data.url]);
@@ -420,7 +420,12 @@ const NewPosterPopup = () => {
           {showHint && (
             <div className={classes.special_hint}>
               <div style={{ color: "#e74c3c" }}>موجودی شما کافی نیست </div>
-              <Link href="/my-wallet">
+              <Link
+                href="/my-wallet"
+                onClick={() =>
+                  setAuth((prev) => ({ ...prev, showNewPosterPopup: false }))
+                }
+              >
                 <button className={classes.go_to_wallet}>
                   رفتن به کیف پول{" "}
                 </button>
@@ -486,7 +491,7 @@ const NewPosterPopup = () => {
                       status: poster.status,
                       tel_id: "mhr1380",
                       title: poster.title,
-                      special_ads: specialPoster ? "premium" : "normal",
+                      special_type: specialPoster ? "premium" : "normal",
                       user_phone: "09030335008",
                       user_id: 4,
                     },

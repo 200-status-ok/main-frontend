@@ -101,3 +101,12 @@
   margin-top: 8px;
   margin-bottom: 32px;
 }
+
+@media screen and (max-width: 600px) {
+  .container {
+    width: 100%;
+  }
+  .transactions_container {
+    width: 80%;
+  }
+}

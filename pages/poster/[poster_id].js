@@ -40,14 +40,14 @@ const Poster = () => {
   const [poster, setPoster] = useState({
     title: "",
     description: "",
-    address: [],
+    addresses: [],
   });
   const router = useRouter();
 
   const checkLatLong = () => {
-    if (poster?.address.length > 0) {
-      if (poster.address[0].latitude && poster.address[0].longitude) {
-        return [poster.address[0].latitude, poster.address[0].longitude];
+    if (poster?.addresses.length > 0) {
+      if (poster.addresses[0].latitude && poster.addresses[0].longitude) {
+        return [poster.addresses[0].latitude, poster.addresses[0].longitude];
       } else {
         return latLong;
       }
@@ -87,8 +87,8 @@ const Poster = () => {
                 <span className={classes.lost}> گم شده </span>
                 در{" "}
                 <b>
-                  {poster?.address.length > 0
-                    ? poster.address[0].address_detail
+                  {poster?.addresses.length > 0
+                    ? poster.addresses[0].address_detail
                     : ""}
                 </b>
               </p>
@@ -99,8 +99,8 @@ const Poster = () => {
                 در{" "}
                 <b>
                   {" "}
-                  {poster?.address.length > 0
-                    ? poster.address[0].address_detail
+                  {poster?.addresses.length > 0
+                    ? poster.addresses[0].address_detail
                     : ""}
                 </b>
               </p>
@@ -128,8 +128,13 @@ const Poster = () => {
                       );
                       router.push(`/chat/${data.conversation.id}`);
                     } catch (error) {
-                      console.log(error);
-                      toast.error("خطایی پیش آمده است ");
+                      if (error.response.data.error.includes("yourself")) {
+                        toast.error(
+                          "شما نمی توانید با خودتان چتی را آغاز کنید!"
+                        );
+                      } else {
+                        toast.error("خطایی پیش آمده است ");
+                      }
                     }
                   }}
                 >
@@ -187,6 +192,16 @@ const Poster = () => {
                 </div>
               ) : (
                 ""
+              )}
+            </div>
+            <div className={classes.map_in_mobile}>
+              موقعیت
+              {poster.addresses.length > 0 && poster.addresses[0].latitude && (
+                <MapWithNoSSR
+                  noDrawCircle={true}
+                  firstCircle={true}
+                  latLong={{ lat: checkLatLong()[0], lng: checkLatLong()[1] }}
+                />
               )}
             </div>
             {/* <div className={classes.report_container}></div> */}
@@ -248,7 +263,7 @@ const Poster = () => {
             </div>
             <div className={classes.map_container}>
               موقعیت
-              {poster.address.length > 0 && poster.address[0].latitude && (
+              {poster.addresses.length > 0 && poster.addresses[0].latitude && (
                 <MapWithNoSSR
                   noDrawCircle={true}
                   firstCircle={true}

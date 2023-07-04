@@ -30,7 +30,8 @@ export default function Home() {
         const { data } = await axios.get(
           "https://main-backend.iran.liara.run/api/v1/posters/?page_id=1&page_size=10&status=both"
         );
-        setAllPosters(data);
+        console.log(data);
+        setAllPosters(data.posters);
       } catch (error) {
         toast.error("مشکلی در ارتباط با سرور پیش آمد");
       }
@@ -86,7 +87,7 @@ export default function Home() {
               </button>
             </Link>
 
-            <Image src={dots} width={100} />
+            <Image className={classes.cta_bottom_dots} src={dots} width={100} />
           </div>
         </div>
         <Image className={classes.cta_dots} src={leftdots} width={350} />
@@ -102,11 +103,11 @@ export default function Home() {
                 title={poster.title}
                 description={poster.description}
                 image={
-                  poster.images.length > 0 ? poster.images[0].url : bicycle.src
+                  poster.images.length > 0 ? poster.images[0] : bicycle.src
                 }
                 found={poster.status === "found"}
                 lost={poster.status === "lost"}
-                location={poster.address[0].address_detail}
+                location={poster.addresses[0].address_detail}
                 time_description="3 دقیقه پیش"
               />
             </Link>
@@ -114,7 +115,7 @@ export default function Home() {
         </div>
       </div>
       <div className={classes.more}>
-        <Image src={toodots} width={1140} />
+        <img src={toodots.src} className={classes.more_image} />
         <div className={classes.more_button_container}>
           <Link href="/posters">
             <button className={classes.more_button}>مشاهده بیشتر</button>

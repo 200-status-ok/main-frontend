@@ -162,7 +162,8 @@ const Posters = () => {
         }&lat=${checkLatLong(latLong.lat)}&lon=${checkLatLong(latLong.lng)}`
       );
       setError("");
-      setAllPosters(data);
+      setAllPosters(data.posters ? data.posters:[]);
+      
     } catch (error) {
       console.log(error);
       // setError("خطایی در دریافت اطلاعات پیش آمده است ...");
@@ -216,6 +217,7 @@ const Posters = () => {
             setLatLong={setLatLong}
             latLong={latLong}
             firstCircle={false}
+            className="home"
           />
           <div className={classes.filter_options_container}>
             <div className={classes.searchbar_container}>
@@ -332,10 +334,10 @@ const Posters = () => {
               id={poster.id}
               key={index}
               image={
-                poster?.images.length > 0 ? poster?.images[0]?.url : bicycle.src
+                poster?.images.length > 0 ? poster?.images[0] : bicycle.src
               }
               title={poster.title}
-              location={poster.address[0].address_detail}
+              location={poster.addresses[0].address_detail}
               description={poster.description}
               categories={poster.categories}
               special_type={poster.special_type}

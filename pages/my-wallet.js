@@ -18,7 +18,7 @@ const MyWallet = () => {
     if (auth.token) {
       (async () => {
         const { data } = await axios.get(
-          "https://main-backend.iran.liara.run/api/v1/users/authorize/payment/user_wallet/get_transactions",
+          "https://main-backend.iran.liara.run/api/v1/users/authorize/payment/user_wallet/transactions",
           {
             headers: { Authorization: `Bearer ${auth.token}` },
           }
@@ -56,7 +56,7 @@ const MyWallet = () => {
             onClick={async () => {
               if (depositAmount > 0) {
                 const { data } = await axios.get(
-                  `https://main-backend.iran.liara.run/api/v1/users/authorize/payment/user_wallet?url=http://localhost:3000/payment&amount=${depositAmount}`,
+                  `https://main-backend.iran.liara.run/api/v1/users/authorize/payment/user_wallet?url=https://haminjast.iran.liara.run/payment&amount=${depositAmount}`,
                   {
                     headers: { Authorization: `Bearer ${auth.token}` },
                   }

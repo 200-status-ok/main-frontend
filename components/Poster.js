@@ -31,8 +31,7 @@ const Poster = ({
           : description}
       </p>
       <div className={classes.badges_container}>
-        <div className={`${classes.badge} ${classes.emergency}`}>فوری</div>
-        <div className={`${classes.badge} ${classes.category}`}>دسته کلید</div>
+        
       </div>
       {found && (
         <p>
