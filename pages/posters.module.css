@@ -213,6 +213,8 @@
   background-color: #efefef;
   color: black;
 }
+.searchbar_items_cotainer {
+}
 
 @media screen and (max-width: 1300px) {
   .filter_container {

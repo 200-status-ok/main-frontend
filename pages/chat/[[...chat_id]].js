@@ -1,3 +1,6 @@
+/* eslint-disable @next/next/no-img-element */
+/* eslint-disable jsx-a11y/alt-text */
+/* eslint-disable react-hooks/exhaustive-deps */
 import AppHeader from "../../Layout/AppHeader";
 import classes from "./Chat.module.css";
 import bicycle from "../../assets/images/bicycle.png";
@@ -40,6 +43,7 @@ const Chat = () => {
     websocket.onclose = (event) => {
       console.log(event);
       console.log("closed connection");
+      createConnection();
     };
     websocket.onerror = (event) => {
       console.log(event);
@@ -47,6 +51,9 @@ const Chat = () => {
   };
 
   useEffect(() => {
+    if (auth)
+      if (!auth.token && !auth.showLoginPopup)
+        setAuth((prev) => ({ ...prev, showLoginPopup: true }));
     if (auth.token) {
       (async () => {
         const { data } = await axios.get(
@@ -68,7 +75,7 @@ const Chat = () => {
         }
       })();
     }
-  }, [auth.token]);
+  }, [auth]);
   useEffect(() => {
     if (router.query.chat_id && allChats?.length > 0) {
       const currentActiveChat = allChats.find(
@@ -101,7 +108,6 @@ const Chat = () => {
   };
   useEffect(() => {
     if (chatHistory.length > 0) {
-      console.log("in ref");
       dummy.current.scrollIntoView({ behavior: "smooth" });
     }
   }, [chatHistory]);
@@ -152,7 +158,6 @@ const Chat = () => {
           <div className={classes.chatslist_container}>
             <div className={classes.chatslist_header}>چت های من</div>
             <div className={classes.chatslist_body}>
-              {console.log(allChats)}
               {allChats.map((chat, index) => (
                 <ChatItem
                   name={chat.name}
