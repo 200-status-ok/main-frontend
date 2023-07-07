@@ -1,3 +1,6 @@
+/* eslint-disable react-hooks/exhaustive-deps */
+/* eslint-disable jsx-a11y/alt-text */
+/* eslint-disable @next/next/no-img-element */
 import AppHeader from "../../Layout/AppHeader";
 import Image from "next/image";
 import classes from "./poster.module.css";
@@ -169,7 +172,7 @@ const Poster = () => {
               <h3>توضیحات</h3> {poster?.description}
             </div>
             <div className={classes.badges_container}>
-              {poster?.categories?.map((cat) => {
+              {poster?.tags?.map((cat) => {
                 return (
                   <div
                     key={cat.name}

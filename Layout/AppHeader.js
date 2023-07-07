@@ -46,7 +46,7 @@ const AppHeader = () => {
             ))}
           </div>
           <div className={classes.header_right}>
-            <Link href="/">
+            <Link href="/posters">
               <h1 className={classes.header_logo}>همینجاست</h1>
             </Link>
             {/* <hr className={classes.divider} />
@@ -61,22 +61,34 @@ const AppHeader = () => {
             </div> */}
           </div>
           <div className={classes.header_left}>
-            <Link
+            <div
               className={`${classes.menu_item} ${
                 router.pathname === "/my-wallet" ? classes.active : ""
               }`}
-              href="/my-wallet"
+              onClick={() => {
+                if (auth?.token) {
+                  router.push("/my-wallet");
+                } else {
+                  setAuth((prev) => ({ ...prev, showLoginPopup: true }));
+                }
+              }}
             >
               <div className={classes.header_menu_items}>
                 <TbWallet width={10} color="rgba(0, 0, 0, 0.56)" />
                 کیف پول
               </div>
-            </Link>
-            <Link
+            </div>
+            <div
               className={`${classes.menu_item} ${
                 router.pathname === "/my-posters" ? classes.active : ""
               }`}
-              href="/my-posters"
+              onClick={() => {
+                if (auth?.token) {
+                  router.push("/my-posters");
+                } else {
+                  setAuth((prev) => ({ ...prev, showLoginPopup: true }));
+                }
+              }}
             >
               <div
                 className={classes.header_menu_items}
@@ -85,30 +97,41 @@ const AppHeader = () => {
                 <HiOutlineViewGrid width={10} color="rgba(0, 0, 0, 0.56)" />
                 آگهی های من
               </div>
-            </Link>
-            <Link
+            </div>
+            <div
               className={`${`${classes.menu_item} ${
                 router.pathname === "/posters" ? classes.active : ""
               }`} ${classes.home}`}
-              href="/posters"
+              onClick={() => {
+                if (auth?.token) {
+                  router.push("/my-posters");
+                } else {
+                  setAuth((prev) => ({ ...prev, showLoginPopup: true }));
+                }
+              }}
             >
               <div className={classes.header_menu_items}>
                 <HiOutlineHome width={10} color="rgba(0, 0, 0, 0.56)" />
                 خانه
               </div>
-            </Link>
-            <Link
+            </div>
+            <div
               className={`${classes.menu_item} ${
                 router.pathname.includes("chat") ? classes.active : ""
               }`}
-              href="/chat"
+              onClick={() => {
+                if (auth?.token) {
+                  router.push("/chat");
+                } else {
+                  setAuth((prev) => ({ ...prev, showLoginPopup: true }));
+                }
+              }}
             >
               <div className={classes.header_menu_items}>
                 <HiOutlineChatAlt2 width={10} color="rgba(0, 0, 0, 0.56)" />
                 چت
               </div>
-            </Link>
-            {console.log(router.pathname)}
+            </div>
             <div
               className={classes.add_poster_btn}
               onClick={() => {

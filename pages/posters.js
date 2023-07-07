@@ -1,3 +1,4 @@
+/* eslint-disable react-hooks/exhaustive-deps */
 import AppHeader from "../Layout/AppHeader";
 import Layout from "../Layout/Layout";
 import bicycle from "../assets/images/bicycle.png";
@@ -133,6 +134,7 @@ const Posters = () => {
   const [type, setType] = useState("both");
   const [checked, setChecked] = useState(false);
   const [allPosters, setAllPosters] = useState([]);
+  const [searchBoxItems, setSearchBoxItems] = useState([]);
 
   const router = useRouter();
   console.log(router.query);
@@ -145,9 +147,6 @@ const Posters = () => {
   const [allTags, setAllTags] = useState([]);
 
   const [refetch, setRefetch] = useState(0);
-  const { auth, setAuth } = useAuth();
-
-  const [drawCircle, setDrawCircle] = useState(false);
 
   const handleChange = (nextChecked) => {
     setChecked(nextChecked);
@@ -162,8 +161,7 @@ const Posters = () => {
         }&lat=${checkLatLong(latLong.lat)}&lon=${checkLatLong(latLong.lng)}`
       );
       setError("");
-      setAllPosters(data.posters ? data.posters:[]);
-      
+      setAllPosters(data.posters ? data.posters : []);
     } catch (error) {
       console.log(error);
       // setError("خطایی در دریافت اطلاعات پیش آمده است ...");
@@ -194,6 +192,26 @@ const Posters = () => {
       }, 1000);
     }
   }, [router.query]);
+  useEffect(() => {
+    let fetcherTimer;
+
+    if (search) {
+      fetcherTimer = setTimeout(async () => {
+        const { data } = await axios.get(
+          `https://main-backend.iran.liara.run/api/v1/posters/?page_id=1&page_size=10&state=accepted&status=${type}&search_phrase=${
+            search ? search : ""
+          }`
+        );
+        setSearchBoxItems(data?.posters);
+        console.log(data);
+      }, 500);
+    } else {
+      setSearchBoxItems([]);
+    }
+    return () => {
+      clearTimeout(fetcherTimer);
+    };
+  }, [search]);
 
   // useEffect(() => {
   //   (async () => {
@@ -231,6 +249,7 @@ const Posters = () => {
                 style={{ position: "absolute", left: "75px", top: "12px" }}
                 color="rgba(0, 0, 0, 0.3)"
               />
+              <div className={classes.searchbar_items_cotainer}></div>
             </div>
             <div className={classes.search_tags_container}>
               <SearchableSelectTags
@@ -339,7 +358,7 @@ const Posters = () => {
               title={poster.title}
               location={poster.addresses[0].address_detail}
               description={poster.description}
-              categories={poster.categories}
+              categories={poster.tags}
               special_type={poster.special_type}
               // time_description={poster.time_description}
               found={poster.status === "found"}
