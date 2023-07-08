@@ -47,14 +47,14 @@
   color: #3a3a3ad9;
 }
 .poster_image {
-  width: 30%;
+  width: 160px;
 }
 .badge {
   padding: 4px 8px;
   font-size: 12px;
 }
 .emergency {
-  background-color: #ffd1d1;
+  background-color: #ffb3b3;
 }
 .category {
   background-color: #efefef;
@@ -69,7 +69,7 @@
 }
 .lost {
   font-weight: bold;
-  color: #ffd1d1;
+  color: #ffb3b3;
 }
 .time_description {
   font-size: 12px;
@@ -125,13 +125,27 @@
   column-gap: 16px;
   color: rgba(0, 0, 0, 0.56);
 }
-.searchbar_container {
-  z-index: 1;
+.searchbar_container_holder {
+  z-index: 99999;
   width: 100%;
   height: 40px;
   display: flex;
   justify-content: center;
   position: relative;
+}
+.searchbar_container {
+  z-index: 99999;
+  width: 100%;
+  height: 40px;
+  transition: all 0.3s ease-in-out;
+  display: flex;
+  justify-content: center;
+  position: absolute;
+  top: 0;
+  overflow: hidden;
+}
+.searchbar_container.show {
+  height: 220px;
 }
 .searchbar_container_new {
   width: 100%;
@@ -212,4 +226,76 @@
 .poster_state.pending {
   background-color: #efefef;
   color: black;
+}
+.searchbar_items_cotainer {
+  position: absolute;
+  display: flex;
+  flex-direction: column;
+  width: 70%;
+  height: 150px;
+  top: 56px;
+  overflow-y: auto;
+  background-color: #fff;
+  border-radius: 4px;
+  transition: all 0.3s ease-in-out;
+  z-index: 1;
+  row-gap: 8px;
+  padding: 16px;
+  border: 1px solid rgb(0, 0, 0, 0.3);
+}
+.pagination_container {
+  width: 50%;
+  margin: 0 auto;
+  margin-top: 32px;
+  display: flex;
+  column-gap: 4px;
+  margin-bottom: 64px;
+}
+.page_item {
+  cursor: pointer;
+}
+.page_item.active {
+  color: #2f89fc;
+}
+@media screen and (max-width: 1300px) {
+  .filter_container {
+    width: 100%;
+  }
+}
+@media screen and (max-width: 1000px) {
+  .container {
+    width: 90%;
+  }
+  .filter_container {
+    flex-direction: column-reverse;
+    row-gap: 32px;
+    align-items: center;
+  }
+  .filter_options_container {
+    width: 450px;
+  }
+  .posters_container {
+    grid-template-columns: 1fr;
+  }
+}
+@media screen and (max-width: 700px) {
+  .container {
+    margin-top: 0;
+    margin-bottom: 80px;
+  }
+}
+@media screen and (max-width: 650px) {
+  .filter_options_container {
+    width: 300px;
+  }
+}
+@media screen and (max-width: 400px) {
+  .poster {
+    flex-direction: column-reverse;
+    row-gap: 8px;
+    align-items: center;
+  }
+  .poster_body {
+    width: 100%;
+  }
 }

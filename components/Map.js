@@ -27,6 +27,8 @@ export default function Map({
   radius = 50,
   noDrawCircle,
   firstCircle,
+  height,
+  className = "",
 }) {
   const [map, setMap] = useState(null);
   const [firstCircleState, setFirstCircleState] = useState(firstCircle);
@@ -58,8 +60,9 @@ export default function Map({
     <MapContainer
       center={center}
       zoom={zoom}
-      style={{ height: "200px", ...style }}
+      style={{ height: height ? height : "200px", ...style }}
       whenReady={(map) => setMap(map)}
+      className={className}
     >
       <TileLayer
         attribution='&copy; <a href="http://osm.org/copyright">OpenStreetMap</a> contributors'

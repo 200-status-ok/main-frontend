@@ -1,3 +1,4 @@
+/* eslint-disable react-hooks/exhaustive-deps */
 import classes from "./my-wallet.module.css";
 import AppHeader from "../Layout/AppHeader";
 import { useEffect, useState } from "react";
@@ -15,10 +16,15 @@ const MyWallet = () => {
   const [balance, setBalance] = useState(0);
   const router = useRouter();
   useEffect(() => {
+    console.log(auth);
+    if (auth)
+      if (!auth.token && !auth.showLoginPopup)
+        setAuth((prev) => ({ ...prev, showLoginPopup: true }));
+
     if (auth.token) {
       (async () => {
         const { data } = await axios.get(
-          "https://main-backend.iran.liara.run/api/v1/users/authorize/payment/user_wallet/get_transactions",
+          "https://main-backend.iran.liara.run/api/v1/users/authorize/payment/user_wallet/transactions",
           {
             headers: { Authorization: `Bearer ${auth.token}` },
           }
@@ -33,7 +39,7 @@ const MyWallet = () => {
         setAllTransactions(data ? data : []);
       })();
     }
-  }, [auth.token]);
+  }, [auth.token, auth]);
   return (
     <>
       <AppHeader></AppHeader>
@@ -56,7 +62,7 @@ const MyWallet = () => {
             onClick={async () => {
               if (depositAmount > 0) {
                 const { data } = await axios.get(
-                  `https://main-backend.iran.liara.run/api/v1/users/authorize/payment/user_wallet?url=http://localhost:3000/payment&amount=${depositAmount}`,
+                  `https://main-backend.iran.liara.run/api/v1/users/authorize/payment/user_wallet?url=https://haminjast.iran.liara.run/payment&amount=${depositAmount}`,
                   {
                     headers: { Authorization: `Bearer ${auth.token}` },
                   }

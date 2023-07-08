@@ -3,7 +3,9 @@ import classes from "./ReportPopup.module.css";
 import { useState } from "react";
 import { toast } from "react-toastify";
 import { Oval } from "react-loader-spinner";
+import { useAuth } from "../context/AuthProvider";
 const ReportPopup = ({ setShow, posterId }) => {
+  const { auth, setAuth } = useAuth();
   const [description, setDescription] = useState("");
   const [loading, setLoading] = useState(false);
   return (
@@ -26,13 +28,19 @@ const ReportPopup = ({ setShow, posterId }) => {
           <button
             className={classes.button}
             onClick={async () => {
-              setLoading(true);
-              const data = await axios.post(
-                `https://main-backend.iran.liara.run/api/v1/reports/report-poster?poster_id=${posterId}&issuer_id=1&report_type=other&description=${description}`
-              );
-              console.log(data);
-              toast.success("گزارش شما با موفقیت ثبت شد");
-              setShow(false);
+              if (description.trim().length !== 0) {
+                setLoading(true);
+                const data = await axios.post(
+                  `https://main-backend.iran.liara.run/api/v1/reports/report-poster?poster_id=${posterId}&report_type=other&description=${description}`,
+                  {},
+                  { headers: { Authorization: `Bearer ${auth.token}` } }
+                );
+                console.log(data);
+                toast.success("گزارش شما با موفقیت ثبت شد");
+                setShow(false);
+              } else {
+                toast.error("لطفا متن گزارش را وارد کنید");
+              }
             }}
           >
             {loading ? (

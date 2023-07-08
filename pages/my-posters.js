@@ -1,3 +1,4 @@
+/* eslint-disable react-hooks/exhaustive-deps */
 import { useState, useEffect } from "react";
 import AppHeader from "../Layout/AppHeader";
 import classes from "./posters.module.css";
@@ -25,6 +26,9 @@ const MyPosters = () => {
   };
 
   useEffect(() => {
+    if (auth)
+      if (!auth.token && !auth.showLoginPopup)
+        setAuth((prev) => ({ ...prev, showLoginPopup: true }));
     if (auth.token) {
       fetchPosters();
     }

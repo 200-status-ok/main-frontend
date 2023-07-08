@@ -1,3 +1,5 @@
+/* eslint-disable jsx-a11y/alt-text */
+/* eslint-disable @next/next/no-img-element */
 import classes from "../pages/Home.module.css";
 import dot from "../assets/images/dot.png";
 import Image from "next/image";
@@ -30,10 +32,7 @@ const Poster = ({
           ? description.slice(0, lengthOfDescription) + " ..."
           : description}
       </p>
-      <div className={classes.badges_container}>
-        <div className={`${classes.badge} ${classes.emergency}`}>فوری</div>
-        <div className={`${classes.badge} ${classes.category}`}>دسته کلید</div>
-      </div>
+      <div className={classes.badges_container}></div>
       {found && (
         <p>
           {time_description + " "}

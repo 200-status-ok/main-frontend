@@ -30,7 +30,7 @@
   flex-direction: column;
   row-gap: 12px;
   font-size: 18px;
-  width: 94%;
+  width: 97%;
 }
 .poster_description h3 {
   color: rgba(0, 0, 0, 0.87);
@@ -110,7 +110,7 @@
   padding: 4px 16px;
 }
 .emergency {
-  background-color: #ffd1d1;
+  background-color: #ffb3b3;
 }
 .category {
   background-color: #efefef;
@@ -124,7 +124,7 @@
 }
 .lost {
   font-weight: bold;
-  color: #ffd1d1;
+  color: #ffb3b3;
 }
 .time_description {
   font-size: 12px;
@@ -144,4 +144,33 @@
 }
 .small_slide_image.active {
   outline: 2px solid #2f89fc;
+}
+.map_in_mobile {
+  display: none;
+}
+@media screen and (max-width: 1200px) {
+  .container {
+    width: 75%;
+  }
+}
+@media screen and (max-width: 950px) {
+  .poster_container {
+    flex-direction: column-reverse;
+    row-gap: 16px;
+    align-items: center;
+  }
+  .details_container {
+    width: 100%;
+  }
+  .map_container {
+    display: none;
+  }
+  .media_container {
+    width: 100%;
+  }
+  .map_in_mobile {
+    display: flex;
+    flex-direction: column;
+    row-gap: 16px;
+  }
 }

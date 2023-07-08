@@ -1,13 +1,17 @@
+/* eslint-disable @next/next/no-img-element */
+/* eslint-disable jsx-a11y/alt-text */
+/* eslint-disable react-hooks/exhaustive-deps */
 import AppHeader from "../../Layout/AppHeader";
 import classes from "./Chat.module.css";
 import bicycle from "../../assets/images/bicycle.png";
 import ChatItem from "../../components/ChatItem";
-import { HiOutlinePaperAirplane } from "react-icons/hi";
+import { HiOutlinePaperAirplane, HiArrowSmRight } from "react-icons/hi";
 import { useEffect, useRef, useState } from "react";
 import axios from "axios";
 import { useAuth } from "../../context/AuthProvider";
 import { useRouter } from "next/router";
 import { w3cwebsocket } from "websocket";
+import Link from "next/link";
 
 const Chat = () => {
   const [allChats, setAllChats] = useState([]);
@@ -39,6 +43,7 @@ const Chat = () => {
     websocket.onclose = (event) => {
       console.log(event);
       console.log("closed connection");
+      createConnection();
     };
     websocket.onerror = (event) => {
       console.log(event);
@@ -46,6 +51,9 @@ const Chat = () => {
   };
 
   useEffect(() => {
+    if (auth)
+      if (!auth.token && !auth.showLoginPopup)
+        setAuth((prev) => ({ ...prev, showLoginPopup: true }));
     if (auth.token) {
       (async () => {
         const { data } = await axios.get(
@@ -57,15 +65,17 @@ const Chat = () => {
           }
         );
 
-        setAllChats(data);
-        setOwner(
-          data.map((chat) => {
-            return { id: chat.id, is_owner: chat.is_owner };
-          })
-        );
+        if (data) {
+          setAllChats(data);
+          setOwner(
+            data.map((chat) => {
+              return { id: chat.id, is_owner: chat.is_owner };
+            })
+          );
+        }
       })();
     }
-  }, [auth.token]);
+  }, [auth]);
   useEffect(() => {
     if (router.query.chat_id && allChats?.length > 0) {
       const currentActiveChat = allChats.find(
@@ -98,7 +108,6 @@ const Chat = () => {
   };
   useEffect(() => {
     if (chatHistory.length > 0) {
-      console.log("in ref");
       dummy.current.scrollIntoView({ behavior: "smooth" });
     }
   }, [chatHistory]);
@@ -141,14 +150,18 @@ const Chat = () => {
     <>
       <AppHeader />
       <div className={classes.container}>
-        <div className={classes.chatslist}>
+        <div
+          className={`${classes.chatslist} ${
+            router.query.chat_id ? classes.disabled : ""
+          }`}
+        >
           <div className={classes.chatslist_container}>
             <div className={classes.chatslist_header}>چت های من</div>
             <div className={classes.chatslist_body}>
               {allChats.map((chat, index) => (
                 <ChatItem
                   name={chat.name}
-                  description={chat.name}
+                  description={""}
                   image={chat?.image_url}
                   key={index}
                   onClick={() => {
@@ -160,10 +173,23 @@ const Chat = () => {
             </div>
           </div>
         </div>
-        <div className={classes.singlechat}>
+        <div
+          className={`${classes.singlechat} ${
+            router?.query?.chat_id ? classes.active : ""
+          }`}
+        >
           {activeChat ? (
             <>
-              <div className={classes.singlechat_header}>کاربر همینجاست</div>
+              <div className={classes.singlechat_header}>
+                {router.query.chat_id ? (
+                  <Link href="/chat" style={{ width: "30px", height: "30px" }}>
+                    <HiArrowSmRight size={30} />
+                  </Link>
+                ) : (
+                  ""
+                )}
+                کاربر همینجاست{" "}
+              </div>
               <div className={classes.singlechat_body}>
                 <div className={classes.singlechat_top}>
                   <div className={classes.singlechat_top_icon}>

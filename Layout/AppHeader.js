@@ -2,7 +2,7 @@ import { useState } from "react";
 import { useAuth } from "../context/AuthProvider";
 import classes from "./AppHeader.module.css";
 import {
-  HiOutlineLocationMarker,
+  HiOutlineHome,
   HiPlus,
   HiOutlineViewGrid,
   HiOutlineChatAlt2,
@@ -12,10 +12,13 @@ import LoginPopup from "../components/LoginPopup";
 import NewPosterPopup from "../components/NewPosterPopup";
 import { states } from "../data/province/Province";
 import Link from "next/link";
+import { useRouter } from "next/router";
+
 const AppHeader = () => {
   const [city, setCity] = useState("تهران");
   const [showCities, setShowCities] = useState(false);
   const { auth, setAuth } = useAuth();
+  const router = useRouter();
   return (
     <>
       {auth?.showLoginPopup && <LoginPopup />}
@@ -43,7 +46,7 @@ const AppHeader = () => {
             ))}
           </div>
           <div className={classes.header_right}>
-            <Link href="/">
+            <Link href="/posters">
               <h1 className={classes.header_logo}>همینجاست</h1>
             </Link>
             {/* <hr className={classes.divider} />
@@ -58,24 +61,77 @@ const AppHeader = () => {
             </div> */}
           </div>
           <div className={classes.header_left}>
-            <Link href="/my-wallet">
+            <div
+              className={`${classes.menu_item} ${
+                router.pathname === "/my-wallet" ? classes.active : ""
+              }`}
+              onClick={() => {
+                if (auth?.token) {
+                  router.push("/my-wallet");
+                } else {
+                  setAuth((prev) => ({ ...prev, showLoginPopup: true }));
+                }
+              }}
+            >
               <div className={classes.header_menu_items}>
                 <TbWallet width={10} color="rgba(0, 0, 0, 0.56)" />
                 کیف پول
               </div>
-            </Link>
-            <Link href="/my-posters">
-              <div className={classes.header_menu_items}>
+            </div>
+            <div
+              className={`${classes.menu_item} ${
+                router.pathname === "/my-posters" ? classes.active : ""
+              }`}
+              onClick={() => {
+                if (auth?.token) {
+                  router.push("/my-posters");
+                } else {
+                  setAuth((prev) => ({ ...prev, showLoginPopup: true }));
+                }
+              }}
+            >
+              <div
+                className={classes.header_menu_items}
+                style={{ whiteSpace: "pre" }}
+              >
                 <HiOutlineViewGrid width={10} color="rgba(0, 0, 0, 0.56)" />
                 آگهی های من
               </div>
-            </Link>
-            <Link href="/chat">
+            </div>
+            <div
+              className={`${`${classes.menu_item} ${
+                router.pathname === "/posters" ? classes.active : ""
+              }`} ${classes.home}`}
+              onClick={() => {
+                if (auth?.token) {
+                  router.push("/my-posters");
+                } else {
+                  setAuth((prev) => ({ ...prev, showLoginPopup: true }));
+                }
+              }}
+            >
+              <div className={classes.header_menu_items}>
+                <HiOutlineHome width={10} color="rgba(0, 0, 0, 0.56)" />
+                خانه
+              </div>
+            </div>
+            <div
+              className={`${classes.menu_item} ${
+                router.pathname.includes("chat") ? classes.active : ""
+              }`}
+              onClick={() => {
+                if (auth?.token) {
+                  router.push("/chat");
+                } else {
+                  setAuth((prev) => ({ ...prev, showLoginPopup: true }));
+                }
+              }}
+            >
               <div className={classes.header_menu_items}>
                 <HiOutlineChatAlt2 width={10} color="rgba(0, 0, 0, 0.56)" />
                 چت
               </div>
-            </Link>
+            </div>
             <div
               className={classes.add_poster_btn}
               onClick={() => {
@@ -87,7 +143,7 @@ const AppHeader = () => {
               }}
             >
               ثبت آگهی
-              <HiPlus width={10} color="white" />
+              <HiPlus width={10} />
             </div>
           </div>
         </div>
