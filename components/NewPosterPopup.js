@@ -69,7 +69,7 @@ const NewPosterPopup = () => {
   }, [district]);
   useEffect(() => {
     (async () => {
-      if (images.length > 0) {
+      if (images.length > 0 && images[0]?.file) {
         images.forEach(async (image) => {
           console.log(image);
           if (image.isUploaded) return;
@@ -79,7 +79,10 @@ const NewPosterPopup = () => {
             "https://main-backend.iran.liara.run/api/v1/posters/image",
             formData
           );
-          setImagesToBackend([...imagesToBackend, data.url]);
+          setImagesToBackend([
+            ...imagesToBackend,
+            { id: image.file, url: data.url },
+          ]);
           const updatedImages = [...images];
           updatedImages[
             updatedImages.findIndex((img) => img.file === image.file)
@@ -143,25 +146,34 @@ const NewPosterPopup = () => {
                 </div>
               </div>
             </div>
-            {images.map((image, index) => (
-              <div className={classes.image} key={index}>
-                <img src={URL.createObjectURL(image.file)} />
-                <div className={classes.delete_image}>
-                  <HiTrash
-                    size={20}
-                    color="#2f89fc"
-                    onClick={() => {
-                      setImages(
-                        images.filter((img) => img.file !== image.file)
-                      );
-                      // setImagesToBackend(
-                      //   imagesToBackend.filter((img) => img !== image.file)
-                      // );
-                    }}
-                  />
-                </div>
-              </div>
-            ))}
+            {images.map((image, index) => {
+              if (image?.file) {
+                return (
+                  <div className={classes.image} key={index}>
+                    <img
+                      src={image?.file ? URL.createObjectURL(image.file) : ""}
+                    />
+                    <div className={classes.delete_image}>
+                      <HiTrash
+                        size={20}
+                        color="#2f89fc"
+                        onClick={() => {
+                          setImages(
+                            images.filter((img) => img.file !== image.file)
+                          );
+                          console.log(imagesToBackend);
+                          setImagesToBackend(
+                            imagesToBackend.filter(
+                              (img) => img.id !== image.file
+                            )
+                          );
+                        }}
+                      />
+                    </div>
+                  </div>
+                );
+              }
+            })}
           </div>
         </div>
         <div className={classes.title_container}>
@@ -178,14 +190,20 @@ const NewPosterPopup = () => {
               className={`${classes.ai_generate_button} ${
                 imagesToBackend[0] ? classes.active : classes.disabled
               }`}
-              disabled={!imagesToBackend[0]}
+              disabled={!imagesToBackend[0]?.url}
               onClick={async () => {
-                setLoadingAi(true);
-                const { data } = await axios.get(
-                  `https://main-backend.iran.liara.run/api/v1/api-call/generate-poster-Info?image_url=${imagesToBackend[0]}`
-                );
-                setAiObjects(data);
-                setLoadingAi(false);
+                try {
+                  setLoadingAi(true);
+                  const { data } = await axios.get(
+                    `https://main-backend.iran.liara.run/api/v1/api-call/generate-poster-Info?image_url=${imagesToBackend[0].url}`
+                  );
+                  setAiObjects(data);
+                  setLoadingAi(false);
+                } catch (error) {
+                  toast.error(
+                    "خطایی در گرفتن اطلاعات پیش آمد ، لطفا از jpeg بودن فرمت تصویر خود اطمینان حاصل کنید"
+                  );
+                }
               }}
             >
               {loadingAi ? (
@@ -284,7 +302,6 @@ const NewPosterPopup = () => {
             )}
           </div>
         </div>
-
         <div className={classes.tags_container}>
           <div className={classes.tags}>برچسب ها</div>
           <SearchableSelectTags
@@ -333,6 +350,32 @@ const NewPosterPopup = () => {
                   {tag}
                 </div>
               ))}
+          </div>
+        </div>
+        <div className={classes.title_container}>
+          <div className={classes.title}>شماره تماس</div>
+          <div className={classes.ai_button_container}>
+            <input
+              className={classes.title_input}
+              style={{ width: "100%" }}
+              value={poster.user_phone}
+              onChange={(e) => {
+                setPoster({ ...poster, user_phone: e.target.value });
+              }}
+            />
+          </div>
+        </div>{" "}
+        <div className={classes.title_container}>
+          <div className={classes.title}>ایدی تلگرام</div>
+          <div className={classes.ai_button_container}>
+            <input
+              className={classes.title_input}
+              style={{ width: "100%" }}
+              value={poster.telegram_id}
+              onChange={(e) => {
+                setPoster({ ...poster, telegram_id: e.target.value });
+              }}
+            />
           </div>
         </div>
         <div
@@ -442,7 +485,6 @@ const NewPosterPopup = () => {
             zindex="1000000"
           />
         </div>
-
         <div className={classes.province_container}>
           <div className={classes.province}>محله</div>
           <SearchableSelect
@@ -466,49 +508,70 @@ const NewPosterPopup = () => {
           <div
             className={classes.submit_button}
             onClick={async () => {
-              if (!poster.title || !poster.description) {
-                toast.error("لطفا تمامی فیلد ها را پر کنید");
+              if (
+                !poster.title ||
+                !poster.description ||
+                imagesToBackend.length === 0
+              ) {
+                toast.error("آگهی باید تصویر ، عنوان و توضیحات داشته باشد");
               } else {
+                const regex = new RegExp("^(\\+98|0)?9\\d{9}$");
+                if (
+                  poster?.user_phone?.length > 0 &&
+                  !regex.test(poster.user_phone)
+                ) {
+                  toast.error("لطفا شماره تلفن معتبری وارد کنید");
+                  return;
+                }
+
                 setSendLoading(true);
-                await axios.post(
-                  "https://main-backend.iran.liara.run/api/v1/posters/authorize/",
-                  {
-                    addresses: [
-                      {
-                        address_detail: district.name,
-                        city: province.name,
-                        latitude: latLong.lat,
-                        longitude: latLong.lng,
-                        province: province.name,
+                try {
+                  await axios.post(
+                    "https://main-backend.iran.liara.run/api/v1/posters/authorize/",
+                    {
+                      addresses: [
+                        {
+                          address_detail: district.name,
+                          city: province.name,
+                          latitude: latLong.lat,
+                          longitude: latLong.lng,
+                          province: province.name,
+                        },
+                      ],
+                      img_urls: imagesToBackend.map((i) => i.url),
+                      poster: {
+                        alert: true,
+                        award: award ? 1 : 0,
+                        chat: true,
+                        description: poster.description,
+                        status: poster.status,
+                        tel_id: poster.telegram_id,
+                        title: poster.title,
+                        special_type: specialPoster ? "premium" : "normal",
+                        [poster?.user_phone ? "user_phone" : ""]:
+                          poster.user_phone,
                       },
-                    ],
-                    img_urls: imagesToBackend,
-                    poster: {
-                      alert: true,
-                      award: award ? 1 : 0,
-                      chat: true,
-                      description: poster.description,
-                      status: poster.status,
-                      tel_id: "mhr1380",
-                      title: poster.title,
-                      special_type: specialPoster ? "premium" : "normal",
-                      user_phone: "09030335008",
-                      user_id: 4,
+                      state: "pending",
+                      tags: [
+                        ...tags.map((tag) => {
+                          return tag.name;
+                        }),
+                      ].filter((tag) => tag !== undefined),
                     },
-                    state: "pending",
-                    tags: [
-                      ...tags.map((tag) => {
-                        return tag.name;
-                      }),
-                    ].filter((tag) => tag !== undefined),
-                  },
-                  { headers: { Authorization: `Bearer ${auth.token}` } }
-                );
-                setAuth({ ...auth, showNewPosterPopup: false, refresh: true });
-                setSendLoading(false);
-                toast.success(
-                  "آگهی شما با موفقیت ارسال شد و پس از تایید نمایش داده خواهد شد"
-                );
+                    { headers: { Authorization: `Bearer ${auth.token}` } }
+                  );
+                  setAuth({
+                    ...auth,
+                    showNewPosterPopup: false,
+                    refresh: true,
+                  });
+                  setSendLoading(false);
+                  toast.success(
+                    "آگهی شما با موفقیت ارسال شد و پس از تایید نمایش داده خواهد شد"
+                  );
+                } catch (error) {
+                  toast.error("خطایی پیش آمده است");
+                }
               }
             }}
           >

@@ -21,6 +21,7 @@ import Poster from "../components/Poster";
 import Link from "next/link";
 import axios from "axios";
 import { toast } from "react-toastify";
+import SmallPoster from "../components/SmallPoster";
 export default function Home() {
   const [showLoginPopup, setShowLoginPopup] = useState(false);
   const [search, setSearch] = useState("");
@@ -30,7 +31,7 @@ export default function Home() {
     (async () => {
       try {
         const { data } = await axios.get(
-          "https://main-backend.iran.liara.run/api/v1/posters/?page_id=1&page_size=10&status=both"
+          "https://main-backend.iran.liara.run/api/v1/posters/?page_id=1&page_size=10&status=both&state=accepted"
         );
         console.log(data);
         setAllPosters(data.posters);
@@ -49,14 +50,19 @@ export default function Home() {
             <b> جستجوی </b> ما هر لحظه که آگهی مشابهی تو سامانه ثبت بشه،{" "}
             <b> باخبرت میکنه </b>
           </div>
-          <button className={classes.hero_button}>چیزی گم کردی؟</button>
+          <a href="#cta">
+            {" "}
+            <button className={classes.hero_button}>چیزی گم کردی؟</button>
+          </a>
         </div>
         <Image className={classes.hero_image} src={IranMap} width={650} />
         <Image className={classes.hero_dots_up} src={manydots} width={550} />
         <Image className={classes.hero_dots_down} src={manydots} width={550} />
         <div className={classes.hero_subtext_container}>
           <p className={classes.hero_subtext_up}>چیزی پیدا کردی؟</p>
-          <p className={classes.hero_subtext_down}>مرسی که ثبتش میکنی</p>
+          <Link href="/posters?addposter=true">
+            <p className={classes.hero_subtext_down}>مرسی که ثبتش میکنی</p>
+          </Link>
         </div>
       </div>
       <div className={classes.cta} id="cta">
@@ -82,7 +88,7 @@ export default function Home() {
             بگرد
           </Link>
           <div className={classes.cta_button_container}>
-            <Link href="/posters">
+            <Link href="/posters?addposter=true">
               <button className={classes.cta_button}>
                 <Image src={plus} width={30} />
                 ثبت آگهی
@@ -98,19 +104,23 @@ export default function Home() {
         <div className={classes.posters_title}>آخرین آگهی ها</div>
         <div className={classes.posters_container}>
           {console.log(allPosters)}
-          {allPosters.slice(0, 3).map((poster) => (
+          {allPosters.slice(0, 4).map((poster, index) => (
             <Link href={`/poster/${poster.id}`} key={poster.id}>
-              <Poster
-                key={poster.id}
-                title={poster.title}
-                description={poster.description}
+              <SmallPoster
+                id={poster.id}
+                key={index}
                 image={
-                  poster.images.length > 0 ? poster.images[0] : bicycle.src
+                  poster?.images.length > 0 ? poster?.images[0] : bicycle.src
                 }
+                title={poster.title}
+                location={poster.addresses[0].address_detail}
+                description={poster.description}
+                categories={poster.tags}
+                special_type={poster.special_type}
+                // time_description={poster.time_description}
                 found={poster.status === "found"}
                 lost={poster.status === "lost"}
-                location={poster.addresses[0].address_detail}
-                time_description="3 دقیقه پیش"
+                award={poster?.award}
               />
             </Link>
           ))}

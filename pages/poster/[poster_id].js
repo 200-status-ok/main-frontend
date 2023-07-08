@@ -59,7 +59,7 @@ const Poster = () => {
     }
   };
   useEffect(() => {
-    if (router.query.poster_id) {
+    if (router.query.poster_id && !poster?.title) {
       fetchPoster();
     }
   }, [router.query.poster_id]);
@@ -74,7 +74,11 @@ const Poster = () => {
   return (
     <>
       {showContactDetail && (
-        <Popup phone={poster?.phone_user} setShow={setShowContactDetail} />
+        <Popup
+          phone={poster?.user_phone}
+          telegram_id={poster?.telegram_id}
+          setShow={setShowContactDetail}
+        />
       )}
       {showReportPoster && (
         <ReportPopup setShow={setShowReportPoster} posterId={poster.id} />
@@ -111,33 +115,41 @@ const Poster = () => {
 
             <div className={classes.poster_cta_container}>
               <div className={classes.poster_cta_buttons}>
-                <button
-                  className={classes.contact}
-                  onClick={() => setShowContactDetail(true)}
-                >
-                  اطلاعات تماس
-                </button>
+                {poster?.user_phone || poster.telegram_id ? (
+                  <button
+                    className={classes.contact}
+                    onClick={() => setShowContactDetail(true)}
+                  >
+                    اطلاعات تماس
+                  </button>
+                ) : (
+                  ""
+                )}
                 <button
                   className={classes.chat}
                   onClick={async () => {
-                    try {
-                      const { data } = await axios.post(
-                        "https://main-backend.iran.liara.run/api/v1/chats/authorize/conversation",
-                        {
-                          name: poster.title,
-                          poster_id: poster.id,
-                        },
-                        { headers: { Authorization: `Bearer ${auth.token}` } }
-                      );
-                      router.push(`/chat/${data.conversation.id}`);
-                    } catch (error) {
-                      if (error.response.data.error.includes("yourself")) {
-                        toast.error(
-                          "شما نمی توانید با خودتان چتی را آغاز کنید!"
+                    if (auth?.token) {
+                      try {
+                        const { data } = await axios.post(
+                          "https://main-backend.iran.liara.run/api/v1/chats/authorize/conversation",
+                          {
+                            name: poster.title,
+                            poster_id: poster.id,
+                          },
+                          { headers: { Authorization: `Bearer ${auth.token}` } }
                         );
-                      } else {
-                        toast.error("خطایی پیش آمده است ");
+                        router.push(`/chat/${data.conversation.id}`);
+                      } catch (error) {
+                        if (error.response.data.error.includes("yourself")) {
+                          toast.error(
+                            "شما نمی توانید با خودتان چتی را آغاز کنید!"
+                          );
+                        } else {
+                          toast.error("خطایی پیش آمده است ");
+                        }
                       }
+                    } else {
+                      toast.error("برای آغاز چت باید به حساب خود وارد شوید");
                     }
                   }}
                 >
@@ -148,7 +160,13 @@ const Poster = () => {
               <div className={classes.poster_cta_share}>
                 <div
                   className={classes.share_button}
-                  onClick={() => setShowReportPoster(true)}
+                  onClick={() => {
+                    if (auth?.token) {
+                      setShowReportPoster(true);
+                    } else {
+                      toast.error("برای ثبت گزارش باید به حساب خود وارد شوید");
+                    }
+                  }}
                 >
                   <MdOutlineReport size="24px" />
                 </div>
@@ -264,17 +282,18 @@ const Poster = () => {
                 })}
               </div>
             </div>
-            <div className={classes.map_container}>
-              موقعیت
-              {poster.addresses.length > 0 && poster.addresses[0].latitude && (
-                <MapWithNoSSR
-                  noDrawCircle={true}
-                  firstCircle={true}
-                  latLong={{ lat: checkLatLong()[0], lng: checkLatLong()[1] }}
-                />
-              )}
-            </div>
           </div>
+        </div>
+        <div className={classes.map_container}>
+          موقعیت
+          {poster.addresses.length > 0 && poster.addresses[0].latitude && (
+            <MapWithNoSSR
+              noDrawCircle={true}
+              firstCircle={true}
+              height={"300px"}
+              latLong={{ lat: checkLatLong()[0], lng: checkLatLong()[1] }}
+            />
+          )}
         </div>
       </div>
     </>

@@ -20,6 +20,7 @@
   margin-top: -50px;
 }
 .hero_button {
+  cursor: pointer;
   background-color: #3a3a3a;
   color: white;
   width: 240px;
@@ -154,7 +155,7 @@
 }
 .posters_container {
   display: grid;
-  grid-template-columns: 1fr 1fr 1fr;
+  grid-template-columns: 1fr 1fr;
   /* width: 80%; */
   margin: 0 auto;
   grid-gap: 64px;

@@ -30,7 +30,7 @@
   flex-direction: column;
   row-gap: 12px;
   font-size: 18px;
-  width: 94%;
+  width: 97%;
 }
 .poster_description h3 {
   color: rgba(0, 0, 0, 0.87);
@@ -110,7 +110,7 @@
   padding: 4px 16px;
 }
 .emergency {
-  background-color: #ffd1d1;
+  background-color: #ffb3b3;
 }
 .category {
   background-color: #efefef;
@@ -124,7 +124,7 @@
 }
 .lost {
   font-weight: bold;
-  color: #ffd1d1;
+  color: #ffb3b3;
 }
 .time_description {
   font-size: 12px;
