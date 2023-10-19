@@ -31,9 +31,8 @@ const ReportPopup = ({ setShow, posterId }) => {
               if (description.trim().length !== 0) {
                 setLoading(true);
                 const data = await axios.post(
-                  `https://main-backend.iran.liara.run/api/v1/reports/report-poster?poster_id=${posterId}&report_type=other&description=${description}`,
-                  {},
-                  { headers: { Authorization: `Bearer ${auth.token}` } }
+                  `https://main-backend.iran.liara.run/api/v1/reports/report-poster?poster_id=${posterId}&issuer_id=4&report_type=other&description=${description}`,
+                  {}
                 );
                 console.log(data);
                 toast.success("گزارش شما با موفقیت ثبت شد");
