@@ -18,6 +18,7 @@ import SearchableSelectTags from "../components/SearchableSelectTags";
 import { toast } from "react-toastify";
 import Link from "next/link";
 import useOnClickOutside from "../hooks/useOutside";
+import { http } from "../http-services/http";
 
 const posters = [
   {
@@ -165,8 +166,8 @@ const Posters = () => {
   };
   const fetchPosters = async () => {
     try {
-      const { data } = await axios.get(
-        `https://main-backend.iran.liara.run/api/v1/posters/?page_id=${currentPage}&page_size=5&state=accepted&status=${type}${
+      const { data } = await http.get(
+        `/api/v1/posters/?page_id=${currentPage}&page_size=5&state=accepted&status=${type}${
           tags.length > 0 ? `&tag_ids=${tags.map((t) => t.id).toString()}` : ""
         }&only_awards=${checked}&search_phrase=${
           search ? search : ""
@@ -182,9 +183,7 @@ const Posters = () => {
   };
   const fetchTags = async () => {
     try {
-      const { data } = await axios.get(
-        "https://main-backend.iran.liara.run/api/v1/tags/"
-      );
+      const { data } = await http.get("/api/v1/tags/");
       setAllTags(data);
     } catch (error) {
       toast.error("خطایی در دریافت دسته بندی ها رخ داده است");
@@ -216,8 +215,8 @@ const Posters = () => {
     let fetcherTimer;
     if (search) {
       fetcherTimer = setTimeout(async () => {
-        const { data } = await axios.get(
-          `https://main-backend.iran.liara.run/api/v1/posters/?page_id=1&page_size=10&state=accepted&status=${type}&search_phrase=${
+        const { data } = await http.get(
+          `/api/v1/posters/?page_id=1&page_size=10&state=accepted&status=${type}&search_phrase=${
             search ? search : ""
           }`
         );

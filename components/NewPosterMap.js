@@ -1,13 +1,6 @@
 import { useState, useEffect } from "react";
 import L from "leaflet";
-import {
-  MapContainer,
-  TileLayer,
-  Marker,
-  useMap,
-  Circle,
-  useMapEvent,
-} from "react-leaflet";
+import { MapContainer, TileLayer, useMap, Circle } from "react-leaflet";
 import "leaflet/dist/leaflet.css";
 
 export function ChangeView({ coords, zoom }) {

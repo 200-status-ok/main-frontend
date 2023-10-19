@@ -1,4 +1,3 @@
-import { HiOutlinePhone } from "react-icons/hi";
 import classes from "../styles/Popup.module.css";
 import useOnClickOutside from "../hooks/useOutside";
 import { useRef } from "react";

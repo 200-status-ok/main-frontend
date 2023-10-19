@@ -22,6 +22,7 @@ import Link from "next/link";
 import axios from "axios";
 import { toast } from "react-toastify";
 import SmallPoster from "../components/SmallPoster";
+import { http } from "../http-services/http";
 export default function Home() {
   const [showLoginPopup, setShowLoginPopup] = useState(false);
   const [search, setSearch] = useState("");
@@ -30,8 +31,8 @@ export default function Home() {
   useEffect(() => {
     (async () => {
       try {
-        const { data } = await axios.get(
-          "https://main-backend.iran.liara.run/api/v1/posters/?page_id=1&page_size=10&status=both&state=accepted"
+        const { data } = await http.get(
+          "/api/v1/posters/?page_id=1&page_size=10&status=both&state=accepted"
         );
         console.log(data);
         setAllPosters(data.posters);
