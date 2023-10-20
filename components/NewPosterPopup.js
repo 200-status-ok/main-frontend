@@ -29,8 +29,8 @@ const initialValueOfPoster = {
   status: "lost",
 };
 const initialLatLong = {
-  lat: district.centroid.latitude,
-  lng: district.centroid.longitude,
+  lat: Tehran.districts[0].centroid.latitude,
+  lng: Tehran.districts[0].centroid.longitude,
 };
 const NewPosterPopup = () => {
   const [province, setProvince] = useState(states[6]);

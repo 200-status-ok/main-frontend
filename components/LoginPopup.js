@@ -11,7 +11,7 @@ import { useState, useRef } from "react";
 import useOnClickOutside from "../hooks/useOutside";
 import { useTimer } from "react-timer-hook";
 import { useAuth } from "../context/AuthProvider";
-import { ApiUrl, http } from "../http-services/http";
+import { ApiUrl, FrontEndUrl, http } from "../http-services/http";
 const LoginPopup = () => {
   const [username, setUsername] = useState("");
   const [otp, setOtp] = useState("");
@@ -70,7 +70,18 @@ const LoginPopup = () => {
                 }}
                 type="number"
               />
-              <button className={classes.code_button} onClick={sendOtpHandler}>
+              <button
+                className={classes.code_button}
+                onClick={() =>
+                  sendOtpHandler(
+                    username,
+                    updateTime,
+                    Otp_timer,
+                    setShowSendCode,
+                    setDisable
+                  )
+                }
+              >
                 {showSendCode
                   ? "ارسال"
                   : Otp_timer.minutes + ":" + Otp_timer.seconds}
@@ -81,12 +92,15 @@ const LoginPopup = () => {
             <Image alt="dots" src={nine_dots} width="70" />
           </div>
           <div className={classes.buttons_container}>
-            <button className={classes.login_button} onClick={onVerifyHandler}>
+            <button
+              className={classes.login_button}
+              onClick={() => onVerifyHandler(otp, username, setAuth)}
+            >
               ورود
             </button>
             <a
               className={classes.gLogin_button}
-              href={`${ApiUrl}/api/v1/users/auth/google/login/?redirect_uri=https://haminjast.iran.liara.run/glogin`}
+              href={`${ApiUrl}/api/v1/users/auth/google/login/?redirect_uri=${FrontEndUrl}/glogin`}
             >
               <Image
                 src={googleIcon}
@@ -120,7 +134,13 @@ const updateTime = (Otp_timer) => {
   Otp_timer.restart(timer);
 };
 
-const sendOtpHandler = async () => {
+const sendOtpHandler = async (
+  username,
+  updateTime,
+  Otp_timer,
+  setShowSendCode,
+  setDisable
+) => {
   try {
     const emailRegex =
       /^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|.(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
@@ -148,11 +168,12 @@ const sendOtpHandler = async () => {
       }
     }
   } catch (error) {
+    console.log(error);
     toast.error("مشکلی در اتصال به بکند پیش آمده است");
   }
 };
 
-const onVerifyHandler = async () => {
+const onVerifyHandler = async (otp, username, setAuth) => {
   if (otp.length !== 6) {
     toast.error("کد وارد شده اشتباه است");
   } else {

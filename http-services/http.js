@@ -1,5 +1,6 @@
 import axios from "axios";
-export const ApiUrl = "http://localhost:8000";
+export const ApiUrl = "http://localhost:8080";
+export const FrontEndUrl = "http://localhost:3000";
 
 axios.defaults.baseURL = ApiUrl;
 
