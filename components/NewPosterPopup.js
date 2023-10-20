@@ -8,12 +8,6 @@ import { RxMagicWand } from "react-icons/rx";
 import Tehran from "../data/districts/Tehran.json";
 import box from "../assets/images/box.svg";
 import SearchableSelectTags from "./SearchableSelectTags";
-const MapWithNoSsrNewPoster = dynamic(
-  () => import("../components/NewPosterMap"),
-  {
-    ssr: false,
-  }
-);
 import dynamic from "next/dynamic";
 import { HiOutlinePhotograph, HiPlusCircle, HiTrash } from "react-icons/hi";
 import axios from "axios";
@@ -23,7 +17,12 @@ import { toast } from "react-toastify";
 import ReactSwitch from "react-switch";
 import Link from "next/link";
 import { http } from "../http-services/http";
-
+const MapWithNoSsrNewPoster = dynamic(
+  () => import("../components/NewPosterMap"),
+  {
+    ssr: false,
+  }
+);
 const initialValueOfPoster = {
   title: "",
   description: "",
@@ -64,7 +63,6 @@ const NewPosterPopup = () => {
     (async () => {
       if (images.length > 0 && images[0]?.file) {
         images.forEach(async (image) => {
-          console.log(image);
           if (image.isUploaded) return;
           const formData = new FormData();
           formData.append("poster_image", image.file);
@@ -78,7 +76,6 @@ const NewPosterPopup = () => {
             updatedImages.findIndex((img) => img.file === image.file)
           ].isUploaded = true;
           setImages(updatedImages);
-          console.log(data);
         });
       }
     })();
