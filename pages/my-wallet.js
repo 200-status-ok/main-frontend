@@ -7,6 +7,7 @@ import axios from "axios";
 import { useAuth } from "../context/AuthProvider";
 import { router } from "websocket";
 import { useRouter } from "next/router";
+import { http } from "../http-services/http";
 const depositOptions = ["50000", "100000", "200000", "500000"];
 const MyWallet = () => {
   const { auth, setAuth } = useAuth();
@@ -23,18 +24,15 @@ const MyWallet = () => {
 
     if (auth.token) {
       (async () => {
-        const { data } = await axios.get(
-          "https://main-backend.iran.liara.run/api/v1/users/authorize/payment/user_wallet/transactions",
+        const { data } = await http.get(
+          "/api/v1/users/authorize/payment/user_wallet/transactions",
           {
             headers: { Authorization: `Bearer ${auth.token}` },
           }
         );
-        const { data: user } = await axios.get(
-          "https://main-backend.iran.liara.run/api/v1/users/authorize/",
-          {
-            headers: { Authorization: `Bearer ${auth.token}` },
-          }
-        );
+        const { data: user } = await http.get("/api/v1/users/authorize/", {
+          headers: { Authorization: `Bearer ${auth.token}` },
+        });
         setBalance(user.wallet);
         setAllTransactions(data ? data : []);
       })();
@@ -61,8 +59,8 @@ const MyWallet = () => {
             className={classes.deposit_button}
             onClick={async () => {
               if (depositAmount > 0) {
-                const { data } = await axios.get(
-                  `https://main-backend.iran.liara.run/api/v1/users/authorize/payment/user_wallet?url=https://haminjast.iran.liara.run/payment&amount=${depositAmount}`,
+                const { data } = await http.get(
+                  `/api/v1/users/authorize/payment/user_wallet?url=https://haminjast.iran.liara.run/payment&amount=${depositAmount}`,
                   {
                     headers: { Authorization: `Bearer ${auth.token}` },
                   }

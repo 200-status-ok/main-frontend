@@ -2,6 +2,7 @@ import axios from "axios";
 import { useRouter } from "next/router";
 import { useEffect, useState } from "react";
 import { useAuth } from "../context/AuthProvider";
+import { http } from "../http-services/http";
 
 const Payment = () => {
   const [status, setStatus] = useState("درحال بررسی پرداخت ... ");
@@ -13,8 +14,8 @@ const Payment = () => {
       if (router.query.trackId && auth.token) {
         const { trackId } = router.query;
         try {
-          const { data } = await axios.get(
-            `https://main-backend.iran.liara.run/api/v1/users/authorize/payment/user_wallet/verify?track_id=${trackId}`,
+          const { data } = await http.get(
+            `/api/v1/users/authorize/payment/user_wallet/verify?track_id=${trackId}`,
             { headers: { Authorization: `Bearer ${auth.token}` } }
           );
 

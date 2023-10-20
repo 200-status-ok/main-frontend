@@ -12,6 +12,7 @@ import { useAuth } from "../../context/AuthProvider";
 import { useRouter } from "next/router";
 import { w3cwebsocket } from "websocket";
 import Link from "next/link";
+import { http } from "../../http-services/http";
 
 const Chat = () => {
   const [allChats, setAllChats] = useState([]);
@@ -56,8 +57,8 @@ const Chat = () => {
         setAuth((prev) => ({ ...prev, showLoginPopup: true }));
     if (auth.token) {
       (async () => {
-        const { data } = await axios.get(
-          "https://main-backend.iran.liara.run/api/v1/chats/authorize/conversations",
+        const { data } = await http.get(
+          "/api/v1/chats/authorize/conversations",
           {
             headers: {
               Authorization: `Bearer ${auth?.token}`,
@@ -89,14 +90,14 @@ const Chat = () => {
   }, [router.query, allChats]);
 
   const fetchChatHistory = async (id) => {
-    const { data } = await axios.get(
-      `https://main-backend.iran.liara.run/api/v1/chats/authorize/history/${id}?page_id=1&page_size=500`,
+    const { data } = await http.get(
+      `/api/v1/chats/authorize/history/${id}?page_id=1&page_size=500`,
       {
         headers: { Authorization: `Bearer ${auth?.token}` },
       }
     );
-    const { data: data2 } = await axios.get(
-      `https://main-backend.iran.liara.run/api/v1/chats/authorize/conversation/${id}`,
+    const { data: data2 } = await http.get(
+      `/api/v1/chats/authorize/conversation/${id}`,
       {
         headers: {
           Authorization: `Bearer ${auth?.token}`,

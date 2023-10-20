@@ -24,6 +24,7 @@ import ReportPopup from "../../components/ReportPopup";
 import SharePopup from "../../components/SharePopup";
 import { useAuth } from "../../context/AuthProvider";
 import { toast } from "react-toastify";
+import { http } from "../../http-services/http";
 let swiperInstance = null;
 
 const MapWithNoSSR = dynamic(() => import("../../components/Map"), {
@@ -65,8 +66,8 @@ const Poster = () => {
   }, [router.query.poster_id]);
 
   const fetchPoster = async () => {
-    const { data } = await axios.get(
-      `https://main-backend.iran.liara.run/api/v1/posters/${router.query.poster_id}`
+    const { data } = await http.get(
+      `/api/v1/posters/${router.query.poster_id}`
     );
     console.log(data);
     setPoster(data);
@@ -130,8 +131,8 @@ const Poster = () => {
                   onClick={async () => {
                     if (auth?.token) {
                       try {
-                        const { data } = await axios.post(
-                          "https://main-backend.iran.liara.run/api/v1/chats/authorize/conversation",
+                        const { data } = await http.post(
+                          "/api/v1/chats/authorize/conversation",
                           {
                             name: poster.title,
                             poster_id: poster.id,

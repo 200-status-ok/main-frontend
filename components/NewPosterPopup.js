@@ -8,77 +8,65 @@ import { RxMagicWand } from "react-icons/rx";
 import Tehran from "../data/districts/Tehran.json";
 import box from "../assets/images/box.svg";
 import SearchableSelectTags from "./SearchableSelectTags";
-const MapWithNoSsrNewPoster = dynamic(
-  () => import("../components/NewPosterMap"),
-  {
-    ssr: false,
-  }
-);
 import dynamic from "next/dynamic";
-import {
-  HiOutlinePhotograph,
-  HiOutlinePlus,
-  HiPlusCircle,
-  HiTrash,
-} from "react-icons/hi";
+import { HiOutlinePhotograph, HiPlusCircle, HiTrash } from "react-icons/hi";
 import axios from "axios";
 import { useAuth } from "../context/AuthProvider";
 import { Oval } from "react-loader-spinner";
 import { toast } from "react-toastify";
 import ReactSwitch from "react-switch";
 import Link from "next/link";
+import { http } from "../http-services/http";
+const MapWithNoSsrNewPoster = dynamic(
+  () => import("../components/NewPosterMap"),
+  {
+    ssr: false,
+  }
+);
+const initialValueOfPoster = {
+  title: "",
+  description: "",
+  status: "lost",
+};
+const initialLatLong = {
+  lat: district.centroid.latitude,
+  lng: district.centroid.longitude,
+};
 const NewPosterPopup = () => {
   const [province, setProvince] = useState(states[6]);
   const [district, setDistrict] = useState(Tehran.districts[0]);
-  const [latLong, setLatLong] = useState({
-    lat: district.centroid.latitude,
-    lng: district.centroid.longitude,
-  });
+  const [latLong, setLatLong] = useState(initialLatLong);
   const [sendLoading, setSendLoading] = useState(false);
-
+  const [poster, setPoster] = useState(initialValueOfPoster);
   const [award, setAward] = useState(false);
   const [specialPoster, setSpecialPoster] = useState(false);
   const [showHint, setShowHint] = useState(false);
-
   const [aiObjects, setAiObjects] = useState();
-
   const [allTags, setAllTags] = useState([]);
-
-  const [poster, setPoster] = useState({
-    title: "",
-    description: "",
-    status: "lost",
-  });
   const [tags, setTags] = useState([]);
   const [imagesToBackend, setImagesToBackend] = useState([]);
   const [images, setImages] = useState([]);
-  const imageRef = useRef();
-
   const [loadingAi, setLoadingAi] = useState(false);
-
-  const { auth, setAuth } = useAuth();
-
   const [userCredit, setUserCredits] = useState(0);
 
+  const imageRef = useRef();
+  const { auth, setAuth } = useAuth();
+
   useEffect(() => {
-    console.log("district", district);
     setLatLong({
       lat: district.centroid.latitude,
       lng: district.centroid.longitude,
     });
   }, [district]);
+
   useEffect(() => {
     (async () => {
       if (images.length > 0 && images[0]?.file) {
         images.forEach(async (image) => {
-          console.log(image);
           if (image.isUploaded) return;
           const formData = new FormData();
           formData.append("poster_image", image.file);
-          const { data } = await axios.post(
-            "https://main-backend.iran.liara.run/api/v1/posters/image",
-            formData
-          );
+          const { data } = await axios.post("/api/v1/posters/image", formData);
           setImagesToBackend([
             ...imagesToBackend,
             { id: image.file, url: data.url },
@@ -88,7 +76,6 @@ const NewPosterPopup = () => {
             updatedImages.findIndex((img) => img.file === image.file)
           ].isUploaded = true;
           setImages(updatedImages);
-          console.log(data);
         });
       }
     })();
@@ -97,18 +84,11 @@ const NewPosterPopup = () => {
   useEffect(() => {
     (async () => {
       try {
-        const { data } = await axios.get(
-          "https://main-backend.iran.liara.run/api/v1/tags/"
-        );
-
+        const { data } = await http.get("/api/v1/tags/");
         setAllTags(data);
-
-        const { data: user } = await axios.get(
-          "https://main-backend.iran.liara.run/api/v1/users/authorize/",
-          {
-            headers: { Authorization: `Bearer ${auth.token}` },
-          }
-        );
+        const { data: user } = await http.get("/api/v1/users/authorize/", {
+          headers: { Authorization: `Bearer ${auth.token}` },
+        });
         setUserCredits(user.wallet);
       } catch (error) {
         toast.error("خطایی در دریافت دسته بندی رخ داده است");
@@ -194,8 +174,8 @@ const NewPosterPopup = () => {
               onClick={async () => {
                 try {
                   setLoadingAi(true);
-                  const { data } = await axios.get(
-                    `https://main-backend.iran.liara.run/api/v1/api-call/generate-poster-Info?image_url=${imagesToBackend[0].url}`
+                  const { data } = await http.get(
+                    `/api/v1/api-call/generate-poster-Info?image_url=${imagesToBackend[0].url}`
                   );
                   setAiObjects(data);
                   setLoadingAi(false);
@@ -526,8 +506,8 @@ const NewPosterPopup = () => {
 
                 setSendLoading(true);
                 try {
-                  await axios.post(
-                    "https://main-backend.iran.liara.run/api/v1/posters/authorize/",
+                  await http.post(
+                    "/api/v1/posters/authorize/",
                     {
                       addresses: [
                         {

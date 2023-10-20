@@ -5,7 +5,6 @@ export const MyContext = createContext();
 
 const AuthProvider = ({ children }) => {
   const [auth, setAuth] = useState({ showLoginPopup: false });
-  const router = useRouter();
 
   useEffect(() => {
     const token = getCookie("token");

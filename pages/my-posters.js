@@ -6,18 +6,16 @@ import axios from "axios";
 import { useAuth } from "../context/AuthProvider";
 import SmallPoster from "../components/SmallPoster";
 import bicycle from "../assets/images/bicycle.png";
+import { http } from "../http-services/http";
 
 const MyPosters = () => {
   const [allPosters, setAllPosters] = useState([]);
   const { auth, setAuth } = useAuth();
   const fetchPosters = async () => {
     try {
-      const { data } = await axios.get(
-        `https://main-backend.iran.liara.run/api/v1/users/authorize/`,
-        {
-          headers: { Authorization: `Bearer ${auth?.token}` },
-        }
-      );
+      const { data } = await http.get(`/api/v1/users/authorize/`, {
+        headers: { Authorization: `Bearer ${auth?.token}` },
+      });
       setAllPosters(data.posters);
       console.log(data);
     } catch (error) {

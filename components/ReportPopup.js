@@ -4,8 +4,8 @@ import { useState } from "react";
 import { toast } from "react-toastify";
 import { Oval } from "react-loader-spinner";
 import { useAuth } from "../context/AuthProvider";
+import { http } from "../http-services/http";
 const ReportPopup = ({ setShow, posterId }) => {
-  const { auth, setAuth } = useAuth();
   const [description, setDescription] = useState("");
   const [loading, setLoading] = useState(false);
   return (
@@ -27,21 +27,9 @@ const ReportPopup = ({ setShow, posterId }) => {
           </button>
           <button
             className={classes.button}
-            onClick={async () => {
-              if (description.trim().length !== 0) {
-                setLoading(true);
-                const data = await axios.post(
-                  `https://main-backend.iran.liara.run/api/v1/reports/report-poster?poster_id=${posterId}&report_type=other&description=${description}`,
-                  {},
-                  { headers: { Authorization: `Bearer ${auth.token}` } }
-                );
-                console.log(data);
-                toast.success("گزارش شما با موفقیت ثبت شد");
-                setShow(false);
-              } else {
-                toast.error("لطفا متن گزارش را وارد کنید");
-              }
-            }}
+            onClick={() =>
+              sendReportHandler(description, posterId, setShow, setLoading)
+            }
           >
             {loading ? (
               <Oval
@@ -67,3 +55,22 @@ const ReportPopup = ({ setShow, posterId }) => {
 };
 
 export default ReportPopup;
+
+const sendReportHandler = async (
+  description,
+  posterId,
+  setShow,
+  setLoading
+) => {
+  if (description.trim().length !== 0) {
+    setLoading(true);
+    await http.post(
+      `/api/v1/reports/report-poster?poster_id=${posterId}&issuer_id=4&report_type=other&description=${description}`,
+      {}
+    );
+    toast.success("گزارش شما با موفقیت ثبت شد");
+    setShow(false);
+  } else {
+    toast.error("لطفا متن گزارش را وارد کنید");
+  }
+};
