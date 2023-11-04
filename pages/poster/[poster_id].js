@@ -21,7 +21,6 @@ import "swiper/css/scrollbar";
 import axios from "axios";
 import Popup from "../../components/Popup";
 import ReportPopup from "../../components/ReportPopup";
-import SharePopup from "../../components/SharePopup";
 import { useAuth } from "../../context/AuthProvider";
 import { toast } from "react-toastify";
 import { http } from "../../http-services/http";
