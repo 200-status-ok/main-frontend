@@ -10,7 +10,6 @@ import { useEffect, useRef, useState } from "react";
 import ReactSwitch from "react-switch";
 import axios from "axios";
 import { HiSearch } from "react-icons/hi";
-
 import { useAuth } from "../context/AuthProvider";
 import { useRouter } from "next/router";
 import NewPosterPopup from "../components/NewPosterPopup";
@@ -148,6 +147,14 @@ const Posters = () => {
             radius={900}
             setLatLong={setLatLong}
             latLong={latLong}
+            itemsLatLong={allPosters.map((poster) => {
+              return {
+                lat: poster.addresses[0].location.lat,
+                lng: poster.addresses[0].location.lon,
+                title: poster.title,
+                id: poster.id,
+              };
+            })}
             firstCircle={false}
             className="home"
           />

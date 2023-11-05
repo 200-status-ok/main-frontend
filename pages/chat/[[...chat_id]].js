@@ -33,9 +33,10 @@ const Chat = () => {
 
   const createConnection = () => {
     const websocket = new w3cwebsocket(
-      `wss://main-backend.iran.liara.run/api/v1/chats/join?conv_id=${router.query.chat_id}&token=${auth.token}`
+      `wss://localhost:8080/api/v1/chats/open-ws`
     );
     websocket.onopen = (event) => {
+      console.log(event);
       setConnection(websocket);
     };
     websocket.onmessage = (event) => {
@@ -57,14 +58,11 @@ const Chat = () => {
         setAuth((prev) => ({ ...prev, showLoginPopup: true }));
     if (auth.token) {
       (async () => {
-        const { data } = await http.get(
-          "/api/v1/chats/authorize/conversations",
-          {
-            headers: {
-              Authorization: `Bearer ${auth?.token}`,
-            },
-          }
-        );
+        const { data } = await http.get("/api/v1/chat/authorize/conversation", {
+          headers: {
+            Authorization: `Bearer ${auth?.token}`,
+          },
+        });
 
         if (data) {
           setAllChats(data);
