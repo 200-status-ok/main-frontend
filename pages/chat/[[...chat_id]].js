@@ -7,13 +7,13 @@ import bicycle from "../../assets/images/bicycle.png";
 import ChatItem from "../../components/ChatItem";
 import { HiOutlinePaperAirplane, HiArrowSmRight } from "react-icons/hi";
 import { useEffect, useRef, useState } from "react";
-import axios from "axios";
+import axios, { all } from "axios";
 import { useAuth } from "../../context/AuthProvider";
 import { useRouter } from "next/router";
 import { w3cwebsocket } from "websocket";
 import Link from "next/link";
 import { http } from "../../http-services/http";
-
+let chatId;
 const Chat = () => {
   const [allChats, setAllChats] = useState([]);
   const [activeChat, setActiveChat] = useState();
@@ -33,24 +33,36 @@ const Chat = () => {
 
   const createConnection = () => {
     const websocket = new w3cwebsocket(
-      `wss://localhost:8080/api/v1/chats/open-ws`
+      `ws://localhost:8080/api/v1/chat/open-ws?token=${auth.token}`
     );
     websocket.onopen = (event) => {
       console.log(event);
       setConnection(websocket);
     };
     websocket.onmessage = (event) => {
-      fetchChatHistory(router.query.chat_id);
+      console.log(chatId);
+      if (chatId) {
+        fetchChatHistory(chatId);
+      }
+      console.log(event);
     };
     websocket.onclose = (event) => {
       console.log(event);
       console.log("closed connection");
-      createConnection();
+      // createConnection();
     };
     websocket.onerror = (event) => {
       console.log(event);
     };
   };
+
+  useEffect(() => {
+    if (auth.token) {
+      if (!connection) {
+        createConnection();
+      }
+    }
+  }, [auth]);
 
   useEffect(() => {
     if (auth)
@@ -76,26 +88,27 @@ const Chat = () => {
     }
   }, [auth]);
   useEffect(() => {
-    if (router.query.chat_id && allChats?.length > 0) {
-      const currentActiveChat = allChats.find(
-        (chat) => chat.id === +router.query.chat_id
-      );
-      connection?.close();
-      setActiveChat(currentActiveChat);
-      fetchChatHistory(router.query.chat_id);
-      createConnection();
+    if (router?.query?.chat_id) {
+      chatId = router?.query?.chat_id[0];
+      if (allChats.length > 0) {
+        const currentActiveChat = allChats.find(
+          (chat) => chat.id === +router.query.chat_id
+        );
+        setActiveChat(currentActiveChat);
+        fetchChatHistory(router.query.chat_id[0]);
+      }
     }
   }, [router.query, allChats]);
 
   const fetchChatHistory = async (id) => {
     const { data } = await http.get(
-      `/api/v1/chats/authorize/history/${id}?page_id=1&page_size=500`,
+      `/api/v1/chat/authorize/history/${id}?page_id=1&page_size=500`,
       {
         headers: { Authorization: `Bearer ${auth?.token}` },
       }
     );
     const { data: data2 } = await http.get(
-      `/api/v1/chats/authorize/conversation/${id}`,
+      `/api/v1/chat/authorize/conversation/${id}`,
       {
         headers: {
           Authorization: `Bearer ${auth?.token}`,
@@ -107,6 +120,7 @@ const Chat = () => {
   };
   useEffect(() => {
     if (chatHistory.length > 0) {
+      console.log(chatHistory);
       dummy.current.scrollIntoView({ behavior: "smooth" });
     }
   }, [chatHistory]);
@@ -131,20 +145,21 @@ const Chat = () => {
         JSON.stringify({
           content: chatText,
           type: "text",
+          conversation_id: +router.query.chat_id[0],
         })
       );
     }
     setChatText("");
-    const timerId = setTimeout(() => {
-      fetchChatHistory(router.query.chat_id);
-      clearTimeout(timerId);
-    }, 500);
   };
   const handlePressEnter = (e) => {
     if (e.key === "Enter") {
       sendMessage();
     }
   };
+  // useEffect(() => {
+  //   if (router?.query?.chat_id) {
+  //   }
+  // }, [router.query]);
   return (
     <>
       <AppHeader />
