@@ -131,7 +131,7 @@ const Poster = () => {
                     if (auth?.token) {
                       try {
                         const { data } = await http.post(
-                          "/api/v1/chats/authorize/conversation",
+                          "/api/v1/chat/authorize/conversation",
                           {
                             name: poster.title,
                             poster_id: poster.id,

@@ -5,6 +5,7 @@ import { useEffect, useRef, useState } from "react";
 import { states } from "../data/province/Province";
 import { BsMagic } from "react-icons/bs";
 import { RxMagicWand } from "react-icons/rx";
+import { HiOutlineSparkles } from "react-icons/hi2";
 import Tehran from "../data/districts/Tehran.json";
 import box from "../assets/images/box.svg";
 import SearchableSelectTags from "./SearchableSelectTags";
@@ -216,7 +217,7 @@ const NewPosterPopup = () => {
                 />
               ) : (
                 <>
-                  بهوش <BsMagic />
+                  بهوش <HiOutlineSparkles />
                 </>
               )}
             </button>

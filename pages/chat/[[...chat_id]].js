@@ -6,17 +6,19 @@ import classes from "./Chat.module.css";
 import bicycle from "../../assets/images/bicycle.png";
 import ChatItem from "../../components/ChatItem";
 import { HiOutlinePaperAirplane, HiArrowSmRight } from "react-icons/hi";
+import { BiImageAdd } from "react-icons/bi";
 import { useEffect, useRef, useState } from "react";
-import axios from "axios";
+import axios, { all } from "axios";
 import { useAuth } from "../../context/AuthProvider";
 import { useRouter } from "next/router";
 import { w3cwebsocket } from "websocket";
 import Link from "next/link";
 import { http } from "../../http-services/http";
-
+import { HiOutlineMap, HiOutlineMapPin } from "react-icons/hi2";
+let chatId;
 const Chat = () => {
   const [allChats, setAllChats] = useState([]);
-  const [activeChat, setActiveChat] = useState();
+  const [activeChat, setActiveChat] = useState({});
   const [chatText, setChatText] = useState("");
 
   const dummy = useRef();
@@ -33,18 +35,40 @@ const Chat = () => {
 
   const createConnection = () => {
     const websocket = new w3cwebsocket(
-      `wss://main-backend.iran.liara.run/api/v1/chats/join?conv_id=${router.query.chat_id}&token=${auth.token}`
+      `ws://localhost:8080/api/v1/chat/open-ws?token=${auth.token}`
     );
     websocket.onopen = (event) => {
+      console.log(event);
       setConnection(websocket);
     };
     websocket.onmessage = (event) => {
-      fetchChatHistory(router.query.chat_id);
+      console.log(event.data);
+      console.log("های");
+
+      console.log(chatId);
+      if (!event.data.includes("User")) {
+        const message = JSON.parse(event.data);
+        console.log(message, chatId);
+        if (message.conversation_id === chatId) {
+          const newMessage = {
+            ...message,
+            receiver_id: message.receiver,
+            sender_id: message.sender,
+          };
+          delete newMessage.receiver;
+          delete newMessage.sender;
+          setChatHistory((prev) => [...prev, newMessage]);
+        }
+      }
+      // if (chatId) {
+      //   fetchChatHistory(chatId);
+      // }
+      console.log(event);
     };
     websocket.onclose = (event) => {
       console.log(event);
       console.log("closed connection");
-      createConnection();
+      // createConnection();
     };
     websocket.onerror = (event) => {
       console.log(event);
@@ -52,52 +76,57 @@ const Chat = () => {
   };
 
   useEffect(() => {
+    if (auth.token) {
+      if (!connection) {
+        // createConnection();
+      }
+    }
+  }, [auth]);
+
+  useEffect(() => {
     if (auth)
       if (!auth.token && !auth.showLoginPopup)
         setAuth((prev) => ({ ...prev, showLoginPopup: true }));
     if (auth.token) {
-      (async () => {
-        const { data } = await http.get(
-          "/api/v1/chats/authorize/conversations",
-          {
-            headers: {
-              Authorization: `Bearer ${auth?.token}`,
-            },
-          }
-        );
-
-        if (data) {
-          setAllChats(data);
-          setOwner(
-            data.map((chat) => {
-              return { id: chat.id, is_owner: chat.is_owner };
-            })
-          );
-        }
-      })();
+      // (async () => {
+      //   const { data } = await http.get("/api/v1/chat/authorize/conversation", {
+      //     headers: {
+      //       Authorization: `Bearer ${auth?.token}`,
+      //     },
+      //   });
+      //   if (data) {
+      //     setAllChats(data);
+      //     setOwner(
+      //       data.map((chat) => {
+      //         return { id: chat.id, is_owner: chat.is_owner };
+      //       })
+      //     );
+      //   }
+      // })();
     }
   }, [auth]);
   useEffect(() => {
-    if (router.query.chat_id && allChats?.length > 0) {
-      const currentActiveChat = allChats.find(
-        (chat) => chat.id === +router.query.chat_id
-      );
-      connection?.close();
-      setActiveChat(currentActiveChat);
-      fetchChatHistory(router.query.chat_id);
-      createConnection();
+    if (router?.query?.chat_id) {
+      chatId = router?.query?.chat_id[0];
+      if (allChats.length > 0) {
+        const currentActiveChat = allChats.find(
+          (chat) => chat.id === +router.query.chat_id
+        );
+        setActiveChat(currentActiveChat);
+        fetchChatHistory(router.query.chat_id[0]);
+      }
     }
   }, [router.query, allChats]);
 
   const fetchChatHistory = async (id) => {
     const { data } = await http.get(
-      `/api/v1/chats/authorize/history/${id}?page_id=1&page_size=500`,
+      `/api/v1/chat/authorize/history/${id}?page_id=1&page_size=500`,
       {
         headers: { Authorization: `Bearer ${auth?.token}` },
       }
     );
     const { data: data2 } = await http.get(
-      `/api/v1/chats/authorize/conversation/${id}`,
+      `/api/v1/chat/authorize/conversation/${id}`,
       {
         headers: {
           Authorization: `Bearer ${auth?.token}`,
@@ -109,6 +138,7 @@ const Chat = () => {
   };
   useEffect(() => {
     if (chatHistory.length > 0) {
+      console.log(chatHistory);
       dummy.current.scrollIntoView({ behavior: "smooth" });
     }
   }, [chatHistory]);
@@ -133,20 +163,21 @@ const Chat = () => {
         JSON.stringify({
           content: chatText,
           type: "text",
+          conversation_id: +router.query.chat_id[0],
         })
       );
     }
     setChatText("");
-    const timerId = setTimeout(() => {
-      fetchChatHistory(router.query.chat_id);
-      clearTimeout(timerId);
-    }, 500);
   };
   const handlePressEnter = (e) => {
     if (e.key === "Enter") {
       sendMessage();
     }
   };
+  // useEffect(() => {
+  //   if (router?.query?.chat_id) {
+  //   }
+  // }, [router.query]);
   return (
     <>
       <AppHeader />
@@ -226,6 +257,12 @@ const Chat = () => {
                   <div ref={dummy}></div>
                 </div>
                 <div className={classes.singlechat_bottom}>
+                  <button className={classes.singlechat_bottom_send}>
+                    <HiOutlineMapPin size="28px" color="#2f89fc" />
+                  </button>
+                  <button className={classes.singlechat_bottom_send}>
+                    <BiImageAdd size="28px" color="#2f89fc" />
+                  </button>
                   <input
                     value={chatText}
                     onChange={() => {
@@ -234,6 +271,7 @@ const Chat = () => {
                     onKeyDown={handlePressEnter}
                     placeholder="متنی بنویسید ..."
                   />
+
                   <button
                     className={classes.singlechat_bottom_send}
                     onClick={() => {
