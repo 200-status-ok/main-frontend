@@ -6,6 +6,7 @@ import classes from "./Chat.module.css";
 import bicycle from "../../assets/images/bicycle.png";
 import ChatItem from "../../components/ChatItem";
 import { HiOutlinePaperAirplane, HiArrowSmRight } from "react-icons/hi";
+import { BiImageAdd } from "react-icons/bi";
 import { useEffect, useRef, useState } from "react";
 import axios, { all } from "axios";
 import { useAuth } from "../../context/AuthProvider";
@@ -13,10 +14,11 @@ import { useRouter } from "next/router";
 import { w3cwebsocket } from "websocket";
 import Link from "next/link";
 import { http } from "../../http-services/http";
+import { HiOutlineMap, HiOutlineMapPin } from "react-icons/hi2";
 let chatId;
 const Chat = () => {
   const [allChats, setAllChats] = useState([]);
-  const [activeChat, setActiveChat] = useState();
+  const [activeChat, setActiveChat] = useState({});
   const [chatText, setChatText] = useState("");
 
   const dummy = useRef();
@@ -40,10 +42,27 @@ const Chat = () => {
       setConnection(websocket);
     };
     websocket.onmessage = (event) => {
+      console.log(event.data);
+      console.log("های");
+
       console.log(chatId);
-      if (chatId) {
-        fetchChatHistory(chatId);
+      if (!event.data.includes("User")) {
+        const message = JSON.parse(event.data);
+        console.log(message, chatId);
+        if (message.conversation_id === chatId) {
+          const newMessage = {
+            ...message,
+            receiver_id: message.receiver,
+            sender_id: message.sender,
+          };
+          delete newMessage.receiver;
+          delete newMessage.sender;
+          setChatHistory((prev) => [...prev, newMessage]);
+        }
       }
+      // if (chatId) {
+      //   fetchChatHistory(chatId);
+      // }
       console.log(event);
     };
     websocket.onclose = (event) => {
@@ -59,7 +78,7 @@ const Chat = () => {
   useEffect(() => {
     if (auth.token) {
       if (!connection) {
-        createConnection();
+        // createConnection();
       }
     }
   }, [auth]);
@@ -69,22 +88,21 @@ const Chat = () => {
       if (!auth.token && !auth.showLoginPopup)
         setAuth((prev) => ({ ...prev, showLoginPopup: true }));
     if (auth.token) {
-      (async () => {
-        const { data } = await http.get("/api/v1/chat/authorize/conversation", {
-          headers: {
-            Authorization: `Bearer ${auth?.token}`,
-          },
-        });
-
-        if (data) {
-          setAllChats(data);
-          setOwner(
-            data.map((chat) => {
-              return { id: chat.id, is_owner: chat.is_owner };
-            })
-          );
-        }
-      })();
+      // (async () => {
+      //   const { data } = await http.get("/api/v1/chat/authorize/conversation", {
+      //     headers: {
+      //       Authorization: `Bearer ${auth?.token}`,
+      //     },
+      //   });
+      //   if (data) {
+      //     setAllChats(data);
+      //     setOwner(
+      //       data.map((chat) => {
+      //         return { id: chat.id, is_owner: chat.is_owner };
+      //       })
+      //     );
+      //   }
+      // })();
     }
   }, [auth]);
   useEffect(() => {
@@ -239,6 +257,12 @@ const Chat = () => {
                   <div ref={dummy}></div>
                 </div>
                 <div className={classes.singlechat_bottom}>
+                  <button className={classes.singlechat_bottom_send}>
+                    <HiOutlineMapPin size="28px" color="#2f89fc" />
+                  </button>
+                  <button className={classes.singlechat_bottom_send}>
+                    <BiImageAdd size="28px" color="#2f89fc" />
+                  </button>
                   <input
                     value={chatText}
                     onChange={() => {
@@ -247,6 +271,7 @@ const Chat = () => {
                     onKeyDown={handlePressEnter}
                     placeholder="متنی بنویسید ..."
                   />
+
                   <button
                     className={classes.singlechat_bottom_send}
                     onClick={() => {
