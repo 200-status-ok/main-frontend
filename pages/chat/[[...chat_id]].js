@@ -16,9 +16,10 @@ import Link from "next/link";
 import { http } from "../../http-services/http";
 import { HiOutlineMap, HiOutlineMapPin } from "react-icons/hi2";
 let chatId;
+let allChat;
 const Chat = () => {
   const [allChats, setAllChats] = useState([]);
-  const [activeChat, setActiveChat] = useState({});
+  const [activeChat, setActiveChat] = useState();
   const [chatText, setChatText] = useState("");
 
   const dummy = useRef();
@@ -42,24 +43,20 @@ const Chat = () => {
       setConnection(websocket);
     };
     websocket.onmessage = (event) => {
-      console.log(event.data);
-      console.log("های");
-
-      console.log(chatId);
       if (!event.data.includes("User")) {
         const message = JSON.parse(event.data);
-        console.log(message, chatId);
-        if (message.conversation_id === chatId) {
-          const newMessage = {
-            ...message,
-            receiver_id: message.receiver,
-            sender_id: message.sender,
-          };
-          delete newMessage.receiver;
-          delete newMessage.sender;
-          setChatHistory((prev) => [...prev, newMessage]);
+
+        if (+message.conversation_id === +chatId) {
+          setChatHistory((prev) => [...prev, message]);
         }
+        const newAllChats = [...allChat];
+        const selectedChat = newAllChats.find(
+          (chat) => chat.id === message.conversation_id
+        );
+        selectedChat.description = message.content;
+        setAllChats(newAllChats);
       }
+
       // if (chatId) {
       //   fetchChatHistory(chatId);
       // }
@@ -78,31 +75,33 @@ const Chat = () => {
   useEffect(() => {
     if (auth.token) {
       if (!connection) {
-        // createConnection();
+        createConnection();
       }
     }
   }, [auth]);
+  console.log(allChats);
 
   useEffect(() => {
     if (auth)
       if (!auth.token && !auth.showLoginPopup)
         setAuth((prev) => ({ ...prev, showLoginPopup: true }));
     if (auth.token) {
-      // (async () => {
-      //   const { data } = await http.get("/api/v1/chat/authorize/conversation", {
-      //     headers: {
-      //       Authorization: `Bearer ${auth?.token}`,
-      //     },
-      //   });
-      //   if (data) {
-      //     setAllChats(data);
-      //     setOwner(
-      //       data.map((chat) => {
-      //         return { id: chat.id, is_owner: chat.is_owner };
-      //       })
-      //     );
-      //   }
-      // })();
+      (async () => {
+        const { data } = await http.get("/api/v1/chat/authorize/conversation", {
+          headers: {
+            Authorization: `Bearer ${auth?.token}`,
+          },
+        });
+        if (data) {
+          setAllChats(data);
+          allChat = data;
+          setOwner(
+            data.map((chat) => {
+              return { id: chat.id, is_owner: chat.is_owner };
+            })
+          );
+        }
+      })();
     }
   }, [auth]);
   useEffect(() => {
@@ -116,7 +115,7 @@ const Chat = () => {
         fetchChatHistory(router.query.chat_id[0]);
       }
     }
-  }, [router.query, allChats]);
+  }, [router.query]);
 
   const fetchChatHistory = async (id) => {
     const { data } = await http.get(
@@ -138,11 +137,11 @@ const Chat = () => {
   };
   useEffect(() => {
     if (chatHistory.length > 0) {
-      console.log(chatHistory);
       dummy.current.scrollIntoView({ behavior: "smooth" });
     }
   }, [chatHistory]);
   const checkClassOfMessage = (message, is_owner) => {
+    console.log(message);
     if (is_owner) {
       if (message.receiver_id === ownerId) {
         return classes.singlechat_left_message;
@@ -166,6 +165,11 @@ const Chat = () => {
           conversation_id: +router.query.chat_id[0],
         })
       );
+      // send https request
+      const newAllChats = [...allChat];
+      const selectedChat = newAllChats.find((chat) => chat.id === +chatId);
+      selectedChat.description = chatText;
+      setAllChats(newAllChats);
     }
     setChatText("");
   };
@@ -193,7 +197,7 @@ const Chat = () => {
               {allChats.map((chat, index) => (
                 <ChatItem
                   name={chat.name}
-                  description={""}
+                  description={chat?.description ? chat?.description : ""}
                   image={chat?.image_url}
                   key={index}
                   onClick={() => {
