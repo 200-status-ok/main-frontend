@@ -220,15 +220,39 @@
 }
 .location_container {
   background-color: white;
+  padding: 8px;
   border-radius: 8px;
-  width: 400px;
-  height: 300px;
+  width: 450px;
+  height: 320px;
   display: flex;
   flex-direction: column;
-  row-gap: 8px;
+  row-gap: 16px;
 }
 .location_buttons {
   display: flex;
+  column-gap: 8px;
+  align-self: flex-end;
+}
+.location_cancel {
+  width: 100px;
+  height: 40px;
+  border-radius: 4px;
+  border: 1px solid rgb(0, 0, 0, 0.3);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  cursor: pointer;
+}
+.location_send {
+  width: 100px;
+  height: 40px;
+  border-radius: 4px;
+  background-color: #2f89fc;
+  color: white;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  cursor: pointer;
 }
 @media screen and (max-width: 1300px) {
   .container {

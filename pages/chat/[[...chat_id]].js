@@ -19,19 +19,16 @@ import { toast } from "react-toastify";
 import dynamic from "next/dynamic";
 let chatId;
 let allChat;
-const MapWithNoSsrNewPoster = dynamic(
-  () => import("../../components/NewPosterMap"),
-  {
-    ssr: false,
-  }
-);
+const ChatMap = dynamic(() => import("../../components/ChatMap"), {
+  ssr: false,
+});
 const Chat = () => {
   const [allChats, setAllChats] = useState([]);
   const [activeChat, setActiveChat] = useState();
   const [chatText, setChatText] = useState("");
 
   const [locationPopup, setLocationPopup] = useState(false);
-  const [location, setLocation] = useState();
+  const [location, setLocation] = useState({ lat: 35.686023, lng: 51.393045 });
 
   const dummy = useRef();
   const [owner, setOwner] = useState([{ id: 0, is_owner: false }]);
@@ -201,7 +198,28 @@ const Chat = () => {
       {locationPopup && (
         <div className={classes.location_background}>
           <div className={classes.location_container}>
-            <MapWithNoSsrNewPoster />
+            <ChatMap
+              latLong={location}
+              setLatLong={(latlong) => setLocation(latlong)}
+              style={{ width: "100%", height: "240px" }}
+            />
+            <div className={classes.location_buttons}>
+              <div
+                className={classes.location_cancel}
+                onClick={() => setLocationPopup(false)}
+              >
+                انصراف
+              </div>
+              <div
+                className={classes.location_send}
+                onClick={() => {
+                  sendMessage(JSON.stringify(location), "location");
+                  setLocationPopup(false);
+                }}
+              >
+                ارسال
+              </div>
+            </div>
           </div>
         </div>
       )}
@@ -350,7 +368,13 @@ const showMessage = (content, type) => {
   } else if (type === "text") {
     return content;
   } else if (type === "location") {
-    return "somthing";
+    return (
+      <ChatMap
+        latLong={JSON.parse(content)}
+        unClickable
+        style={{ width: "250px", height: "200px" }}
+      />
+    );
   }
 };
 export default Chat;
