@@ -15,12 +15,23 @@ import { w3cwebsocket } from "websocket";
 import Link from "next/link";
 import { http } from "../../http-services/http";
 import { HiOutlineMap, HiOutlineMapPin } from "react-icons/hi2";
+import { toast } from "react-toastify";
+import dynamic from "next/dynamic";
 let chatId;
 let allChat;
+const MapWithNoSsrNewPoster = dynamic(
+  () => import("../../components/NewPosterMap"),
+  {
+    ssr: false,
+  }
+);
 const Chat = () => {
   const [allChats, setAllChats] = useState([]);
   const [activeChat, setActiveChat] = useState();
   const [chatText, setChatText] = useState("");
+
+  const [locationPopup, setLocationPopup] = useState(false);
+  const [location, setLocation] = useState();
 
   const dummy = useRef();
   const [owner, setOwner] = useState([{ id: 0, is_owner: false }]);
@@ -32,6 +43,8 @@ const Chat = () => {
   const [chatHistory, setChatHistory] = useState([]);
 
   const [isConnectionOpen, setIsConnectionOpen] = useState(false);
+
+  const imageRef = useRef();
   const router = useRouter();
 
   const createConnection = () => {
@@ -53,7 +66,7 @@ const Chat = () => {
         const selectedChat = newAllChats.find(
           (chat) => chat.id === message.conversation_id
         );
-        selectedChat.description = message.content;
+        if (selectedChat) selectedChat.description = message.content;
         setAllChats(newAllChats);
       }
 
@@ -75,6 +88,7 @@ const Chat = () => {
   useEffect(() => {
     if (auth.token) {
       if (!connection) {
+        console.log("create connection");
         createConnection();
       }
     }
@@ -156,26 +170,26 @@ const Chat = () => {
       }
     }
   };
-  const sendMessage = () => {
-    if (chatText) {
+  const sendMessage = (text, type = "text") => {
+    if (text) {
       connection.send(
         JSON.stringify({
-          content: chatText,
-          type: "text",
+          content: text,
+          type,
           conversation_id: +router.query.chat_id[0],
         })
       );
       // send https request
       const newAllChats = [...allChat];
       const selectedChat = newAllChats.find((chat) => chat.id === +chatId);
-      selectedChat.description = chatText;
+      selectedChat.description = text;
       setAllChats(newAllChats);
     }
     setChatText("");
   };
   const handlePressEnter = (e) => {
     if (e.key === "Enter") {
-      sendMessage();
+      sendMessage(chatText, "text");
     }
   };
   // useEffect(() => {
@@ -184,7 +198,15 @@ const Chat = () => {
   // }, [router.query]);
   return (
     <>
+      {locationPopup && (
+        <div className={classes.location_background}>
+          <div className={classes.location_container}>
+            <MapWithNoSsrNewPoster />
+          </div>
+        </div>
+      )}
       <AppHeader />
+
       <div className={classes.container}>
         <div
           className={`${classes.chatslist} ${
@@ -253,7 +275,7 @@ const Chat = () => {
                         key={index}
                       >
                         <div className={classes.singlechat_chat_item_text}>
-                          {chat.content}
+                          {showMessage(chat.content, chat.type)}
                         </div>
                       </div>
                     );
@@ -261,10 +283,37 @@ const Chat = () => {
                   <div ref={dummy}></div>
                 </div>
                 <div className={classes.singlechat_bottom}>
-                  <button className={classes.singlechat_bottom_send}>
+                  <button
+                    className={classes.singlechat_bottom_send}
+                    onClick={() => {
+                      setLocationPopup(true);
+                    }}
+                  >
                     <HiOutlineMapPin size="28px" color="#2f89fc" />
                   </button>
-                  <button className={classes.singlechat_bottom_send}>
+                  <input
+                    type="file"
+                    ref={imageRef}
+                    style={{ display: "none " }}
+                    onChange={async (e) => {
+                      if (e.target.files[0]) {
+                        const formData = new FormData();
+                        formData.append("image", e.target.files[0]);
+                        const { data } = await axios.post(
+                          "/api/v1/api-call/image-upload",
+                          formData
+                        );
+                        sendMessage(data.url, "image");
+                      }
+                    }}
+                  />
+                  <button
+                    style={{ marginLeft: "8px" }}
+                    className={classes.singlechat_bottom_send}
+                    onClick={() => {
+                      imageRef.current.click();
+                    }}
+                  >
                     <BiImageAdd size="28px" color="#2f89fc" />
                   </button>
                   <input
@@ -295,5 +344,13 @@ const Chat = () => {
     </>
   );
 };
-
+const showMessage = (content, type) => {
+  if (type === "image") {
+    return <img style={{ width: "200px", height: "200px" }} src={content} />;
+  } else if (type === "text") {
+    return content;
+  } else if (type === "location") {
+    return "somthing";
+  }
+};
 export default Chat;
