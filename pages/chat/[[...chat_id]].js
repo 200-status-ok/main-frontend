@@ -15,11 +15,23 @@ import { w3cwebsocket } from "websocket";
 import Link from "next/link";
 import { http } from "../../http-services/http";
 import { HiOutlineMap, HiOutlineMapPin } from "react-icons/hi2";
+import { toast } from "react-toastify";
+import dynamic from "next/dynamic";
 let chatId;
+let allChat;
+const MapWithNoSsrNewPoster = dynamic(
+  () => import("../../components/NewPosterMap"),
+  {
+    ssr: false,
+  }
+);
 const Chat = () => {
   const [allChats, setAllChats] = useState([]);
-  const [activeChat, setActiveChat] = useState({});
+  const [activeChat, setActiveChat] = useState();
   const [chatText, setChatText] = useState("");
+
+  const [locationPopup, setLocationPopup] = useState(false);
+  const [location, setLocation] = useState();
 
   const dummy = useRef();
   const [owner, setOwner] = useState([{ id: 0, is_owner: false }]);
@@ -31,6 +43,8 @@ const Chat = () => {
   const [chatHistory, setChatHistory] = useState([]);
 
   const [isConnectionOpen, setIsConnectionOpen] = useState(false);
+
+  const imageRef = useRef();
   const router = useRouter();
 
   const createConnection = () => {
@@ -42,24 +56,20 @@ const Chat = () => {
       setConnection(websocket);
     };
     websocket.onmessage = (event) => {
-      console.log(event.data);
-      console.log("های");
-
-      console.log(chatId);
       if (!event.data.includes("User")) {
         const message = JSON.parse(event.data);
-        console.log(message, chatId);
-        if (message.conversation_id === chatId) {
-          const newMessage = {
-            ...message,
-            receiver_id: message.receiver,
-            sender_id: message.sender,
-          };
-          delete newMessage.receiver;
-          delete newMessage.sender;
-          setChatHistory((prev) => [...prev, newMessage]);
+
+        if (+message.conversation_id === +chatId) {
+          setChatHistory((prev) => [...prev, message]);
         }
+        const newAllChats = [...allChat];
+        const selectedChat = newAllChats.find(
+          (chat) => chat.id === message.conversation_id
+        );
+        if (selectedChat) selectedChat.description = message.content;
+        setAllChats(newAllChats);
       }
+
       // if (chatId) {
       //   fetchChatHistory(chatId);
       // }
@@ -78,31 +88,34 @@ const Chat = () => {
   useEffect(() => {
     if (auth.token) {
       if (!connection) {
-        // createConnection();
+        console.log("create connection");
+        createConnection();
       }
     }
   }, [auth]);
+  console.log(allChats);
 
   useEffect(() => {
     if (auth)
       if (!auth.token && !auth.showLoginPopup)
         setAuth((prev) => ({ ...prev, showLoginPopup: true }));
     if (auth.token) {
-      // (async () => {
-      //   const { data } = await http.get("/api/v1/chat/authorize/conversation", {
-      //     headers: {
-      //       Authorization: `Bearer ${auth?.token}`,
-      //     },
-      //   });
-      //   if (data) {
-      //     setAllChats(data);
-      //     setOwner(
-      //       data.map((chat) => {
-      //         return { id: chat.id, is_owner: chat.is_owner };
-      //       })
-      //     );
-      //   }
-      // })();
+      (async () => {
+        const { data } = await http.get("/api/v1/chat/authorize/conversation", {
+          headers: {
+            Authorization: `Bearer ${auth?.token}`,
+          },
+        });
+        if (data) {
+          setAllChats(data);
+          allChat = data;
+          setOwner(
+            data.map((chat) => {
+              return { id: chat.id, is_owner: chat.is_owner };
+            })
+          );
+        }
+      })();
     }
   }, [auth]);
   useEffect(() => {
@@ -116,7 +129,7 @@ const Chat = () => {
         fetchChatHistory(router.query.chat_id[0]);
       }
     }
-  }, [router.query, allChats]);
+  }, [router.query]);
 
   const fetchChatHistory = async (id) => {
     const { data } = await http.get(
@@ -138,11 +151,11 @@ const Chat = () => {
   };
   useEffect(() => {
     if (chatHistory.length > 0) {
-      console.log(chatHistory);
       dummy.current.scrollIntoView({ behavior: "smooth" });
     }
   }, [chatHistory]);
   const checkClassOfMessage = (message, is_owner) => {
+    console.log(message);
     if (is_owner) {
       if (message.receiver_id === ownerId) {
         return classes.singlechat_left_message;
@@ -157,21 +170,26 @@ const Chat = () => {
       }
     }
   };
-  const sendMessage = () => {
-    if (chatText) {
+  const sendMessage = (text, type = "text") => {
+    if (text) {
       connection.send(
         JSON.stringify({
-          content: chatText,
-          type: "text",
+          content: text,
+          type,
           conversation_id: +router.query.chat_id[0],
         })
       );
+      // send https request
+      const newAllChats = [...allChat];
+      const selectedChat = newAllChats.find((chat) => chat.id === +chatId);
+      selectedChat.description = text;
+      setAllChats(newAllChats);
     }
     setChatText("");
   };
   const handlePressEnter = (e) => {
     if (e.key === "Enter") {
-      sendMessage();
+      sendMessage(chatText, "text");
     }
   };
   // useEffect(() => {
@@ -180,7 +198,15 @@ const Chat = () => {
   // }, [router.query]);
   return (
     <>
+      {locationPopup && (
+        <div className={classes.location_background}>
+          <div className={classes.location_container}>
+            <MapWithNoSsrNewPoster />
+          </div>
+        </div>
+      )}
       <AppHeader />
+
       <div className={classes.container}>
         <div
           className={`${classes.chatslist} ${
@@ -193,7 +219,7 @@ const Chat = () => {
               {allChats.map((chat, index) => (
                 <ChatItem
                   name={chat.name}
-                  description={""}
+                  description={chat?.description ? chat?.description : ""}
                   image={chat?.image_url}
                   key={index}
                   onClick={() => {
@@ -249,7 +275,7 @@ const Chat = () => {
                         key={index}
                       >
                         <div className={classes.singlechat_chat_item_text}>
-                          {chat.content}
+                          {showMessage(chat.content, chat.type)}
                         </div>
                       </div>
                     );
@@ -257,10 +283,37 @@ const Chat = () => {
                   <div ref={dummy}></div>
                 </div>
                 <div className={classes.singlechat_bottom}>
-                  <button className={classes.singlechat_bottom_send}>
+                  <button
+                    className={classes.singlechat_bottom_send}
+                    onClick={() => {
+                      setLocationPopup(true);
+                    }}
+                  >
                     <HiOutlineMapPin size="28px" color="#2f89fc" />
                   </button>
-                  <button className={classes.singlechat_bottom_send}>
+                  <input
+                    type="file"
+                    ref={imageRef}
+                    style={{ display: "none " }}
+                    onChange={async (e) => {
+                      if (e.target.files[0]) {
+                        const formData = new FormData();
+                        formData.append("image", e.target.files[0]);
+                        const { data } = await axios.post(
+                          "/api/v1/api-call/image-upload",
+                          formData
+                        );
+                        sendMessage(data.url, "image");
+                      }
+                    }}
+                  />
+                  <button
+                    style={{ marginLeft: "8px" }}
+                    className={classes.singlechat_bottom_send}
+                    onClick={() => {
+                      imageRef.current.click();
+                    }}
+                  >
                     <BiImageAdd size="28px" color="#2f89fc" />
                   </button>
                   <input
@@ -291,5 +344,13 @@ const Chat = () => {
     </>
   );
 };
-
+const showMessage = (content, type) => {
+  if (type === "image") {
+    return <img style={{ width: "200px", height: "200px" }} src={content} />;
+  } else if (type === "text") {
+    return content;
+  } else if (type === "location") {
+    return "somthing";
+  }
+};
 export default Chat;

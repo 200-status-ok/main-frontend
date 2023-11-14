@@ -108,8 +108,9 @@
   width: 100%;
   display: flex;
   align-items: center;
-  column-gap: 16px;
-  padding: 12px 16px;
+  /* column-gap: 8px; */
+  padding: 12px 8px;
+
   box-shadow: 0 -1px 2px rgba(0, 0, 0, 0.12);
 }
 .singlechat_bottom input {
@@ -133,11 +134,11 @@
   padding-bottom: 3px;
   cursor: pointer;
   height: 36px;
+  padding: 4px;
 }
 .singlechat_bottom_send:hover {
   background-color: rgba(0, 0, 0, 0.04);
   border-radius: 50%;
-  /* padding: 4px; */
 }
 .singlechat_right_message {
   background-color: #eff8ff;
@@ -206,6 +207,28 @@
 }
 .chatslist_chat_item.active {
   background-color: #eff8ff;
+}
+.location_background {
+  width: 100%;
+  height: 100vh;
+  background-color: rgba(0, 0, 0, 0.3);
+  position: fixed;
+  display: grid;
+  place-items: center;
+  top: 0;
+  z-index: 9999999;
+}
+.location_container {
+  background-color: white;
+  border-radius: 8px;
+  width: 400px;
+  height: 300px;
+  display: flex;
+  flex-direction: column;
+  row-gap: 8px;
+}
+.location_buttons {
+  display: flex;
 }
 @media screen and (max-width: 1300px) {
   .container {
