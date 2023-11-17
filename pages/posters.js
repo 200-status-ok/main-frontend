@@ -10,7 +10,6 @@ import { useEffect, useRef, useState } from "react";
 import ReactSwitch from "react-switch";
 import axios from "axios";
 import { HiSearch } from "react-icons/hi";
-
 import { useAuth } from "../context/AuthProvider";
 import { useRouter } from "next/router";
 import NewPosterPopup from "../components/NewPosterPopup";
@@ -42,11 +41,10 @@ const Posters = () => {
   for (let i = 1; i <= maxPage; i++) {
     pagesArray.push(i);
   }
-  console.log(pagesArray);
   const { auth, setAuth } = useAuth();
   const searchItemsBoxRef = useRef();
   const router = useRouter();
-  console.log(router.query);
+
   const [error, setError] = useState("");
   const [latLong, setLatLong] = useState({ lat: 35.686023, lng: 51.393045 });
 
@@ -117,7 +115,6 @@ const Posters = () => {
           }`
         );
         setSearchBoxItems(data?.posters ? data?.posters : []);
-        console.log(data);
       }, 500);
     } else {
       setSearchBoxItems([]);
@@ -150,6 +147,14 @@ const Posters = () => {
             radius={900}
             setLatLong={setLatLong}
             latLong={latLong}
+            itemsLatLong={allPosters.map((poster) => {
+              return {
+                lat: poster.addresses[0].location.lat,
+                lng: poster.addresses[0].location.lon,
+                title: poster.title,
+                id: poster.id,
+              };
+            })}
             firstCircle={false}
             className="home"
           />
@@ -281,7 +286,6 @@ const Posters = () => {
         {error && <div className={classes.error}>{error}</div>}
 
         <div className={classes.posters_container}>
-          {console.log(allPosters)}
           {allPosters.map((poster, index) => (
             <SmallPoster
               id={poster.id}

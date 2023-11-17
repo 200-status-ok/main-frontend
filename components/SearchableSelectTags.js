@@ -10,7 +10,6 @@ const SearchableSelectTags = ({
   customStyle,
   maxLengthOfTags = "350px",
 }) => {
-  console.log(options, tags);
   const [search, setSearch] = useState("");
   const [showOptions, setShowOptions] = useState(false);
   const [filteredOptions, setFilteredOptions] = useState([]);
@@ -21,7 +20,6 @@ const SearchableSelectTags = ({
     const filtered_Options = options?.filter((option) => {
       return !tagsId.includes(option.id);
     });
-    console.log(tagsId, filtered_Options);
     setFilteredOptions(filtered_Options ? filtered_Options : []);
   }, [options]);
   useEffect(() => {

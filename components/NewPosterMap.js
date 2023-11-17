@@ -12,7 +12,14 @@ export function ChangeView({ coords, zoom }) {
 import icon from "leaflet/dist/images/marker-icon.png";
 import iconShadow from "leaflet/dist/images/marker-shadow.png";
 
-export default function Map({ style, zoom = 16.5, latLong, setLatLong }) {
+export default function Map({
+  style,
+  zoom = 16.5,
+  lat,
+  lng,
+  setLatLong,
+  district,
+}) {
   //   const [geoData, setGeoData] = useState({ lat: 35.683111, lng: 51.439189 });
   const [map, setMap] = useState(null);
   let DefaultIcon = L.icon({
@@ -21,7 +28,7 @@ export default function Map({ style, zoom = 16.5, latLong, setLatLong }) {
   });
 
   L.Marker.prototype.options.icon = DefaultIcon;
-  const center = [latLong.lat, latLong.lng];
+  const center = [lat, lng];
 
   useEffect(() => {
     if (map) {
@@ -33,6 +40,14 @@ export default function Map({ style, zoom = 16.5, latLong, setLatLong }) {
     }
   }, [map]);
 
+  useEffect(() => {
+    if (district) {
+      setLatLong({
+        lat: district.centroid.latitude,
+        lng: district.centroid.longitude,
+      });
+    }
+  }, [district]);
   return (
     <MapContainer
       center={center}
@@ -44,7 +59,7 @@ export default function Map({ style, zoom = 16.5, latLong, setLatLong }) {
         attribution='&copy; <a href="http://osm.org/copyright">OpenStreetMap</a> contributors'
         url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
       />
-      <Circle radius={50} center={[latLong.lat, latLong.lng]}></Circle>
+      <Circle radius={50} center={[lat, lng]}></Circle>
       {/* <Marker position={[geoData.lat, geoData.lng]}></Marker> */}
       <ChangeView coords={center} />
     </MapContainer>

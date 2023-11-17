@@ -5,6 +5,7 @@ import { useEffect, useRef, useState } from "react";
 import { states } from "../data/province/Province";
 import { BsMagic } from "react-icons/bs";
 import { RxMagicWand } from "react-icons/rx";
+import { HiOutlineSparkles } from "react-icons/hi2";
 import Tehran from "../data/districts/Tehran.json";
 import box from "../assets/images/box.svg";
 import SearchableSelectTags from "./SearchableSelectTags";
@@ -28,14 +29,17 @@ const initialValueOfPoster = {
   description: "",
   status: "lost",
 };
-const initialLatLong = {
-  lat: Tehran.districts[0].centroid.latitude,
-  lng: Tehran.districts[0].centroid.longitude,
-};
+
 const NewPosterPopup = () => {
-  const [province, setProvince] = useState(states[6]);
-  const [district, setDistrict] = useState(Tehran.districts[0]);
-  const [latLong, setLatLong] = useState(initialLatLong);
+  const [addresses, setAddresses] = useState([
+    {
+      address_detail: Tehran.districts[0],
+      city: states[6],
+      latitude: Tehran.districts[0].centroid.latitude,
+      longitude: Tehran.districts[0].centroid.longitude,
+      province: states[6],
+    },
+  ]);
   const [sendLoading, setSendLoading] = useState(false);
   const [poster, setPoster] = useState(initialValueOfPoster);
   const [award, setAward] = useState(false);
@@ -46,18 +50,14 @@ const NewPosterPopup = () => {
   const [tags, setTags] = useState([]);
   const [imagesToBackend, setImagesToBackend] = useState([]);
   const [images, setImages] = useState([]);
+  const [activeImageforAi, setActiveImageForAi] = useState(0);
   const [loadingAi, setLoadingAi] = useState(false);
   const [userCredit, setUserCredits] = useState(0);
 
   const imageRef = useRef();
   const { auth, setAuth } = useAuth();
 
-  useEffect(() => {
-    setLatLong({
-      lat: district.centroid.latitude,
-      lng: district.centroid.longitude,
-    });
-  }, [district]);
+  useEffect(() => {}, [addresses]);
 
   useEffect(() => {
     (async () => {
@@ -65,8 +65,11 @@ const NewPosterPopup = () => {
         images.forEach(async (image) => {
           if (image.isUploaded) return;
           const formData = new FormData();
-          formData.append("poster_image", image.file);
-          const { data } = await axios.post("/api/v1/posters/image", formData);
+          formData.append("image", image.file);
+          const { data } = await axios.post(
+            "/api/v1/api-call/image-upload",
+            formData
+          );
           setImagesToBackend([
             ...imagesToBackend,
             { id: image.file, url: data.url },
@@ -105,12 +108,14 @@ const NewPosterPopup = () => {
           <input
             type="file"
             style={{ display: "none" }}
-            onChange={(e) =>
-              setImages([
-                ...images,
-                { file: e.target.files[0], isUploaded: false },
-              ])
-            }
+            onChange={(e) => {
+              if (e.target.files[0]) {
+                setImages([
+                  ...images,
+                  { file: e.target.files[0], isUploaded: false },
+                ]);
+              }
+            }}
             ref={imageRef}
           />
           <div className={classes.images_container}>
@@ -126,10 +131,19 @@ const NewPosterPopup = () => {
                 </div>
               </div>
             </div>
+            {console.log(addresses)}
             {images.map((image, index) => {
               if (image?.file) {
                 return (
-                  <div className={classes.image} key={index}>
+                  <div
+                    className={`${classes.image} ${
+                      index === activeImageforAi ? classes.active : ""
+                    }`}
+                    key={index}
+                    onClick={() => {
+                      setActiveImageForAi(index);
+                    }}
+                  >
                     <img
                       src={image?.file ? URL.createObjectURL(image.file) : ""}
                     />
@@ -141,7 +155,6 @@ const NewPosterPopup = () => {
                           setImages(
                             images.filter((img) => img.file !== image.file)
                           );
-                          console.log(imagesToBackend);
                           setImagesToBackend(
                             imagesToBackend.filter(
                               (img) => img.id !== image.file
@@ -168,14 +181,16 @@ const NewPosterPopup = () => {
             />
             <button
               className={`${classes.ai_generate_button} ${
-                imagesToBackend[0] ? classes.active : classes.disabled
+                imagesToBackend[activeImageforAi]
+                  ? classes.active
+                  : classes.disabled
               }`}
-              disabled={!imagesToBackend[0]?.url}
+              disabled={!imagesToBackend[activeImageforAi]?.url}
               onClick={async () => {
                 try {
                   setLoadingAi(true);
                   const { data } = await http.get(
-                    `/api/v1/api-call/generate-poster-Info?image_url=${imagesToBackend[0].url}`
+                    `/api/v1/api-call/generate-poster-Info?image_url=${imagesToBackend[activeImageforAi].url}`
                   );
                   setAiObjects(data);
                   setLoadingAi(false);
@@ -183,6 +198,7 @@ const NewPosterPopup = () => {
                   toast.error(
                     "خطایی در گرفتن اطلاعات پیش آمد ، لطفا از jpeg بودن فرمت تصویر خود اطمینان حاصل کنید"
                   );
+                  setLoadingAi(false);
                 }
               }}
             >
@@ -201,7 +217,7 @@ const NewPosterPopup = () => {
                 />
               ) : (
                 <>
-                  بهوش <BsMagic />
+                  بهوش <HiOutlineSparkles />
                 </>
               )}
             </button>
@@ -456,25 +472,69 @@ const NewPosterPopup = () => {
             </div>
           )}
         </div>
-        <div className={classes.province_container}>
-          <div className={classes.province}>استان</div>
-          <SearchableSelect
-            options={states}
-            value={province}
-            setValue={setProvince}
-            zindex="1000000"
-          />
-        </div>
-        <div className={classes.province_container}>
-          <div className={classes.province}>محله</div>
-          <SearchableSelect
-            options={districts}
-            value={district}
-            setValue={setDistrict}
-          />
-        </div>
-        <div className={classes.map}>
-          <MapWithNoSsrNewPoster latLong={latLong} setLatLong={setLatLong} />
+        {addresses.map((address, index) => {
+          return (
+            <>
+              <div className={classes.province_container}>
+                <div className={classes.province}>استان</div>
+                <SearchableSelect
+                  options={states}
+                  value={address.province}
+                  setValue={(province) => {
+                    const copyOfAddresses = [...addresses];
+                    copyOfAddresses[index].province = province;
+                    setAddresses(copyOfAddresses);
+                  }}
+                  zindex="1000000"
+                />
+              </div>
+              <div className={classes.province_container}>
+                <div className={classes.province}>محله</div>
+                <SearchableSelect
+                  options={districts}
+                  value={address.address_detail}
+                  setValue={(district) => {
+                    const copyOfAddresses = [...addresses];
+                    copyOfAddresses[index].address_detail = district;
+                    setAddresses(copyOfAddresses);
+                  }}
+                />
+              </div>
+              <div className={classes.map}>
+                <MapWithNoSsrNewPoster
+                  lat={address.latitude}
+                  lng={address.longitude}
+                  district={address.address_detail}
+                  setLatLong={({ lat, lng }) => {
+                    setAddresses((lastAddresses) => {
+                      const copyOfAddresses = [...lastAddresses];
+
+                      copyOfAddresses[index].latitude = lat;
+                      copyOfAddresses[index].longitude = lng;
+                      return copyOfAddresses;
+                    });
+                  }}
+                />
+              </div>
+            </>
+          );
+        })}
+        <div
+          className={classes.add_address_button}
+          onClick={() => {
+            setAddresses([
+              ...addresses,
+              {
+                address_detail: Tehran.districts[0],
+                city: states[6],
+                latitude: Tehran.districts[0].centroid.latitude,
+                longitude: Tehran.districts[0].centroid.longitude,
+                province: states[6],
+              },
+            ]);
+          }}
+        >
+          افزودن آدرس جدید
         </div>
         <div className={classes.buttons_container}>
           <div
@@ -509,15 +569,12 @@ const NewPosterPopup = () => {
                   await http.post(
                     "/api/v1/posters/authorize/",
                     {
-                      addresses: [
-                        {
-                          address_detail: district.name,
-                          city: province.name,
-                          latitude: latLong.lat,
-                          longitude: latLong.lng,
-                          province: province.name,
-                        },
-                      ],
+                      addresses: addresses.map((a) => ({
+                        ...a,
+                        address_detail: a.address_detail.name,
+                        city: a.province.name,
+                        province: a.province.name,
+                      })),
                       img_urls: imagesToBackend.map((i) => i.url),
                       poster: {
                         alert: true,
