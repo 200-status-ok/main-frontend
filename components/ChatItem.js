@@ -11,7 +11,10 @@ const ChatItem = ({ description, name, onClick, active, image }) => {
       }}
     >
       <div className={classes.chatslist_chat_item_icon}>
-        <img src={image ? image : bicycle.src} />
+        <img
+          dateset-testid="chatitem-image"
+          src={image ? image : bicycle.src}
+        />
       </div>
       <div className={classes.chatslist_chat_item_info}>
         <div className={classes.chatslist_chat_item_info_top}>{name} </div>
