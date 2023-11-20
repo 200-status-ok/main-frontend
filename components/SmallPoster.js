@@ -42,7 +42,7 @@ const SmallPoster = ({
   };
   return (
     <Link href={`/poster/${id}`} className={classes.poster}>
-      <div className={classes.poster_body}>
+      <div className={classes.poster_body} data-testid="test">
         <div className={classes.poster_title}>
           {state ? (
             <>

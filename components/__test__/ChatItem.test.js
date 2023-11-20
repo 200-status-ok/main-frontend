@@ -2,7 +2,7 @@ import { render, screen } from "@testing-library/react";
 import "@testing-library/jest-dom";
 import ChatItem from "../ChatItem";
 
-test("renders button component", () => {
+test("renders chat item", () => {
   render(
     <ChatItem
       name="محمدحسین"
@@ -12,7 +12,7 @@ test("renders button component", () => {
   );
   const nameElement = screen.getByText(/محمدحسین/i);
   const descriiptionElement = screen.getByText(/پیام آخر/i);
-  const imageElement = screen.getByTestId("chatitem-image");
+  const imageElement = screen.getByRole("img");
   expect(nameElement).toBeInTheDocument();
   expect(descriiptionElement).toBeInTheDocument();
   expect(imageElement).toBeInTheDocument();
