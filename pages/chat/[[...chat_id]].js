@@ -67,6 +67,8 @@ const Chat = () => {
           (chat) => chat.id === message.conversation_id
         );
         if (selectedChat) selectedChat.description = message.content;
+        if (+message.conversation_id !== +chatId) selectedChat.unread = true;
+        console.log(newAllChats);
         setAllChats(newAllChats);
       }
 
@@ -111,7 +113,11 @@ const Chat = () => {
         });
         setUserId(user.id);
         if (data) {
-          setAllChats(data);
+          const unreadAddedChats = data.map((chat) => ({
+            ...chat,
+            unread: false,
+          }));
+          setAllChats(unreadAddedChats);
           allChat = data;
           setOwner(
             data.map((chat) => {
@@ -130,6 +136,7 @@ const Chat = () => {
         const currentActiveChat = allChats.find(
           (chat) => chat.id === +router.query.chat_id
         );
+        currentActiveChat.unread = false;
         setActiveChat(currentActiveChat);
         fetchChatHistory(router.query.chat_id[0]);
       }
@@ -271,6 +278,7 @@ const Chat = () => {
                   }
                   image={chat?.image_url}
                   key={index}
+                  unread={chat?.unread}
                   onClick={() => {
                     router.push(`/chat/${chat.id}`);
                   }}

@@ -1,6 +1,6 @@
 import classes from "../pages/chat/Chat.module.css";
 import bicycle from "../assets/images/bicycle.png";
-const ChatItem = ({ description, name, onClick, active, image }) => {
+const ChatItem = ({ description, name, onClick, active, image, unread }) => {
   return (
     <div
       className={`${classes.chatslist_chat_item} ${
@@ -22,7 +22,11 @@ const ChatItem = ({ description, name, onClick, active, image }) => {
             : description}
         </div>
       </div>
-      <div className={classes.chatslist_chat_item_notification}></div>
+      <div
+        className={`${classes.chatslist_chat_item_notification} ${
+          unread && classes.active
+        }`}
+      ></div>
     </div>
   );
 };
