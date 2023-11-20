@@ -156,7 +156,7 @@ const Chat = () => {
     setChatHistory(data.messages.reverse());
   };
   useEffect(() => {
-    if (chatHistory.length > 0) {
+    if (chatHistory.length > 0 && activeChat) {
       dummy.current.scrollIntoView({ behavior: "smooth" });
     }
   }, [chatHistory]);
@@ -168,7 +168,7 @@ const Chat = () => {
         return classes.singlechat_right_message;
       }
     } else {
-      if (message.receiver_id === currentChatDetail.owner_id) {
+      if (message.receiver_id === currentChatDetail?.owner_id) {
         return classes.singlechat_right_message;
       } else {
         return classes.singlechat_left_message;
@@ -266,7 +266,9 @@ const Chat = () => {
               {allChats.map((chat, index) => (
                 <ChatItem
                   name={chat.name}
-                  description={chat?.description ? chat?.description : ""}
+                  description={
+                    chat?.description ? chat?.description : "بدون پیام"
+                  }
                   image={chat?.image_url}
                   key={index}
                   onClick={() => {
@@ -375,7 +377,7 @@ const Chat = () => {
                   <button
                     className={classes.singlechat_bottom_send}
                     onClick={() => {
-                      sendMessage();
+                      sendMessage(chatText, "text");
                     }}
                   >
                     <HiOutlinePaperAirplane size="28px" color="#2f89fc" />

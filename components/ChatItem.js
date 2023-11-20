@@ -22,6 +22,7 @@ const ChatItem = ({ description, name, onClick, active, image }) => {
             : description}
         </div>
       </div>
+      <div className={classes.chatslist_chat_item_notification}></div>
     </div>
   );
 };

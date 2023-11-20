@@ -254,6 +254,12 @@
   align-items: center;
   cursor: pointer;
 }
+.chatslist_chat_item_notification {
+  width: 12px;
+  height: 10px;
+  border-radius: 50%;
+  background-color: #2f89fc;
+}
 @media screen and (max-width: 1300px) {
   .container {
     width: 80%;
