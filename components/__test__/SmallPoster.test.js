@@ -1,35 +1,60 @@
-import { render, screen } from "@testing-library/react";
 import "@testing-library/jest-dom";
+import { render, screen } from "@testing-library/react";
 import SmallPoster from "../SmallPoster";
-test("renders chat item", () => {
-  render(
-    <SmallPoster
-      id={1}
-      categories={[
-        {
-          id: 4,
-          created_at: "2023-11-13T23:54:46.175904Z",
-          updated_at: "2023-11-13T23:54:46.175904Z",
-          deleted_at: null,
-          name: "عروسک",
-          state: "accepted",
-          posters: null,
-        },
-      ]}
-      special_type="special"
-      // time_description={poster.time_description}
-      award={0}
-      found={true}
-      location="آبشار"
-      title="عروسک سفید"
-      description="پیام آخر"
-      image="https://salam.com/salam.png"
-    />
-  );
-  const titleElement = screen.getByText("عروسک سفید");
-  const descriptionElement = screen.getByText(/پیام آخر/i);
-  const imageElement = screen.getByRole("img");
-  expect(titleElement).toBeInTheDocument();
-  expect(descriptionElement).toBeInTheDocument();
-  expect(imageElement).toBeInTheDocument();
+
+describe("SmallPoster component", () => {
+  const sampleProps = {
+    image: "path/to/image.jpg",
+    title: "Sample Title",
+    description: "This is a sample description.",
+    found: true,
+    lost: false,
+    location: "Sample Location",
+    time_description: "Sample Time",
+    categories: [{ name: "Category 1" }, { name: "Category 2" }],
+    id: 123,
+    award: 1,
+    special_type: "premium",
+    state: "accepted",
+  };
+
+  test("renders SmallPoster component with provided props", () => {
+    render(<SmallPoster {...sampleProps} />);
+
+    // expect(screen.getByTestId("test")).toHaveAttribute("href", "/poster/123");
+    expect(screen.getByText("Sample Title")).toBeInTheDocument();
+    expect(
+      screen.getByText("This is a sample description.")
+    ).toBeInTheDocument();
+    expect(screen.getByText("Category 1")).toBeInTheDocument();
+    expect(screen.getByText("Category 2")).toBeInTheDocument();
+    expect(screen.getByText("مژدگانی")).toBeInTheDocument();
+    expect(screen.getByText("ویژه")).toBeInTheDocument();
+    expect(screen.getByText("تایید شده")).toBeInTheDocument();
+
+    expect(screen.queryByText("گم شده")).toBeNull();
+  });
+
+  test("truncates long descriptions", () => {
+    const longDescription =
+      "Lorem ipsum dolor sit amet, consectetur adipiscing elit.Lorem ipsum dolor sit amet, consectetur adipiscing elit.Lorem ipsum dolor sit amet, consectetur adipiscing elit.";
+    render(<SmallPoster {...sampleProps} description={longDescription} />);
+
+    expect(
+      screen.getByText(
+        "Lorem ipsum dolor sit amet, consectetur adipiscing elit.Lorem ipsum dolor sit am ..."
+      )
+    ).toBeInTheDocument(); // Check if the description is truncated
+  });
+
+  test("renders SmallPoster component for lost item", () => {
+    const lostProps = {
+      ...sampleProps,
+      found: false,
+      lost: true,
+    };
+    render(<SmallPoster {...lostProps} />);
+
+    expect(screen.queryByText("پیدا شده")).toBeNull(); // Ensure the "پیدا شده" text is not present
+  });
 });

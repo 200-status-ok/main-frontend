@@ -8,7 +8,6 @@ describe("Popup component", () => {
     render(
       <Popup phone="123456789" setShow={() => {}} telegram_id="test_telegram" />
     );
-    console.log(document.body.innerHTML);
     expect(screen.getByText("123456789")).toBeInTheDocument();
     expect(screen.getByText("test_telegram")).toBeInTheDocument();
   });
