@@ -4,7 +4,7 @@ import classes from "../pages/Home.module.css";
 import dot from "../assets/images/dot.png";
 import Image from "next/image";
 
-const lengthOfDescription = 110;
+const lengthOfDescription = 50;
 
 const Poster = ({
   image,
@@ -22,6 +22,7 @@ const Poster = ({
         src={image}
         width={260}
         height={260}
+        alt={title}
       />
       <h2>
         <Image src={dot} width={10} style={{ marginLeft: "8px" }} />

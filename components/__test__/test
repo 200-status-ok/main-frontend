@@ -1,0 +1,54 @@
+import { render, screen, waitFor } from "@testing-library/react";
+import axios from "axios"; // You may need to mock this or use a library like `msw` for API mocking
+import Posters from "../../pages/posters";
+import MyApp from "../../pages/_app";
+import AuthProvider from "../../context/AuthProvider";
+import mockRouter from "next-router-mock";
+
+// Mock the axios module to avoid actual network requests during tests
+jest.mock("axios");
+jest.mock("next/router", () => jest.requireActual("next-router-mock"));
+
+const MyContextProvider = () => {
+  return (
+    <AuthProvider>
+      <Posters />
+    </AuthProvider>
+  );
+};
+describe("Posters component", () => {
+  it("renders posters correctly", async () => {
+    // Mock the data returned from the API
+    axios.get.mockResolvedValue({
+      data: {
+        posters: [
+          {
+            id: 1,
+            images: ["image1.jpg"],
+            title: "Poster 1",
+            addresses: [
+              { address_detail: "Location 1", location: { lat: 10, lon: 20 } },
+            ],
+            description: "Description 1",
+            tags: ["Tag1", "Tag2"],
+            special_type: "special",
+            status: "found",
+            award: 0,
+          },
+          // Add more posters as needed
+        ],
+      },
+    });
+
+    render(<MyContextProvider />);
+    screen.debug();
+
+    // Wait for the API call to complete and check if posters are rendered
+    await waitFor(() => {
+      expect(screen.getByText("Poster 1")).toBeInTheDocument();
+      // Add more assertions based on your component's structure
+    });
+  });
+
+  // Add more tests as needed for other functionality in your component
+});

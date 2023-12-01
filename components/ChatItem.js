@@ -1,6 +1,6 @@
 import classes from "../pages/chat/Chat.module.css";
 import bicycle from "../assets/images/bicycle.png";
-const ChatItem = ({ description, name, onClick, active, image }) => {
+const ChatItem = ({ description, name, onClick, active, image, unread }) => {
   return (
     <div
       className={`${classes.chatslist_chat_item} ${
@@ -11,10 +11,7 @@ const ChatItem = ({ description, name, onClick, active, image }) => {
       }}
     >
       <div className={classes.chatslist_chat_item_icon}>
-        <img
-          dateset-testid="chatitem-image"
-          src={image ? image : bicycle.src}
-        />
+        <img src={image ? image : bicycle.src} />
       </div>
       <div className={classes.chatslist_chat_item_info}>
         <div className={classes.chatslist_chat_item_info_top}>{name} </div>
@@ -25,6 +22,11 @@ const ChatItem = ({ description, name, onClick, active, image }) => {
             : description}
         </div>
       </div>
+      <div
+        className={`${classes.chatslist_chat_item_notification} ${
+          unread && classes.active
+        }`}
+      ></div>
     </div>
   );
 };
