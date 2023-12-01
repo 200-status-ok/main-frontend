@@ -17,7 +17,7 @@ describe("SmallPoster component", () => {
     special_type: "premium",
     state: "accepted",
   };
-
+  // test
   test("renders SmallPoster component with provided props", () => {
     render(<SmallPoster {...sampleProps} />);
 
