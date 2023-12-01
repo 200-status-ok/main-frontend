@@ -42,8 +42,10 @@ const Posters = () => {
     pagesArray.push(i);
   }
   const { auth, setAuth } = useAuth();
+  // const [auth, setAuth] = useState({ token: "" });
   const searchItemsBoxRef = useRef();
   const router = useRouter();
+  // const [router, setRouter] = useState({ query: "" });
 
   const [error, setError] = useState("");
   const [latLong, setLatLong] = useState({ lat: 35.686023, lng: 51.393045 });

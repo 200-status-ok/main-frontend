@@ -36,7 +36,10 @@ const Chat = () => {
 
   const [connection, setConnection] = useState();
 
+  const [userId, setUserId] = useState(0);
   const [ownerId, setOwnerId] = useState(0);
+  const [senderId, setSenderId] = useState(0);
+  const [currentChatDetail, setCurrentChatDetail] = useState();
   const [chatHistory, setChatHistory] = useState([]);
 
   const [isConnectionOpen, setIsConnectionOpen] = useState(false);
@@ -64,6 +67,8 @@ const Chat = () => {
           (chat) => chat.id === message.conversation_id
         );
         if (selectedChat) selectedChat.description = message.content;
+        if (+message.conversation_id !== +chatId) selectedChat.unread = true;
+        console.log(newAllChats);
         setAllChats(newAllChats);
       }
 
@@ -86,11 +91,11 @@ const Chat = () => {
     if (auth.token) {
       if (!connection) {
         console.log("create connection");
+
         createConnection();
       }
     }
   }, [auth]);
-  console.log(allChats);
 
   useEffect(() => {
     if (auth)
@@ -103,8 +108,16 @@ const Chat = () => {
             Authorization: `Bearer ${auth?.token}`,
           },
         });
+        const { data: user } = await http.get("/api/v1/users/authorize/", {
+          headers: { Authorization: `Bearer ${auth.token}` },
+        });
+        setUserId(user.id);
         if (data) {
-          setAllChats(data);
+          const unreadAddedChats = data.map((chat) => ({
+            ...chat,
+            unread: false,
+          }));
+          setAllChats(unreadAddedChats);
           allChat = data;
           setOwner(
             data.map((chat) => {
@@ -115,6 +128,7 @@ const Chat = () => {
       })();
     }
   }, [auth]);
+
   useEffect(() => {
     if (router?.query?.chat_id) {
       chatId = router?.query?.chat_id[0];
@@ -122,6 +136,7 @@ const Chat = () => {
         const currentActiveChat = allChats.find(
           (chat) => chat.id === +router.query.chat_id
         );
+        currentActiveChat.unread = false;
         setActiveChat(currentActiveChat);
         fetchChatHistory(router.query.chat_id[0]);
       }
@@ -143,43 +158,64 @@ const Chat = () => {
         },
       }
     );
-    setOwnerId(data2.conversation.owner_id);
+
+    setCurrentChatDetail(data2.conversation);
     setChatHistory(data.messages.reverse());
   };
   useEffect(() => {
-    if (chatHistory.length > 0) {
+    if (chatHistory.length > 0 && activeChat) {
       dummy.current.scrollIntoView({ behavior: "smooth" });
     }
   }, [chatHistory]);
   const checkClassOfMessage = (message, is_owner) => {
-    console.log(message);
     if (is_owner) {
-      if (message.receiver_id === ownerId) {
+      if (message.receiver_id === currentChatDetail.owner_id) {
         return classes.singlechat_left_message;
       } else {
         return classes.singlechat_right_message;
       }
     } else {
-      if (message.receiver_id === ownerId) {
+      if (message.receiver_id === currentChatDetail?.owner_id) {
         return classes.singlechat_right_message;
       } else {
         return classes.singlechat_left_message;
       }
     }
   };
-  const sendMessage = (text, type = "text") => {
+  const sendMessage = async (text, type = "text") => {
+    console.log(allChats);
+
     if (text) {
-      connection.send(
-        JSON.stringify({
+      const senderId = userId;
+      const receiverId =
+        +currentChatDetail.owner_id === +userId
+          ? +currentChatDetail.member_id
+          : +currentChatDetail.owner_id;
+      const { data } = await http.post(
+        "/api/v1/chat/authorize/message",
+        {
           content: text,
-          type,
           conversation_id: +router.query.chat_id[0],
-        })
+          poster_id: currentChatDetail.poster_id,
+          receiver_id: receiverId,
+          sender_id: senderId,
+          type,
+        },
+        {
+          headers: {
+            Authorization: `Bearer ${auth?.token}`,
+          },
+        }
       );
+      console.log(data.send_message);
       // send https request
       const newAllChats = [...allChat];
       const selectedChat = newAllChats.find((chat) => chat.id === +chatId);
       selectedChat.description = text;
+
+      if (+data.send_message.conversation_id === +chatId) {
+        setChatHistory((prev) => [...prev, data.send_message]);
+      }
       setAllChats(newAllChats);
     }
     setChatText("");
@@ -237,9 +273,12 @@ const Chat = () => {
               {allChats.map((chat, index) => (
                 <ChatItem
                   name={chat.name}
-                  description={chat?.description ? chat?.description : ""}
+                  description={
+                    chat?.description ? chat?.description : "بدون پیام"
+                  }
                   image={chat?.image_url}
                   key={index}
+                  unread={chat?.unread}
                   onClick={() => {
                     router.push(`/chat/${chat.id}`);
                   }}
@@ -346,7 +385,7 @@ const Chat = () => {
                   <button
                     className={classes.singlechat_bottom_send}
                     onClick={() => {
-                      sendMessage();
+                      sendMessage(chatText, "text");
                     }}
                   >
                     <HiOutlinePaperAirplane size="28px" color="#2f89fc" />

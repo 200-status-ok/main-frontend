@@ -14,10 +14,10 @@ import { useEffect, useState } from "react";
 import { useRouter } from "next/router";
 import { Navigation, Pagination } from "swiper";
 // Import Swiper styles
-import "swiper/css";
-import "swiper/css/navigation";
-import "swiper/css/pagination";
-import "swiper/css/scrollbar";
+// import "swiper/css";
+// import "swiper/css/navigation";
+// import "swiper/css/pagination";
+// import "swiper/css/scrollbar";
 import axios from "axios";
 import Popup from "../../components/Popup";
 import ReportPopup from "../../components/ReportPopup";
@@ -65,7 +65,7 @@ const Poster = () => {
   }, [router.query.poster_id]);
 
   const fetchPoster = async () => {
-    const { data } = await http.get(
+    const { data } = await axios.get(
       `/api/v1/posters/${router.query.poster_id}`
     );
     console.log(data);

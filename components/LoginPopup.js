@@ -95,6 +95,7 @@ const LoginPopup = () => {
             <button
               className={classes.login_button}
               onClick={() => onVerifyHandler(otp, username, setAuth)}
+              data-testid="loginbtn"
             >
               ورود
             </button>

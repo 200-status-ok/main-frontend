@@ -254,6 +254,17 @@
   align-items: center;
   cursor: pointer;
 }
+.chatslist_chat_item_notification {
+  width: 12px;
+  opacity: 0;
+  height: 10px;
+  border-radius: 50%;
+  background-color: #2f89fc;
+  transition: all 0.3s ease-in-out;
+}
+.chatslist_chat_item_notification.active {
+  opacity: 1;
+}
 @media screen and (max-width: 1300px) {
   .container {
     width: 80%;
