@@ -1,9 +1,8 @@
 import "@testing-library/jest-dom";
 import { render, screen, fireEvent, waitFor } from "@testing-library/react";
 import ReportPopup from "../ReportPopup";
-import { http } from "../../http-services/http"; // Assuming this is your http object
-
-jest.mock("../../http-services/http"); // Mocking your custom http object
+import { http } from "../../http-services/http";
+jest.mock("../../http-services/http");
 
 describe("ReportPopup component", () => {
   const mockSetShow = jest.fn();
@@ -18,7 +17,7 @@ describe("ReportPopup component", () => {
     expect(screen.getByText("ارسال گزارش")).toBeInTheDocument();
   });
 
-  test("closes the ReportPopup when clicking 'بستن'", () => {
+  test("closes the ReportPopup when clicking close", () => {
     render(<ReportPopup setShow={mockSetShow} posterId={123} />);
 
     fireEvent.click(screen.getByText("بستن"));
@@ -26,7 +25,7 @@ describe("ReportPopup component", () => {
     expect(mockSetShow).toHaveBeenCalledWith(false);
   });
 
-  test("sends report when clicking 'ارسال گزارش' with valid description", async () => {
+  test("sends report when clicking send report with valid description", async () => {
     http.post.mockResolvedValueOnce({}); // Mocking a successful API response
 
     render(<ReportPopup setShow={mockSetShow} posterId={123} />);

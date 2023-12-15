@@ -21,7 +21,7 @@ describe("Poster component", () => {
   test("renders Poster component with provided props", () => {
     render(<Poster {...sampleProps} />);
 
-    expect(screen.getByAltText("Sample Title")).toBeInTheDocument(); // Assuming alt text is set to the title
+    expect(screen.getByAltText("Sample Title")).toBeInTheDocument();
     expect(screen.getByText("Sample Title")).toBeInTheDocument();
     expect(
       screen.getByText("This is a sample description.")
@@ -29,7 +29,7 @@ describe("Poster component", () => {
     // expect(
     //   screen.getByText("Sample Time پیدا شده در Sample Location")
     // ).toBeInTheDocument();
-    expect(screen.queryByText("گم شده")).toBeNull(); // Ensure the "گم شده" text is not present
+    expect(screen.queryByText("گم شده")).toBeNull();
   });
 
   test("check long descriptions", () => {
@@ -39,7 +39,7 @@ describe("Poster component", () => {
 
     expect(
       screen.getByText("Lorem ipsum dolor sit amet, consectetur adipiscing ...")
-    ).toBeInTheDocument(); // Check if the description is truncated
+    ).toBeInTheDocument();
   });
 
   test("renders Poster component for lost item", () => {
@@ -53,6 +53,6 @@ describe("Poster component", () => {
     // expect(
     //   screen.getByText("Sample Time گم شده در Sample Location")
     // ).toBeInTheDocument();
-    expect(screen.queryByText("پیدا شده")).toBeNull(); // Ensure the "پیدا شده" text is not present
+    expect(screen.queryByText("پیدا شده")).toBeNull();
   });
 });
