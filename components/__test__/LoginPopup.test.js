@@ -16,7 +16,6 @@ const MyContextProvider = () => {
 describe("LoginPopup component", () => {
   test("renders LoginPopup component", () => {
     render(<MyContextProvider />);
-    // You can add more specific queries/assertions based on your component's structure
     // expect(screen.getByTestId("loginbtn")).toBeInTheDocument();
   });
 
@@ -32,27 +31,21 @@ describe("LoginPopup component", () => {
     expect(codeInput.value).toBe("123456");
   });
 
-  test("clicking on 'ارسال' button triggers sendOtpHandler function", async () => {
+  test("clicking on send button triggers sendOtpHandler function", async () => {
     render(<MyContextProvider />);
     const sendCodeButton = screen.getByText("ارسال");
 
     await act(async () => {
       fireEvent.click(sendCodeButton);
     });
-
-    // You can add assertions based on the expected behavior of sendOtpHandler
   });
 
-  test("clicking on 'ورود' button triggers onVerifyHandler function", async () => {
+  test("clicking on login button triggers onVerifyHandler function", async () => {
     render(<MyContextProvider />);
     const verifyButton = screen.getByTestId("loginbtn");
 
     await act(async () => {
       fireEvent.click(verifyButton);
     });
-
-    // You can add assertions based on the expected behavior of onVerifyHandler
   });
-
-  // Add more test cases based on your component's functionality
 });

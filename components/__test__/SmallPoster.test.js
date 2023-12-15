@@ -44,7 +44,7 @@ describe("SmallPoster component", () => {
       screen.getByText(
         "Lorem ipsum dolor sit amet, consectetur adipiscing elit.Lorem ipsum dolor sit am ..."
       )
-    ).toBeInTheDocument(); // Check if the description is truncated
+    ).toBeInTheDocument();
   });
 
   test("renders SmallPoster component for lost item", () => {
@@ -55,6 +55,6 @@ describe("SmallPoster component", () => {
     };
     render(<SmallPoster {...lostProps} />);
 
-    expect(screen.queryByText("پیدا شده")).toBeNull(); // Ensure the "پیدا شده" text is not present
+    expect(screen.queryByText("پیدا شده")).toBeNull();
   });
 });

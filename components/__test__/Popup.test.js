@@ -6,9 +6,13 @@ import Popup from "../Popup";
 describe("Popup component", () => {
   test("renders Popup component with contact information", () => {
     render(
-      <Popup phone="123456789" setShow={() => {}} telegram_id="test_telegram" />
+      <Popup
+        phone="09030335008"
+        setShow={() => {}}
+        telegram_id="test_telegram"
+      />
     );
-    expect(screen.getByText("123456789")).toBeInTheDocument();
+    expect(screen.getByText("09030335008")).toBeInTheDocument();
     expect(screen.getByText("test_telegram")).toBeInTheDocument();
   });
 
@@ -18,11 +22,11 @@ describe("Popup component", () => {
   });
 
   test("renders Popup component without telegram id", () => {
-    render(<Popup phone="123456789" setShow={() => {}} />);
+    render(<Popup phone="09030335008" setShow={() => {}} />);
 
     expect(screen.getByText("اطلاعات تماس")).toBeInTheDocument();
     expect(screen.getByText("شماره تماس")).toBeInTheDocument();
-    expect(screen.getByText("123456789")).toBeInTheDocument();
+    expect(screen.getByText("09030335008")).toBeInTheDocument();
     expect(screen.queryByText("ایدی تلگرام")).toBeNull();
   });
 
@@ -30,14 +34,14 @@ describe("Popup component", () => {
     const setShowMock = jest.fn();
     render(
       <Popup
-        phone="123456789"
+        phone="09030335008"
         setShow={setShowMock}
         telegram_id="test_telegram"
       />
     );
 
     const popupBody = screen.getByText("اطلاعات تماس").closest(".popup_body");
-    userEvent.click(popupBody); // Simulate a click inside the Popup
+    userEvent.click(popupBody);
     expect(setShowMock).not.toHaveBeenCalled();
   });
 });
