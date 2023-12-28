@@ -1,8 +1,7 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 import { useState, useEffect } from "react";
-import AppHeader from "../Layout/AppHeader";
 import classes from "./posters.module.css";
-import axios from "axios";
+
 import { useAuth } from "../context/AuthProvider";
 import SmallPoster from "../components/SmallPoster";
 import bicycle from "../assets/images/bicycle.png";
