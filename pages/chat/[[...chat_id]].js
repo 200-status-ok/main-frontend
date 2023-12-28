@@ -48,7 +48,7 @@ const Chat = () => {
 
   const createConnection = () => {
     const websocket = new w3cwebsocket(
-      `ws://localhost:8080/api/v1/chat/open-ws?token=${auth.token}`
+      `ws://main-app.liara.run/:8080/api/v1/chat/open-ws?token=${auth.token}`
     );
     websocket.onopen = (event) => {
       console.log(event);

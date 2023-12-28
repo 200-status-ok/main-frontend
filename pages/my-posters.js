@@ -52,10 +52,12 @@ const MyPosters = () => {
                 id={poster.id}
                 key={index}
                 image={
-                  poster?.image.length > 0 ? poster?.image[0]?.url : bicycle.src
+                  poster?.images.length > 0
+                    ? poster?.images[0]?.url
+                    : bicycle.src
                 }
                 title={poster.title}
-                location={poster.address[0].address_detail}
+                location={poster.addresses[0].address_detail}
                 description={poster?.description}
                 categories={poster.tags}
                 // time_description={poster.time_description}
