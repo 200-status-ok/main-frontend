@@ -1,6 +1,6 @@
 import { createContext, useState, useEffect, useContext } from "react";
 import { getCookie } from "cookies-next";
-import { useRouter } from "next/router";
+
 export const MyContext = createContext();
 
 const AuthProvider = ({ children }) => {

@@ -33,7 +33,7 @@ const MyPosters = () => {
   }, [auth]);
   return (
     <>
-      <AppHeader />
+      {/* <AppHeader /> */}
       <div className={classes.my_posters_container}>
         <div className={classes.my_posters_title}>آگهی های من</div>
         <div className={classes.posters_container}>

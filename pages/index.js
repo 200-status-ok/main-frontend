@@ -18,6 +18,8 @@ import toodots from "../assets/images/toodots.png";
 import leftchevron from "../assets/icons/left_chevron.png";
 import Layout from "../Layout/Layout";
 import Poster from "../components/Poster";
+import SearchableSelect from "../components/SearchableSelect";
+
 import Link from "next/link";
 import axios from "axios";
 import { toast } from "react-toastify";

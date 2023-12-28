@@ -3,7 +3,6 @@ import classes from "./my-wallet.module.css";
 import AppHeader from "../Layout/AppHeader";
 import { useEffect, useState } from "react";
 import TransactionItem from "../components/TransactionItem";
-import axios from "axios";
 import { useAuth } from "../context/AuthProvider";
 import { router } from "websocket";
 import { useRouter } from "next/router";
