@@ -1,8 +1,7 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 import { useState, useEffect } from "react";
-import AppHeader from "../Layout/AppHeader";
 import classes from "./posters.module.css";
-import axios from "axios";
+
 import { useAuth } from "../context/AuthProvider";
 import SmallPoster from "../components/SmallPoster";
 import bicycle from "../assets/images/bicycle.png";
@@ -33,7 +32,7 @@ const MyPosters = () => {
   }, [auth]);
   return (
     <>
-      <AppHeader />
+      {/* <AppHeader /> */}
       <div className={classes.my_posters_container}>
         <div className={classes.my_posters_title}>آگهی های من</div>
         <div className={classes.posters_container}>
