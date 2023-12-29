@@ -150,6 +150,9 @@
   transition: background-color 0.36s ease;
   white-space: pre-line;
   word-break: break-word;
+  align-items: center;
+  display: flex;
+  column-gap: 8px;
 }
 .singlechat_left_message {
   background-color: rgba(0, 0, 0, 0.04);
@@ -162,6 +165,16 @@
   white-space: pre-line;
   word-break: break-word;
   align-self: flex-end;
+  display: flex;
+  align-items: center;
+  flex-direction: row-reverse;
+  column-gap: 8px;
+}
+.singlechat_detail_container {
+  display: flex;
+}
+.singlechat_time {
+  font-size: 8px;
 }
 .chatslist_chat_item {
   display: flex;
@@ -264,6 +277,10 @@
 }
 .chatslist_chat_item_notification.active {
   opacity: 1;
+}
+.singlechat_chat_item_container {
+  display: flex;
+  row-gap: 8px;
 }
 @media screen and (max-width: 1300px) {
   .container {
