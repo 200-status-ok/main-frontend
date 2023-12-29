@@ -138,6 +138,7 @@ const Poster = () => {
                           const { data: conversation } = await http.post(
                             "/api/v1/chat/authorize/message",
                             {
+                              id: Date.now(),
                               content: "test",
                               conversation_id: -1,
                               poster_id: poster.id,
