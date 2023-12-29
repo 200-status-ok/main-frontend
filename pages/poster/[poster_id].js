@@ -130,15 +130,38 @@ const Poster = () => {
                   onClick={async () => {
                     if (auth?.token) {
                       try {
-                        const { data } = await http.post(
+                        const { data } = await http.get(
                           "/api/v1/chat/authorize/conversation",
-                          {
-                            name: poster.title,
-                            poster_id: poster.id,
-                          },
                           { headers: { Authorization: `Bearer ${auth.token}` } }
                         );
-                        router.push(`/chat/${data.conversation.id}`);
+                        if (!data) {
+                          const { data: conversation } = await http.post(
+                            "/api/v1/chat/authorize/message",
+                            {
+                              id: Date.now(),
+                              content: "test",
+                              conversation_id: -1,
+                              poster_id: poster.id,
+                              type: "text",
+                            },
+                            {
+                              headers: {
+                                Authorization: `Bearer ${auth.token}`,
+                              },
+                            }
+                          );
+                          console.log(conversation);
+                        }
+
+                        // const { data } = await http.post(
+                        //   "/api/v1/chat/authorize/conversation",
+                        //   {
+                        //     name: poster.title,
+                        //     poster_id: poster.id,
+                        //   },
+                        //   { headers: { Authorization: `Bearer ${auth.token}` } }
+                        // );
+                        // router.push(`/chat/${data.conversation.id}`);
                       } catch (error) {
                         if (error.response.data.error.includes("yourself")) {
                           toast.error(

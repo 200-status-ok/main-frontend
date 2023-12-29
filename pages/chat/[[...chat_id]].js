@@ -8,15 +8,16 @@ import ChatItem from "../../components/ChatItem";
 import { HiOutlinePaperAirplane, HiArrowSmRight } from "react-icons/hi";
 import { BiImageAdd } from "react-icons/bi";
 import { useEffect, useRef, useState } from "react";
-import axios, { all } from "axios";
+import axios from "axios";
 import { useAuth } from "../../context/AuthProvider";
 import { useRouter } from "next/router";
 import { w3cwebsocket } from "websocket";
 import Link from "next/link";
 import { http } from "../../http-services/http";
-import { HiOutlineMap, HiOutlineMapPin } from "react-icons/hi2";
-import { toast } from "react-toastify";
+import { HiOutlineMapPin } from "react-icons/hi2";
 import dynamic from "next/dynamic";
+import RenderResult from "next/dist/server/render-result";
+import { BsJournal } from "react-icons/bs";
 let chatId;
 let allChat;
 const ChatMap = dynamic(() => import("../../components/ChatMap"), {
@@ -36,20 +37,15 @@ const Chat = () => {
 
   const [connection, setConnection] = useState();
 
-  const [userId, setUserId] = useState(0);
-  const [ownerId, setOwnerId] = useState(0);
-  const [senderId, setSenderId] = useState(0);
   const [currentChatDetail, setCurrentChatDetail] = useState();
   const [chatHistory, setChatHistory] = useState([]);
-
-  const [isConnectionOpen, setIsConnectionOpen] = useState(false);
 
   const imageRef = useRef();
   const router = useRouter();
 
   const createConnection = () => {
     const websocket = new w3cwebsocket(
-      `ws://localhost:8080/api/v1/chat/open-ws?token=${auth.token}`
+      `wss://main-app.liara.run/api/v1/chat/open-ws?token=${auth.token}`
     );
     websocket.onopen = (event) => {
       console.log(event);
@@ -66,7 +62,10 @@ const Chat = () => {
         const selectedChat = newAllChats.find(
           (chat) => chat.id === message.conversation_id
         );
-        if (selectedChat) selectedChat.description = message.content;
+        if (selectedChat) {
+          selectedChat.last_message.content = message.content;
+          selectedChat.last_message.type = message.type;
+        }
         if (+message.conversation_id !== +chatId) selectedChat.unread = true;
         console.log(newAllChats);
         setAllChats(newAllChats);
@@ -108,10 +107,6 @@ const Chat = () => {
             Authorization: `Bearer ${auth?.token}`,
           },
         });
-        const { data: user } = await http.get("/api/v1/users/authorize/", {
-          headers: { Authorization: `Bearer ${auth.token}` },
-        });
-        setUserId(user.id);
         if (data) {
           const unreadAddedChats = data.map((chat) => ({
             ...chat,
@@ -136,6 +131,7 @@ const Chat = () => {
         const currentActiveChat = allChats.find(
           (chat) => chat.id === +router.query.chat_id
         );
+        console.log("test");
         currentActiveChat.unread = false;
         setActiveChat(currentActiveChat);
         fetchChatHistory(router.query.chat_id[0]);
@@ -186,19 +182,18 @@ const Chat = () => {
     console.log(allChats);
 
     if (text) {
-      const senderId = userId;
-      const receiverId =
-        +currentChatDetail.owner_id === +userId
-          ? +currentChatDetail.member_id
-          : +currentChatDetail.owner_id;
+      // const senderId = userId;
+      // const receiverId =
+      //   +currentChatDetail.owner_id === +userId
+      //     ? +currentChatDetail.member_id
+      //     : +currentChatDetail.owner_id;
       const { data } = await http.post(
         "/api/v1/chat/authorize/message",
         {
           content: text,
           conversation_id: +router.query.chat_id[0],
           poster_id: currentChatDetail.poster_id,
-          receiver_id: receiverId,
-          sender_id: senderId,
+          id: Date.now(),
           type,
         },
         {
@@ -211,7 +206,8 @@ const Chat = () => {
       // send https request
       const newAllChats = [...allChat];
       const selectedChat = newAllChats.find((chat) => chat.id === +chatId);
-      selectedChat.description = text;
+      selectedChat.last_message.content = text;
+      selectedChat.last_message.type = type;
 
       if (+data.send_message.conversation_id === +chatId) {
         setChatHistory((prev) => [...prev, data.send_message]);
@@ -273,9 +269,10 @@ const Chat = () => {
               {allChats.map((chat, index) => (
                 <ChatItem
                   name={chat.name}
-                  description={
-                    chat?.description ? chat?.description : "بدون پیام"
-                  }
+                  description={showLastMessage(
+                    chat?.last_message?.content,
+                    chat?.last_message?.type
+                  )}
                   image={chat?.image_url}
                   key={index}
                   unread={chat?.unread}
@@ -322,6 +319,9 @@ const Chat = () => {
                 </div>
                 <div className={classes.singlechat_chat}>
                   {chatHistory?.map((chat, index) => {
+                    const date = new Date(chat.id);
+                    let hours = date.getHours();
+                    let minutes = "0" + date.getMinutes();
                     return (
                       <div
                         className={`${checkClassOfMessage(
@@ -333,6 +333,12 @@ const Chat = () => {
                       >
                         <div className={classes.singlechat_chat_item_text}>
                           {showMessage(chat.content, chat.type)}
+                        </div>
+                        <div className={classes.singlechat_detail_container}>
+                          {" "}
+                          <div
+                            className={classes.singlechat_time}
+                          >{`${hours}:${minutes.substr(-2)}`}</div>
                         </div>
                       </div>
                     );
@@ -414,6 +420,15 @@ const showMessage = (content, type) => {
         style={{ width: "250px", height: "200px" }}
       />
     );
+  }
+};
+const showLastMessage = (content, type) => {
+  if (type === "text") {
+    return content ? content : "بدون پیام";
+  } else if (type === "image") {
+    return "تصویر";
+  } else if (type === "location") {
+    return "مکان";
   }
 };
 export default Chat;

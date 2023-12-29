@@ -1,5 +1,5 @@
 import axios from "axios";
-export const ApiUrl = "http://localhost:8080";
+export const ApiUrl = "https://main-app.liara.run";
 export const FrontEndUrl = "http://localhost:3000";
 
 axios.defaults.baseURL = ApiUrl;
