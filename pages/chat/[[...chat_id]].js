@@ -124,10 +124,23 @@ const Chat = () => {
     }
   }, [auth]);
 
+  console.log(activeChat);
   useEffect(() => {
-    if (router?.query?.chat_id) {
+    if (router.query?.poster_id && router?.query.title) {
+      setActiveChat({
+        name: router?.query.title,
+        id: -1,
+        image_url:
+          "https://main-bucket.s3.ir-thr-at1.arvanstorage.ir/20231228_203444_21030f1e61b7f887.png",
+        poster_id: router.query?.poster_id,
+        unread: false,
+        last_message: {},
+      });
+      console.log("setting active chat");
+    } else if (router?.query?.chat_id?.length > 0) {
       chatId = router?.query?.chat_id[0];
       if (allChats.length > 0) {
+        console.log(allChats);
         const currentActiveChat = allChats.find(
           (chat) => chat.id === +router.query.chat_id
         );
@@ -178,47 +191,66 @@ const Chat = () => {
       }
     }
   };
-  const sendMessage = async (text, type = "text") => {
-    console.log(allChats);
-
+  const sendMessage = async (text, type = "text", activeChat = {}) => {
     if (text) {
+      console.log(activeChat);
+      if (activeChat.id === -1) {
+        const { data } = await http.post(
+          "/api/v1/chat/authorize/message",
+          {
+            id: Date.now(),
+            content: text,
+            conversation_id: -1,
+            poster_id: +activeChat.poster_id,
+            type,
+          },
+          {
+            headers: {
+              Authorization: `Bearer ${auth.token}`,
+            },
+          }
+        );
+        router.push(`/chat/${data.conversation_id}`);
+      }
       // const senderId = userId;
       // const receiverId =
       //   +currentChatDetail.owner_id === +userId
       //     ? +currentChatDetail.member_id
       //     : +currentChatDetail.owner_id;
-      const { data } = await http.post(
-        "/api/v1/chat/authorize/message",
-        {
-          content: text,
-          conversation_id: +router.query.chat_id[0],
-          poster_id: currentChatDetail.poster_id,
-          id: Date.now(),
-          type,
-        },
-        {
-          headers: {
-            Authorization: `Bearer ${auth?.token}`,
+      else {
+        const { data } = await http.post(
+          "/api/v1/chat/authorize/message",
+          {
+            content: text,
+            conversation_id: +router.query.chat_id[0],
+            poster_id: currentChatDetail.poster_id,
+            id: Date.now(),
+            type,
           },
-        }
-      );
-      console.log(data.send_message);
-      // send https request
-      const newAllChats = [...allChat];
-      const selectedChat = newAllChats.find((chat) => chat.id === +chatId);
-      selectedChat.last_message.content = text;
-      selectedChat.last_message.type = type;
+          {
+            headers: {
+              Authorization: `Bearer ${auth?.token}`,
+            },
+          }
+        );
+        console.log(data.send_message);
+        // send https request
+        const newAllChats = [...allChat];
+        const selectedChat = newAllChats.find((chat) => chat.id === +chatId);
+        selectedChat.last_message.content = text;
+        selectedChat.last_message.type = type;
 
-      if (+data.send_message.conversation_id === +chatId) {
-        setChatHistory((prev) => [...prev, data.send_message]);
+        if (+data.send_message.conversation_id === +chatId) {
+          setChatHistory((prev) => [...prev, data.send_message]);
+        }
+        setAllChats(newAllChats);
       }
-      setAllChats(newAllChats);
     }
     setChatText("");
   };
   const handlePressEnter = (e) => {
     if (e.key === "Enter") {
-      sendMessage(chatText, "text");
+      sendMessage(chatText, "text", activeChat);
     }
   };
   // useEffect(() => {
@@ -245,7 +277,7 @@ const Chat = () => {
               <div
                 className={classes.location_send}
                 onClick={() => {
-                  sendMessage(JSON.stringify(location), "location");
+                  sendMessage(JSON.stringify(location), "location", activeChat);
                   setLocationPopup(false);
                 }}
               >
@@ -366,7 +398,7 @@ const Chat = () => {
                           "/api/v1/api-call/image-upload",
                           formData
                         );
-                        sendMessage(data.url, "image");
+                        sendMessage(data.url, "image", activeChat);
                       }
                     }}
                   />
@@ -391,7 +423,7 @@ const Chat = () => {
                   <button
                     className={classes.singlechat_bottom_send}
                     onClick={() => {
-                      sendMessage(chatText, "text");
+                      sendMessage(chatText, "text", activeChat);
                     }}
                   >
                     <HiOutlinePaperAirplane size="28px" color="#2f89fc" />

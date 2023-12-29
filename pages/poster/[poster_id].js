@@ -134,23 +134,16 @@ const Poster = () => {
                           "/api/v1/chat/authorize/conversation",
                           { headers: { Authorization: `Bearer ${auth.token}` } }
                         );
-                        if (!data) {
-                          const { data: conversation } = await http.post(
-                            "/api/v1/chat/authorize/message",
-                            {
-                              id: Date.now(),
-                              content: "test",
-                              conversation_id: -1,
-                              poster_id: poster.id,
-                              type: "text",
-                            },
-                            {
-                              headers: {
-                                Authorization: `Bearer ${auth.token}`,
-                              },
-                            }
+
+                        const currentChat = data.find(
+                          (chat) => chat.poster_id === poster.id
+                        );
+                        if (currentChat) {
+                          router.push(`/chat/${currentChat.id}`);
+                        } else {
+                          router.push(
+                            `/chat/?poster_id=${poster.id}&title=${poster.title}`
                           );
-                          console.log(conversation);
                         }
 
                         // const { data } = await http.post(
