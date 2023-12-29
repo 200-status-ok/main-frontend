@@ -17,6 +17,7 @@ import { http } from "../../http-services/http";
 import { HiOutlineMapPin } from "react-icons/hi2";
 import dynamic from "next/dynamic";
 import RenderResult from "next/dist/server/render-result";
+import { BsJournal } from "react-icons/bs";
 let chatId;
 let allChat;
 const ChatMap = dynamic(() => import("../../components/ChatMap"), {
@@ -318,6 +319,9 @@ const Chat = () => {
                 </div>
                 <div className={classes.singlechat_chat}>
                   {chatHistory?.map((chat, index) => {
+                    const date = new Date(chat.id);
+                    let hours = date.getHours();
+                    let minutes = "0" + date.getMinutes();
                     return (
                       <div
                         className={`${checkClassOfMessage(
@@ -329,6 +333,12 @@ const Chat = () => {
                       >
                         <div className={classes.singlechat_chat_item_text}>
                           {showMessage(chat.content, chat.type)}
+                        </div>
+                        <div className={classes.singlechat_detail_container}>
+                          {" "}
+                          <div
+                            className={classes.singlechat_time}
+                          >{`${hours}:${minutes.substr(-2)}`}</div>
                         </div>
                       </div>
                     );
