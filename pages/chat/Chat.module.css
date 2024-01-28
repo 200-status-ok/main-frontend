@@ -84,6 +84,7 @@
 .singlechat_top_icon {
   width: 32px;
   height: 32px;
+  overflow: hidden;
   display: grid;
   place-items: center;
 }

@@ -2,6 +2,7 @@
 import AppHeader from "../Layout/AppHeader";
 import Layout from "../Layout/Layout";
 import bicycle from "../assets/images/bicycle.png";
+import no_image from "../assets/images/no_image.png";
 import Poster from "../components/Poster";
 import classes from "./posters.module.css";
 import SmallPoster from "../components/SmallPoster";
@@ -293,7 +294,7 @@ const Posters = () => {
               id={poster.id}
               key={index}
               image={
-                poster?.images.length > 0 ? poster?.images[0] : bicycle.src
+                poster?.images.length > 0 ? poster?.images[0] : no_image.src
               }
               title={poster.title}
               location={poster.addresses[0].address_detail}

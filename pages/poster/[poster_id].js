@@ -262,6 +262,7 @@ const Poster = () => {
                 width={500}
                 height={360}
               >
+                {console.log(poster.images)}
                 {poster?.images?.map((slide, index) => {
                   return (
                     <SwiperSlide key={index}>

@@ -7,7 +7,7 @@ import axios from "axios";
 import { useAuth } from "../context/AuthProvider";
 import { router } from "websocket";
 import { useRouter } from "next/router";
-import { http } from "../http-services/http";
+import { FrontEndUrl, http } from "../http-services/http";
 const depositOptions = ["50000", "100000", "200000", "500000"];
 const MyWallet = () => {
   const { auth, setAuth } = useAuth();
@@ -60,7 +60,7 @@ const MyWallet = () => {
             onClick={async () => {
               if (depositAmount > 0) {
                 const { data } = await http.get(
-                  `/api/v1/users/authorize/payment/user_wallet?url=https://haminjast.iran.liara.run/payment&amount=${depositAmount}`,
+                  `/api/v1/users/authorize/payment/user_wallet?url=${FrontEndUrl}/payment&amount=${depositAmount}`,
                   {
                     headers: { Authorization: `Bearer ${auth.token}` },
                   }
