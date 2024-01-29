@@ -2,6 +2,7 @@
 import AppHeader from "../Layout/AppHeader";
 import Layout from "../Layout/Layout";
 import bicycle from "../assets/images/bicycle.png";
+import no_image from "../assets/images/no_image.png";
 import Poster from "../components/Poster";
 import classes from "./posters.module.css";
 import SmallPoster from "../components/SmallPoster";
@@ -33,6 +34,7 @@ const Posters = () => {
   const [checked, setChecked] = useState(false);
   const [allPosters, setAllPosters] = useState([]);
   const [searchBoxItems, setSearchBoxItems] = useState([]);
+  const [mapPosters, setMapPosters] = useState([]);
 
   const [maxPage, setMaxPage] = useState(1);
   const [currentPage, setCurrentPage] = useState(1);
@@ -60,6 +62,19 @@ const Posters = () => {
   const handleChange = (nextChecked) => {
     setChecked(nextChecked);
   };
+  const fetchPostersForMap = async () => {
+    try {
+      const { data } = await http.get(
+        `api/v1/posters/?page_id=1&page_size=50&state=accepted&status=both&only_awards=false&search_phrase=&lat=&lon=`
+      );
+
+      setMapPosters(data.posters ? data.posters : []);
+    } catch (error) {
+      console.log(error);
+      // setError("خطایی در دریافت اطلاعات پیش آمده است ...");
+    }
+  };
+
   const fetchPosters = async () => {
     try {
       const { data } = await http.get(
@@ -87,6 +102,7 @@ const Posters = () => {
   };
   useEffect(() => {
     fetchPosters();
+    fetchPostersForMap();
     if (allTags.length === 0) {
       fetchTags();
     }
@@ -149,7 +165,7 @@ const Posters = () => {
             radius={900}
             setLatLong={setLatLong}
             latLong={latLong}
-            itemsLatLong={allPosters.map((poster) => {
+            itemsLatLong={mapPosters.map((poster) => {
               return {
                 lat: poster.addresses[0].location.lat,
                 lng: poster.addresses[0].location.lon,
@@ -293,7 +309,7 @@ const Posters = () => {
               id={poster.id}
               key={index}
               image={
-                poster?.images.length > 0 ? poster?.images[0] : bicycle.src
+                poster?.images.length > 0 ? poster?.images[0] : no_image.src
               }
               title={poster.title}
               location={poster.addresses[0].address_detail}
