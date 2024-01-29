@@ -501,6 +501,9 @@ const NewPosterPopup = () => {
                 />
               </div>
               <div className={classes.map}>
+                {console.log(
+                  findNearestDistrict(address.latitude, address.longitude)
+                )}
                 <MapWithNoSsrNewPoster
                   lat={address.latitude}
                   lng={address.longitude}
@@ -511,6 +514,9 @@ const NewPosterPopup = () => {
 
                       copyOfAddresses[index].latitude = lat;
                       copyOfAddresses[index].longitude = lng;
+                      copyOfAddresses[index].address_detail =
+                        findNearestDistrict(lat, lng);
+
                       return copyOfAddresses;
                     });
                   }}
@@ -634,5 +640,20 @@ const NewPosterPopup = () => {
     </div>
   );
 };
-
+const findNearestDistrict = (lat, lng) => {
+  const districts = Tehran.districts;
+  let minD = 1000000000;
+  let minIndex = 0;
+  districts.forEach((district, index) => {
+    const d = Math.sqrt(
+      Math.pow(district.centroid.latitude - lat, 2) +
+        Math.pow(district.centroid.longitude - lng, 2)
+    );
+    if (d < minD) {
+      minD = d;
+      minIndex = index;
+    }
+  });
+  return districts[minIndex];
+};
 export default NewPosterPopup;

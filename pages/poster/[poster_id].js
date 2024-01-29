@@ -29,6 +29,12 @@ let swiperInstance = null;
 const MapWithNoSSR = dynamic(() => import("../../components/Map"), {
   ssr: false,
 });
+const MapWithNoSSRSingle = dynamic(
+  () => import("../../components/MapSinglePoster"),
+  {
+    ssr: false,
+  }
+);
 const Poster = () => {
   const [latLong, setLatLong] = [35.742473999999994001, 51.502310300000005001];
   const [slider, setSlider] = useState(0);
@@ -49,11 +55,12 @@ const Poster = () => {
 
   const checkLatLong = () => {
     if (poster?.addresses.length > 0) {
-      if (poster.addresses[0].latitude && poster.addresses[0].longitude) {
-        return [poster.addresses[0].latitude, poster.addresses[0].longitude];
-      } else {
-        return latLong;
-      }
+      console.log(poster.addresses);
+      return poster.addresses.map((address) => {
+        if (address.latitude && address.longitude) {
+          return [address.latitude, address.longitude];
+        }
+      });
     } else {
       return latLong;
     }
@@ -237,7 +244,10 @@ const Poster = () => {
                 <MapWithNoSSR
                   noDrawCircle={true}
                   firstCircle={true}
-                  latLong={{ lat: checkLatLong()[0], lng: checkLatLong()[1] }}
+                  latLong={{
+                    lat: checkLatLong()[0][0],
+                    lng: checkLatLong()[0][1],
+                  }}
                 />
               )}
             </div>
@@ -303,12 +313,13 @@ const Poster = () => {
         </div>
         <div className={classes.map_container}>
           موقعیت
+          {console.log(checkLatLong())}
           {poster.addresses.length > 0 && poster.addresses[0].latitude && (
-            <MapWithNoSSR
+            <MapWithNoSSRSingle
               noDrawCircle={true}
               firstCircle={true}
-              height={"300px"}
-              latLong={{ lat: checkLatLong()[0], lng: checkLatLong()[1] }}
+              zoom={10}
+              latLongs={checkLatLong()}
             />
           )}
         </div>

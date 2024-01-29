@@ -33,6 +33,9 @@ const SearchableSelect = ({ options, value, setValue, zindex = 10000 }) => {
       setSearch(value.name);
     }
   });
+  useEffect(() => {
+    setSearch(value.name);
+  }, [value]);
   return (
     <div className={classes.holder} style={{ zIndex: zindex }}>
       <div

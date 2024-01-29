@@ -159,6 +159,9 @@
     row-gap: 16px;
     align-items: center;
   }
+  .container {
+    margin-top: 32px;
+  }
   .details_container {
     width: 100%;
   }
