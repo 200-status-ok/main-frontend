@@ -1,5 +1,6 @@
 import classes from "../pages/chat/Chat.module.css";
 import bicycle from "../assets/images/bicycle.png";
+import no_image from "../assets/images/no_image.png";
 const ChatItem = ({ description, name, onClick, active, image, unread }) => {
   return (
     <div
@@ -11,7 +12,7 @@ const ChatItem = ({ description, name, onClick, active, image, unread }) => {
       }}
     >
       <div className={classes.chatslist_chat_item_icon}>
-        <img src={image ? image : bicycle.src} />
+        <img src={image ? image : no_image.src} />
       </div>
       <div className={classes.chatslist_chat_item_info}>
         <div className={classes.chatslist_chat_item_info_top}>{name} </div>

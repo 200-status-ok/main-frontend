@@ -3,6 +3,7 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 import AppHeader from "../../Layout/AppHeader";
 import classes from "./Chat.module.css";
+import no_image from "../../assets/images/no_image.png";
 import bicycle from "../../assets/images/bicycle.png";
 import ChatItem from "../../components/ChatItem";
 import { HiOutlinePaperAirplane, HiArrowSmRight } from "react-icons/hi";
@@ -18,6 +19,8 @@ import { HiOutlineMapPin } from "react-icons/hi2";
 import dynamic from "next/dynamic";
 import RenderResult from "next/dist/server/render-result";
 import { BsJournal } from "react-icons/bs";
+import VisibilitySensor from "react-visibility-sensor";
+import { toast } from "react-toastify";
 let chatId;
 let allChat;
 const ChatMap = dynamic(() => import("../../components/ChatMap"), {
@@ -65,9 +68,14 @@ const Chat = () => {
         if (selectedChat) {
           selectedChat.last_message.content = message.content;
           selectedChat.last_message.type = message.type;
+
+          newAllChats.splice(newAllChats.indexOf(selectedChat), 1);
+          // add it to the head of list
+          newAllChats.unshift(selectedChat);
+          // remove it from the list
         }
-        if (+message.conversation_id !== +chatId) selectedChat.unread = true;
-        console.log(newAllChats);
+        if (+message.conversation_id !== +chatId)
+          if (selectedChat) selectedChat.unread = true;
         setAllChats(newAllChats);
       }
 
@@ -102,55 +110,70 @@ const Chat = () => {
         setAuth((prev) => ({ ...prev, showLoginPopup: true }));
     if (auth.token) {
       (async () => {
-        const { data } = await http.get("/api/v1/chat/authorize/conversation", {
-          headers: {
-            Authorization: `Bearer ${auth?.token}`,
-          },
-        });
-        if (data) {
-          const unreadAddedChats = data.map((chat) => ({
-            ...chat,
-            unread: false,
-          }));
-          setAllChats(unreadAddedChats);
-          allChat = data;
-          setOwner(
-            data.map((chat) => {
-              return { id: chat.id, is_owner: chat.is_owner };
-            })
+        try {
+          const { data } = await http.get(
+            "/api/v1/chat/authorize/conversation",
+            {
+              headers: {
+                Authorization: `Bearer ${auth?.token}`,
+              },
+            }
           );
+          if (data) {
+            const unreadAddedChats = data.map((chat) => ({
+              ...chat,
+              unread: false,
+            }));
+            setAllChats(unreadAddedChats);
+            allChat = data;
+            console.log(data);
+            setOwner(
+              data.map((chat) => {
+                return { id: chat.id, is_owner: chat.is_owner };
+              })
+            );
+          }
+        } catch (error) {
+          console.log(error);
         }
       })();
     }
-  }, [auth]);
-
-  console.log(activeChat);
+  }, [auth, router.query.chat_id]);
+  console.log(owner);
   useEffect(() => {
+    console.log(router.query);
     if (router.query?.poster_id && router?.query.title) {
       setActiveChat({
         name: router?.query.title,
         id: -1,
-        image_url:
-          "https://main-bucket.s3.ir-thr-at1.arvanstorage.ir/20231228_203444_21030f1e61b7f887.png",
+        image_url: no_image.src,
         poster_id: router.query?.poster_id,
         unread: false,
         last_message: {},
       });
       console.log("setting active chat");
     } else if (router?.query?.chat_id?.length > 0) {
+      console.log("in router");
       chatId = router?.query?.chat_id[0];
+      console.log(allChats);
       if (allChats.length > 0) {
         console.log(allChats);
         const currentActiveChat = allChats.find(
           (chat) => chat.id === +router.query.chat_id
         );
         console.log("test");
-        currentActiveChat.unread = false;
-        setActiveChat(currentActiveChat);
-        fetchChatHistory(router.query.chat_id[0]);
+        // check currentActivechat object have propry unread
+        console.log(currentActiveChat);
+        if (currentActiveChat) {
+          currentActiveChat.unread = false;
+          setActiveChat(currentActiveChat);
+          fetchChatHistory(router.query.chat_id[0]);
+        }
       }
+    } else {
+      setActiveChat(null);
     }
-  }, [router.query]);
+  }, [router.query, allChats]);
 
   const fetchChatHistory = async (id) => {
     const { data } = await http.get(
@@ -195,22 +218,27 @@ const Chat = () => {
     if (text) {
       console.log(activeChat);
       if (activeChat.id === -1) {
-        const { data } = await http.post(
-          "/api/v1/chat/authorize/message",
-          {
-            id: Date.now(),
-            content: text,
-            conversation_id: -1,
-            poster_id: +activeChat.poster_id,
-            type,
-          },
-          {
-            headers: {
-              Authorization: `Bearer ${auth.token}`,
+        try {
+          const { data } = await http.post(
+            "/api/v1/chat/authorize/message",
+            {
+              id: Date.now(),
+              content: text,
+              conversation_id: -1,
+              poster_id: +activeChat.poster_id,
+              type,
             },
-          }
-        );
-        router.push(`/chat/${data.conversation_id}`);
+            {
+              headers: {
+                Authorization: `Bearer ${auth.token}`,
+              },
+            }
+          );
+          router.push(`/chat/${data.send_message.conversation_id}`);
+        } catch (error) {
+          toast.error("خطایی پیش آمده است");
+          console.log(error);
+        }
       }
       // const senderId = userId;
       // const receiverId =
@@ -218,32 +246,36 @@ const Chat = () => {
       //     ? +currentChatDetail.member_id
       //     : +currentChatDetail.owner_id;
       else {
-        const { data } = await http.post(
-          "/api/v1/chat/authorize/message",
-          {
-            content: text,
-            conversation_id: +router.query.chat_id[0],
-            poster_id: currentChatDetail.poster_id,
-            id: Date.now(),
-            type,
-          },
-          {
-            headers: {
-              Authorization: `Bearer ${auth?.token}`,
+        try {
+          const { data } = await http.post(
+            "/api/v1/chat/authorize/message",
+            {
+              content: text,
+              conversation_id: +router.query.chat_id[0],
+              poster_id: currentChatDetail.poster_id,
+              id: Date.now(),
+              type,
             },
-          }
-        );
-        console.log(data.send_message);
-        // send https request
-        const newAllChats = [...allChat];
-        const selectedChat = newAllChats.find((chat) => chat.id === +chatId);
-        selectedChat.last_message.content = text;
-        selectedChat.last_message.type = type;
+            {
+              headers: {
+                Authorization: `Bearer ${auth?.token}`,
+              },
+            }
+          );
+          // send https request
+          const newAllChats = [...allChat];
+          const selectedChat = newAllChats.find((chat) => chat.id === +chatId);
+          selectedChat.last_message.content = text;
+          selectedChat.last_message.type = type;
 
-        if (+data.send_message.conversation_id === +chatId) {
-          setChatHistory((prev) => [...prev, data.send_message]);
+          if (+data.send_message.conversation_id === +chatId) {
+            setChatHistory((prev) => [...prev, data.send_message]);
+          }
+          setAllChats(newAllChats);
+        } catch (error) {
+          console.log(error);
+          toast.error("خطایی پیش آمده است");
         }
-        setAllChats(newAllChats);
       }
     }
     setChatText("");
@@ -341,7 +373,7 @@ const Chat = () => {
                       src={
                         activeChat?.image_url
                           ? activeChat.image_url
-                          : bicycle.src
+                          : no_image.src
                       }
                     />
                   </div>
@@ -351,6 +383,7 @@ const Chat = () => {
                 </div>
                 <div className={classes.singlechat_chat}>
                   {chatHistory?.map((chat, index) => {
+                    console.log(chat);
                     const date = new Date(chat.id);
                     let hours = date.getHours();
                     let minutes = "0" + date.getMinutes();
@@ -449,7 +482,7 @@ const showMessage = (content, type) => {
       <ChatMap
         latLong={JSON.parse(content)}
         unClickable
-        style={{ width: "250px", height: "200px" }}
+        style={{ width: "210px", height: "200px" }}
       />
     );
   }
