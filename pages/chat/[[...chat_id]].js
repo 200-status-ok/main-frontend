@@ -3,6 +3,7 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 import AppHeader from "../../Layout/AppHeader";
 import classes from "./Chat.module.css";
+import no_image from "../../assets/images/no_image.png";
 import bicycle from "../../assets/images/bicycle.png";
 import ChatItem from "../../components/ChatItem";
 import { HiOutlinePaperAirplane, HiArrowSmRight } from "react-icons/hi";
@@ -67,6 +68,11 @@ const Chat = () => {
         if (selectedChat) {
           selectedChat.last_message.content = message.content;
           selectedChat.last_message.type = message.type;
+
+          newAllChats.splice(newAllChats.indexOf(selectedChat), 1);
+          // add it to the head of list
+          newAllChats.unshift(selectedChat);
+          // remove it from the list
         }
         if (+message.conversation_id !== +chatId)
           if (selectedChat) selectedChat.unread = true;
@@ -140,8 +146,7 @@ const Chat = () => {
       setActiveChat({
         name: router?.query.title,
         id: -1,
-        image_url:
-          "https://main-bucket.s3.ir-thr-at1.arvanstorage.ir/20231228_203444_21030f1e61b7f887.png",
+        image_url: no_image.src,
         poster_id: router.query?.poster_id,
         unread: false,
         last_message: {},
@@ -368,7 +373,7 @@ const Chat = () => {
                       src={
                         activeChat?.image_url
                           ? activeChat.image_url
-                          : bicycle.src
+                          : no_image.src
                       }
                     />
                   </div>
@@ -477,7 +482,7 @@ const showMessage = (content, type) => {
       <ChatMap
         latLong={JSON.parse(content)}
         unClickable
-        style={{ width: "250px", height: "200px" }}
+        style={{ width: "210px", height: "200px" }}
       />
     );
   }
